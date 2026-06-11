@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Groups | SSB Connect{% endblock %}
+{% block content %}
+<div class="grid gap-5 lg:grid-cols-[1fr_340px]">
+  <section class="grid gap-4 md:grid-cols-2">
+    {% for group in groups %}
+    <article class="card p-4">
+      <h2 class="text-lg font-semibold">{{ group.name }}</h2>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ group.description|default:"Focused preparation group." }}</p>
+      <div class="mt-4 flex items-center justify-between text-sm">
+        <span>{{ group.memberships.count }} members</span>
+        <a class="font-semibold text-navy-700 dark:text-white" href="{% url 'group-detail' group.slug %}">Open</a>
+      </div>
+    </article>
+    {% empty %}<p class="card p-5 text-slate-500">No groups yet.</p>{% endfor %}
+  </section>
+  <aside class="card p-4">
+    <h2 class="font-semibold">Create Group</h2>
+    <form class="mt-4 space-y-3" data-api-form="/api/groups/">
+      <input class="field" name="name" placeholder="Group name">
+      <input class="field" name="slug" placeholder="slug">
+      <select class="field" name="category"><option>NDA</option><option>CDS</option><option>AFCAT</option><option>SSB</option></select>
+      <textarea class="field" name="description" placeholder="Description"></textarea>
+      <button class="btn-primary w-full" type="submit">Create</button>
+    </form>
+  </aside>
+</div>
+{% endblock %}

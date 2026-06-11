@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.venv/
+
+# Build output
+dist/
+
+# Environment & secrets
+.env
+.env.*
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Django
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
+# Practice PDFs (large; import locally via manage.py)
+*.pdf
+backend/practice_assets/pdf/ppdt/
+backend/practice_assets/pdf/tat/
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.log
+
+# Local Netlify
+.netlify/

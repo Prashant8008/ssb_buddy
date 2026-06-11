@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Settings | SSB Connect{% endblock %}
+{% block content %}
+<section class="card p-5">
+  <h1 class="text-2xl font-bold">Settings</h1>
+  <div class="mt-5 grid gap-4 md:grid-cols-2">
+    <label class="flex items-center justify-between rounded border border-slate-200 p-4 dark:border-slate-800">Public Profile <input type="checkbox" checked></label>
+    <label class="flex items-center justify-between rounded border border-slate-200 p-4 dark:border-slate-800">Friends Only <input type="checkbox"></label>
+    <label class="flex items-center justify-between rounded border border-slate-200 p-4 dark:border-slate-800">Email Notifications <input type="checkbox" checked></label>
+    <label class="flex items-center justify-between rounded border border-slate-200 p-4 dark:border-slate-800">Push Notifications <input type="checkbox" checked></label>
+  </div>
+</section>
+{% endblock %}

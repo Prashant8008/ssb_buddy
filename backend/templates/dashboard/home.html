@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | SSB Connect{% endblock %}
+{% block content %}
+<div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+  <section class="space-y-4">
+    <div class="card p-5">
+      <p class="text-sm font-semibold uppercase text-olive-700 dark:text-olive-500">Mission dashboard</p>
+      <h1 class="mt-2 text-3xl font-bold">Train with aspirants preparing for NDA, CDS, AFCAT, INET, and SSB.</h1>
+      <form class="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]" data-api-form="/api/posts/">
+        <textarea class="field min-h-24" name="body" placeholder="Share preparation updates, current affairs notes, SSB experience, or a question."></textarea>
+        <button class="btn-primary h-11 self-end" type="submit">Post</button>
+        <p class="text-sm text-slate-500" data-form-status></p>
+      </form>
+    </div>
+    <div class="space-y-3">
+      {% for post in posts %}
+      <article class="card p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="font-semibold">{{ post.title|default:"Aspirant Update" }}</h2>
+            <p class="text-sm text-slate-500">@{{ post.author.username }} · {{ post.created_at|timesince }} ago</p>
+          </div>
+          <span class="rounded bg-olive-700 px-2 py-1 text-xs font-semibold text-white">{{ post.post_type }}</span>
+        </div>
+        <p class="mt-3 text-slate-700 dark:text-slate-300">{{ post.body }}</p>
+        <div class="mt-4 flex gap-3 text-sm text-slate-500">
+          <span>{{ post.likes.count }} likes</span>
+          <span>{{ post.comments.count }} comments</span>
+          <a href="{% url 'post-detail' post.id %}" class="font-semibold text-navy-700 dark:text-white">Open</a>
+        </div>
+      </article>
+      {% empty %}
+      <div class="card p-5 text-slate-500">No posts yet. Create the first one from the feed composer.</div>
+      {% endfor %}
+    </div>
+  </section>
+  <aside class="space-y-4">
+    <section class="card p-4">
+      <h2 class="font-semibold">Nearby Aspirants</h2>
+      <div class="mt-3 space-y-3">
+        {% for profile in nearby_profiles %}
+        <a class="block rounded border border-slate-200 p-3 dark:border-slate-800" href="{% url 'profile' profile.user.username %}">
+          <span class="font-medium">{{ profile.user.get_full_name|default:profile.user.username }}</span>
+          <span class="block text-sm text-slate-500">{{ profile.entry_type|default:"Defence" }} · {{ profile.city|default:"India" }}</span>
+        </a>
+        {% empty %}<p class="text-sm text-slate-500">No public profiles yet.</p>{% endfor %}
+      </div>
+    </section>
+    <section class="card p-4">
+      <h2 class="font-semibold">Upcoming Events</h2>
+      {% for event in events %}
+      <p class="mt-3 text-sm"><span class="font-medium">{{ event.title }}</span><br><span class="text-slate-500">{{ event.starts_at }}</span></p>
+      {% empty %}<p class="mt-3 text-sm text-slate-500">No events scheduled.</p>{% endfor %}
+    </section>
+    <section class="card p-4">
+      <h2 class="font-semibold">Study Groups</h2>
+      {% for group in groups %}
+      <a href="{% url 'group-detail' group.slug %}" class="mt-3 block text-sm font-medium text-navy-700 dark:text-white">{{ group.name }}</a>
+      {% empty %}<p class="mt-3 text-sm text-slate-500">No groups yet.</p>{% endfor %}
+    </section>
+    <section class="card p-4">
+      <h2 class="font-semibold">Trending Discussions</h2>
+      <div class="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
+        <span class="rounded bg-slate-100 px-2 py-1 dark:bg-slate-800">PPDT</span>
+        <span class="rounded bg-slate-100 px-2 py-1 dark:bg-slate-800">AFCAT</span>
+        <span class="rounded bg-slate-100 px-2 py-1 dark:bg-slate-800">Current Affairs</span>
+      </div>
+    </section>
+  </aside>
+</div>
+{% endblock %}

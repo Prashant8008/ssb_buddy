@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile | SSB Connect{% endblock %}
+{% block content %}
+<section class="card p-5">
+  <h1 class="text-2xl font-bold">Edit Profile</h1>
+  <form class="mt-5 grid gap-4 md:grid-cols-2" data-api-form="/api/profiles/me/" method="PATCH">
+    <input class="field" name="city" placeholder="City" value="{{ profile.city }}">
+    <input class="field" name="state" placeholder="State" value="{{ profile.state }}">
+    <input class="field" name="entry_type" placeholder="Entry type" value="{{ profile.entry_type }}">
+    <input class="field" name="preferred_service" placeholder="Preferred service" value="{{ profile.preferred_service }}">
+    <textarea class="field md:col-span-2" name="bio" placeholder="Bio">{{ profile.bio }}</textarea>
+    <button class="btn-primary" type="submit">Save Profile</button>
+    <p class="text-sm text-slate-500" data-form-status></p>
+  </form>
+</section>
+{% endblock %}

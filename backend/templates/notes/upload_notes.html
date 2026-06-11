@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Upload Notes | SSB Connect{% endblock %}
+{% block content %}
+<section class="card p-5">
+  <h1 class="text-2xl font-bold">Upload Notes</h1>
+  <form class="mt-5 space-y-4" data-api-form="/api/notes/" enctype="multipart/form-data">
+    <input class="field" name="title" placeholder="Title">
+    <textarea class="field" name="description" placeholder="Description"></textarea>
+    <select class="field" name="category">
+      <option value="NDA">NDA</option><option value="CDS">CDS</option><option value="AFCAT">AFCAT</option><option value="SSB">SSB Interview</option><option value="CURRENT_AFFAIRS">Current Affairs</option>
+    </select>
+    <input class="field" name="file" type="file" accept="application/pdf">
+    <button class="btn-primary" type="submit">Upload</button>
+    <p class="text-sm text-slate-500" data-form-status></p>
+  </form>
+</section>
+{% endblock %}

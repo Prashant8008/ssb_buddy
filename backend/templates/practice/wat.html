@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}WAT Practice | SSB Connect{% endblock %}
+{% block content %}
+<section class="card p-5">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">WAT Practice</h1>
+    <div class="rounded bg-navy-900 px-3 py-2 font-mono text-white" id="wat-timer">00:15</div>
+  </div>
+  <div class="mt-8 rounded border border-slate-200 p-8 text-center dark:border-slate-800">
+    <p class="text-sm uppercase text-slate-500">Word</p>
+    <p class="mt-2 text-4xl font-bold">{{ prompt.text|default:"Courage" }}</p>
+  </div>
+  <form class="mt-5 space-y-4" data-api-form="/api/practice-submissions/">
+    {% if prompt %}<input type="hidden" name="prompt" value="{{ prompt.id }}">{% endif %}
+    <textarea class="field min-h-32" name="response" placeholder="Write your immediate sentence response."></textarea>
+    <button class="btn-primary" type="submit">Submit Response</button>
+  </form>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+  let seconds = 15;
+  const timer = document.getElementById('wat-timer');
+  setInterval(() => {
+    seconds = Math.max(0, seconds - 1);
+    timer.textContent = `00:${String(seconds).padStart(2, '0')}`;
+  }, 1000);
+</script>
+{% endblock %}

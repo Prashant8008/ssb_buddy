@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Create Post | SSB Connect{% endblock %}
+{% block content %}
+<section class="card p-5">
+  <h1 class="text-2xl font-bold">Create Post</h1>
+  <form class="mt-5 space-y-4" data-api-form="/api/posts/" enctype="multipart/form-data">
+    <input class="field" name="title" placeholder="Title">
+    <select class="field" name="post_type">
+      <option value="TEXT">Text</option><option value="NOTE">Note</option><option value="EXPERIENCE">Experience</option><option value="CURRENT_AFFAIRS">Current Affairs</option>
+    </select>
+    <textarea class="field min-h-40" name="body" placeholder="Write your post"></textarea>
+    <input class="field" name="image" type="file" accept="image/*">
+    <input class="field" name="video" type="file" accept="video/*">
+    <input class="field" name="document" type="file" accept="application/pdf">
+    <button class="btn-primary" type="submit">Publish</button>
+    <p class="text-sm text-slate-500" data-form-status></p>
+  </form>
+</section>
+{% endblock %}

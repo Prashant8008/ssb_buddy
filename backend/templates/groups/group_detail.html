@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Group | SSB Connect{% endblock %}
+{% block content %}
+<section class="card p-5">
+  <h1 class="text-2xl font-bold">{{ group.name }}</h1>
+  <p class="mt-2 text-slate-600 dark:text-slate-300">{{ group.description }}</p>
+  <button class="btn-primary mt-4">Join Group</button>
+</section>
+<div class="mt-5 grid gap-5 lg:grid-cols-[1fr_320px]">
+  <section class="card p-4">
+    <h2 class="font-semibold">Group Feed</h2>
+    <form class="mt-4 space-y-3" data-api-form="/api/posts/">
+      <input type="hidden" name="group" value="{{ group.id }}">
+      <textarea class="field" name="body" placeholder="Post to group"></textarea>
+      <button class="btn-primary" type="submit">Post</button>
+    </form>
+    {% for post in group.posts.all %}
+    <article class="mt-4 rounded border border-slate-200 p-3 dark:border-slate-800">{{ post.body }}</article>
+    {% endfor %}
+  </section>
+  <aside class="space-y-4">
+    <div class="card p-4">
+      <h2 class="font-semibold">Members</h2>
+      {% for member in group.memberships.all %}
+      <p class="mt-2 text-sm">@{{ member.user.username }} · {{ member.role }}</p>
+      {% endfor %}
+    </div>
+    <div class="card p-4">
+      <h2 class="font-semibold">Group Chat</h2>
+      <p class="mt-2 text-sm text-slate-500">Use realtime chat conversations linked to this group.</p>
+    </div>
+  </aside>
+</div>
+{% endblock %}

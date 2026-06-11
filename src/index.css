@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-navy-900 bg-navy-50 overflow-x-hidden;
+    /* Prevent pull-to-refresh on mobile if needed */
+    overscroll-behavior-y: contain;
+  }
+}
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Leaflet map fills its container */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  font-family: inherit;
+}
+
+.run-runner-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.run-start-marker,
+.run-split-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.run-map-tooltip.leaflet-tooltip {
+  background: rgba(30, 58, 95, 0.92);
+  border: none;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.run-map-tooltip.leaflet-tooltip::before {
+  border-top-color: rgba(30, 58, 95, 0.92);
+}
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* Native-like Active States */
+.active-scale:active {
+  transform: scale(0.96);
+}

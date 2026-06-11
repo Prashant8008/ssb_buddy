@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}PPDT Practice | SSB Connect{% endblock %}
+{% block content %}
+<div class="grid gap-5 lg:grid-cols-[1fr_340px]">
+  <section class="card p-5">
+    <h1 class="text-2xl font-bold">PPDT Practice</h1>
+    <div class="mt-5 aspect-video rounded bg-slate-200 dark:bg-slate-800">
+      {% if prompt.image %}<img class="h-full w-full rounded object-cover" src="{{ prompt.image.url }}" alt="PPDT prompt">{% endif %}
+    </div>
+    <form class="mt-5 space-y-4" data-api-form="/api/practice-submissions/">
+      {% if prompt %}<input type="hidden" name="prompt" value="{{ prompt.id }}">{% endif %}
+      <textarea class="field min-h-52" name="response" placeholder="Write your story with characters, mood, action, and outcome."></textarea>
+      <button class="btn-primary" type="submit">Submit Story</button>
+    </form>
+  </section>
+  <aside class="card p-4">
+    <h2 class="font-semibold">Peer Review</h2>
+    {% for submission in submissions %}
+    <div class="mt-3 rounded border border-slate-200 p-3 text-sm dark:border-slate-800">{{ submission.response|truncatewords:24 }}</div>
+    {% empty %}<p class="mt-3 text-sm text-slate-500">No submissions yet.</p>{% endfor %}
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Notes | SSB Connect{% endblock %}
+{% block content %}
+<div class="mb-4 flex items-center justify-between gap-3">
+  <h1 class="text-2xl font-bold">Notes</h1>
+  <a class="btn-primary" href="{% url 'upload-notes' %}">Upload Notes</a>
+</div>
+<section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  {% for note in notes %}
+  <article class="card p-4">
+    <div class="aspect-[4/3] rounded bg-slate-100 p-4 text-sm text-slate-500 dark:bg-slate-800">PDF Preview</div>
+    <h2 class="mt-4 font-semibold">{{ note.title }}</h2>
+    <p class="mt-1 text-sm text-slate-500">{{ note.category }} · {{ note.downloads }} downloads</p>
+    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ note.description }}</p>
+    <div class="mt-4 flex gap-2">
+      <a class="btn-primary" href="{{ note.file.url }}">Download</a>
+      <button class="btn-secondary">Like</button>
+      <button class="btn-secondary">Comment</button>
+    </div>
+  </article>
+  {% empty %}<p class="card p-5 text-slate-500">No notes uploaded yet.</p>{% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Events | SSB Connect{% endblock %}
+{% block content %}
+<div class="grid gap-5 lg:grid-cols-[1fr_360px]">
+  <section class="space-y-4">
+    <h1 class="text-2xl font-bold">Events</h1>
+    {% for event in events %}
+    <article class="card p-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="font-semibold">{{ event.title }}</h2>
+          <p class="text-sm text-slate-500">{{ event.event_type }} · {{ event.starts_at }}</p>
+        </div>
+        <button class="btn-primary">RSVP</button>
+      </div>
+      <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">{{ event.description }}</p>
+    </article>
+    {% empty %}<p class="card p-5 text-slate-500">No events scheduled.</p>{% endfor %}
+  </section>
+  <aside class="card p-4">
+    <h2 class="font-semibold">Create Event</h2>
+    <form class="mt-4 space-y-3" data-api-form="/api/events/">
+      <input class="field" name="title" placeholder="Title">
+      <select class="field" name="event_type"><option value="MOCK_INTERVIEW">Mock Interview</option><option value="GD">Group Discussion</option><option value="RUNNING">Running Session</option><option value="LECTURETTE">Lecturette</option></select>
+      <input class="field" name="starts_at" type="datetime-local">
+      <textarea class="field" name="description" placeholder="Description"></textarea>
+      <button class="btn-primary w-full" type="submit">Create Event</button>
+    </form>
+  </aside>
+</div>
+{% endblock %}

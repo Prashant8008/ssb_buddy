@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}SRT Practice | SSB Connect{% endblock %}
+{% block content %}
+<section class="card p-5">
+  <h1 class="text-2xl font-bold">SRT Practice</h1>
+  <div class="mt-5 rounded border border-slate-200 p-5 dark:border-slate-800">
+    <p class="text-lg">{{ prompt.text|default:"You are leading your group and one member gets injured during a timed outdoor task. What will you do?" }}</p>
+  </div>
+  <form class="mt-5 space-y-4" data-api-form="/api/practice-submissions/">
+    {% if prompt %}<input type="hidden" name="prompt" value="{{ prompt.id }}">{% endif %}
+    <textarea class="field min-h-40" name="response" placeholder="Write a practical, responsible response."></textarea>
+    <button class="btn-primary" type="submit">Submit Solution</button>
+  </form>
+</section>
+{% endblock %}

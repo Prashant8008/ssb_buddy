@@ -1,0 +1,15 @@
+Django>=5.0,<5.3
+daphne
+channels
+channels-redis
+django-cors-headers
+django-filter
+djangorestframework
+djangorestframework-simplejwt
+psycopg[binary]
+python-decouple
+Pillow
+pymupdf>=1.24.0
+whitenoise
+groq>=0.9.0
+pymongo>=4.0.0
