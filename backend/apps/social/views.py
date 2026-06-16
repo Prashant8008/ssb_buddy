@@ -2,12 +2,13 @@
 Social API views backed by MongoDB (posts, comments, likes).
 Report stays in PostgreSQL for admin/moderation tools.
 """
+from pymongo.errors import PyMongoError
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.network.services import get_feed_author_ids
+from apps.network.services import get_feed_author_ids, get_friend_user_ids
 from config.permissions import IsOwnerOrReadOnly
 from .models import Report
 from .serializers import (
@@ -29,28 +30,51 @@ class PostViewSet(viewsets.ViewSet):
         post_type = request.query_params.get("post_type")
         author_id = request.query_params.get("author")
         group_id = request.query_params.get("group")
-        feed_mode = request.query_params.get("feed", "all")
+        feed_mode = (request.query_params.get("feed") or "all").lower()
 
         author_ids = None
         parsed_author_id = int(author_id) if author_id else None
+        feed_meta = None
 
-        if feed_mode == "friends" and request.user.is_authenticated and not parsed_author_id:
-            author_ids = get_feed_author_ids(request.user)
+        if feed_mode == "friends":
+            if not request.user.is_authenticated:
+                return Response(
+                    {"detail": "Log in to view your friends feed."},
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
+            if not parsed_author_id:
+                author_ids = get_feed_author_ids(request.user)
+                friend_ids = get_friend_user_ids(request.user)
+                feed_meta = {
+                    "mode": "friends",
+                    "connected_count": len(friend_ids),
+                    "author_count": len(author_ids),
+                }
 
-        posts = mm.get_feed(
-            page=page,
-            post_type=post_type,
-            author_id=parsed_author_id,
-            group_id=group_id,
-            author_ids=author_ids,
-        )
-        total = mm.count_posts(
-            post_type=post_type,
-            author_id=parsed_author_id,
-            group_id=group_id,
-            author_ids=author_ids,
-        )
-        return Response({"count": total, "results": posts})
+        try:
+            posts = mm.get_feed(
+                page=page,
+                post_type=post_type,
+                author_id=parsed_author_id,
+                group_id=group_id,
+                author_ids=author_ids,
+            )
+            total = mm.count_posts(
+                post_type=post_type,
+                author_id=parsed_author_id,
+                group_id=group_id,
+                author_ids=author_ids,
+            )
+        except PyMongoError:
+            return Response(
+                {"detail": "Feed is temporarily unavailable. Check that MongoDB is running."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        payload = {"count": total, "results": posts}
+        if feed_meta is not None:
+            payload["feed"] = feed_meta
+        return Response(payload)
 
     def create(self, request):
         """POST /api/posts/"""

@@ -7,7 +7,7 @@ import {
   FileText, Send, Loader2, BookMarked,
   ChevronDown, Flame, Users, Globe, Paperclip, ExternalLink
 } from 'lucide-react';
-import { FeedService } from '../services/api';
+import { FeedService, AuthService, NetworkService } from '../services/api';
 import { cn } from '../lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -48,8 +48,16 @@ const currentUserId = (): number => {
     const token = localStorage.getItem('access_token');
     if (!token) return 0;
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.user_id || 0;
+    return Number(payload.user_id ?? payload.sub ?? 0) || 0;
   } catch { return 0; }
+};
+
+const authorId = (post: Post) => Number(post.author_id);
+
+const sortFriendsFeed = (posts: Post[], myId: number) => {
+  const network = posts.filter((p) => authorId(p) !== myId);
+  const own = posts.filter((p) => authorId(p) === myId);
+  return [...network, ...own];
 };
 
 const POST_TYPE_COLORS: Record<string, string> = {
@@ -399,23 +407,41 @@ const Feed = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const myId = currentUserId();
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [myId, setMyId] = useState(() => currentUserId());
+  const [connectedCount, setConnectedCount] = useState(0);
   const pageSize = 20;
 
+  useEffect(() => {
+    AuthService.me()
+      .then((res) => setMyId(res.data.id))
+      .catch(() => setMyId(currentUserId()));
+    NetworkService.getFriends()
+      .then((res) => setConnectedCount(Array.isArray(res.data) ? res.data.length : 0))
+      .catch(() => setConnectedCount(0));
+  }, []);
+
   const loadPosts = async (pageNum: number, tab: FeedTab, replace = false) => {
+    if (replace) setLoadError(null);
     try {
       const res = await FeedService.getPosts(pageNum, { feed: tab });
       const data = res.data;
-      const newPosts: Post[] = data.results || data;
+      let newPosts: Post[] = data.results || data;
       const count = data.count ?? newPosts.length;
+      if (tab === 'friends' && myId) {
+        newPosts = sortFriendsFeed(newPosts, myId);
+      }
       if (replace) {
         setPosts(newPosts);
       } else {
-        setPosts(prev => [...prev, ...newPosts]);
+        setPosts((prev) => [...prev, ...newPosts]);
       }
       setHasMore(pageNum * pageSize < count);
-    } catch (e) {
+    } catch (e: any) {
+      const msg = e.response?.data?.detail || 'Could not load the feed. Is the backend and MongoDB running?';
+      setLoadError(msg);
       console.error('Failed to load feed:', e);
+      if (replace) setPosts([]);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -426,7 +452,7 @@ const Feed = () => {
     setPage(1);
     setLoading(true);
     loadPosts(1, feedTab, true);
-  }, [feedTab]);
+  }, [feedTab, myId]);
 
   const handleLike = async (id: string) => {
     try {
@@ -476,6 +502,9 @@ const Feed = () => {
     setFeedTab(tab);
   };
 
+  const networkPosts = feedTab === 'friends' ? posts.filter((p) => authorId(p) !== myId) : posts;
+  const ownPosts = feedTab === 'friends' ? posts.filter((p) => authorId(p) === myId) : [];
+
   return (
     <div className="max-w-2xl mx-auto pt-20 pb-10 px-4">
 
@@ -512,6 +541,19 @@ const Feed = () => {
       {/* Create Post */}
       <CreatePost onCreated={handleNewPost} />
 
+      {loadError && (
+        <Card className="mb-4 p-4 border border-red-200 bg-red-50 text-red-700 text-sm">
+          {loadError}
+        </Card>
+      )}
+
+      {feedTab === 'friends' && !loading && !loadError && connectedCount > 0 && networkPosts.length === 0 && posts.length > 0 && (
+        <Card className="mb-4 p-4 border border-amber-200 bg-amber-50 text-amber-900 text-sm">
+          You are connected with {connectedCount} aspirant{connectedCount === 1 ? '' : 's'}, but they have not posted yet.
+          Your posts appear below — ask friends like Karan to share updates on the Community tab first.
+        </Card>
+      )}
+
       {/* Feed */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -528,7 +570,9 @@ const Feed = () => {
           </h3>
           <p className="text-sm text-navy-500 mb-4">
             {feedTab === 'friends'
-              ? 'Follow or connect with aspirants (e.g. Karan) to see their posts and uploads here. Your own posts appear here too.'
+              ? connectedCount === 0
+                ? 'Connect with aspirants on Discover or Connections — their posts will appear here along with yours.'
+                : 'Posts from connected aspirants you follow appear first, then your own posts.'
               : 'Be the first to share your SSB journey!'}
           </p>
           {feedTab === 'friends' && (
@@ -539,7 +583,41 @@ const Feed = () => {
         </Card>
       ) : (
         <div className="space-y-6">
-          {posts.map(post => (
+          {feedTab === 'friends' && networkPosts.length > 0 && (
+            <>
+              <p className="text-xs font-bold uppercase tracking-wider text-navy-400 px-1">
+                From your network ({networkPosts.length})
+              </p>
+              {networkPosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  myId={myId}
+                  onLike={handleLike}
+                  onSave={handleSave}
+                />
+              ))}
+            </>
+          )}
+
+          {feedTab === 'friends' && ownPosts.length > 0 && (
+            <>
+              <p className="text-xs font-bold uppercase tracking-wider text-navy-400 px-1 pt-2">
+                Your posts ({ownPosts.length})
+              </p>
+              {ownPosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  myId={myId}
+                  onLike={handleLike}
+                  onSave={handleSave}
+                />
+              ))}
+            </>
+          )}
+
+          {feedTab === 'all' && posts.map((post) => (
             <PostCard
               key={post.id}
               post={post}

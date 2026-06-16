@@ -4,7 +4,7 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost:8001/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -47,7 +47,7 @@ export const FeedService = {
     api.get('/posts/', {
       params: {
         page,
-        ...(options?.feed && options.feed !== 'all' ? { feed: options.feed } : {}),
+        feed: options?.feed ?? 'all',
         ...(options?.postType ? { post_type: options.postType } : {}),
       },
     }),
@@ -247,7 +247,7 @@ export const ChatService = {
 /** Build a WebSocket URL for a conversation */
 export const getChatWebSocketUrl = (conversationId: number): string => {
   const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  return `${wsProtocol}://localhost:8000/ws/chat/${conversationId}/`;
+  return `${wsProtocol}://localhost:8001/ws/chat/${conversationId}/`;
 };
 
 export default api;

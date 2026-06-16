@@ -25,15 +25,23 @@ def get_following_user_ids(user) -> list[int]:
     return list(Follow.objects.filter(follower=user).values_list('following_id', flat=True))
 
 
+def get_follower_user_ids(user) -> list[int]:
+    """Return user IDs of aspirants who follow the current user."""
+    if not user or not getattr(user, 'is_authenticated', False) or not user.is_authenticated:
+        return []
+    return list(Follow.objects.filter(following=user).values_list('follower_id', flat=True))
+
+
 def get_feed_author_ids(user) -> list[int]:
     """
     Authors whose posts appear in the personal Friends feed:
-    connected friends, followed users, and the current user.
+    connected friends, followed users, followers, and the current user.
     """
     if not user or not getattr(user, 'is_authenticated', False) or not user.is_authenticated:
         return []
 
     author_ids = set(get_friend_user_ids(user))
     author_ids.update(get_following_user_ids(user))
+    author_ids.update(get_follower_user_ids(user))
     author_ids.add(user.id)
     return list(author_ids)

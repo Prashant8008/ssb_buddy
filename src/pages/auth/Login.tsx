@@ -16,7 +16,7 @@ const Login = () => {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/token/', {
+      const response = await axios.post('http://localhost:8001/api/auth/token/', {
         username,
         password
       });
