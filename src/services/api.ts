@@ -4,12 +4,18 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8001/api';
+const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
+
+const AUTH_NO_REFRESH_PATHS = ['/auth/token/', '/auth/register/', '/auth/token/refresh/'];
+
+const isAuthNoRefreshRequest = (url?: string) =>
+  !!url && AUTH_NO_REFRESH_PATHS.some((path) => url.includes(path));
 
 // ── JWT: attach access token to every request ──────────────────────────────
 api.interceptors.request.use((config) => {
@@ -23,12 +29,21 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const orig = error.config;
-    if (error.response?.status === 401 && !orig._retry) {
+    if (
+      orig &&
+      error.response?.status === 401 &&
+      !orig._retry &&
+      !isAuthNoRefreshRequest(orig.url)
+    ) {
       orig._retry = true;
       try {
         const refresh = localStorage.getItem('refresh_token');
+        if (!refresh) throw new Error('No refresh token');
         const res = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { refresh });
         localStorage.setItem('access_token', res.data.access);
+        if (res.data.refresh) {
+          localStorage.setItem('refresh_token', res.data.refresh);
+        }
         orig.headers.Authorization = `Bearer ${res.data.access}`;
         return api(orig);
       } catch {
@@ -70,6 +85,15 @@ export const FeedService = {
 // ── Auth ────────────────────────────────────────────────────────────────────
 export const AuthService = {
   me: () => api.get('/users/me/'),
+  login: (username: string, password: string) =>
+    api.post('/auth/token/', { username, password }),
+  register: (data: {
+    first_name: string;
+    last_name: string;
+    username: string;
+    email: string;
+    password: string;
+  }) => api.post('/auth/register/', data),
   updateMe: (data: { first_name?: string; last_name?: string; email?: string }) =>
     api.patch('/users/me/', data),
   logout: async () => {
@@ -112,25 +136,23 @@ export const NetworkService = {
 };
 
 // ── AI Features ─────────────────────────────────────────────────────────────
+const postStoryEvaluation = (
+  path: string,
+  params: { story?: string; context?: string; storyImage?: File | null },
+) => {
+  const form = new FormData();
+  if (params.story) form.append('story', params.story);
+  if (params.context) form.append('context', params.context);
+  if (params.storyImage) form.append('story_image', params.storyImage);
+  // Let axios set multipart boundary — do not set Content-Type manually.
+  return api.post(path, form);
+};
+
 export const AIService = {
-  evaluatePPDT: (params: { story?: string; context?: string; storyImage?: File | null }) => {
-    const form = new FormData();
-    if (params.story) form.append('story', params.story);
-    if (params.context) form.append('context', params.context);
-    if (params.storyImage) form.append('story_image', params.storyImage);
-    return api.post('/ai/ppdt-evaluator/', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-  evaluateTAT: (params: { story?: string; context?: string; storyImage?: File | null }) => {
-    const form = new FormData();
-    if (params.story) form.append('story', params.story);
-    if (params.context) form.append('context', params.context);
-    if (params.storyImage) form.append('story_image', params.storyImage);
-    return api.post('/ai/tat-evaluator/', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
+  evaluatePPDT: (params: { story?: string; context?: string; storyImage?: File | null }) =>
+    postStoryEvaluation('/ai/ppdt-evaluator/', params),
+  evaluateTAT: (params: { story?: string; context?: string; storyImage?: File | null }) =>
+    postStoryEvaluation('/ai/tat-evaluator/', params),
   evaluateWAT: (items: { prompt: string; response: string }[]) =>
     api.post('/ai/wat-evaluator/', { items }),
   evaluateSRT: (items: { prompt: string; response: string }[]) =>
@@ -247,7 +269,10 @@ export const ChatService = {
 /** Build a WebSocket URL for a conversation */
 export const getChatWebSocketUrl = (conversationId: number): string => {
   const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  return `${wsProtocol}://localhost:8001/ws/chat/${conversationId}/`;
+  const wsHost = API_ORIGIN.replace(/^https?:\/\//, '');
+  return `${wsProtocol}://${wsHost}/ws/chat/${conversationId}/`;
 };
+
+export { API_BASE_URL, API_ORIGIN };
 
 export default api;

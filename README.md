@@ -87,7 +87,7 @@ ssb_buddy/
 
 ```bash
 git clone https://github.com/Prashant8008/ssb_buddy.git
-cd ssb-buddy
+cd ssb_buddy
 ```
 
 ### 2. Install Frontend Dependencies

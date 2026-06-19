@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ShieldCheck, User, Mail, Lock, Award, ChevronRight, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import { AuthService } from '../../services/api';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -19,12 +19,12 @@ const Register = () => {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      await axios.post('http://localhost:8001/api/auth/register/', {
+      await AuthService.register({
         first_name: firstName,
         last_name: lastName,
         username,
         email,
-        password
+        password,
       });
       // Navigate to login with query param to show success alert
       navigate('/login?registered=true');
@@ -34,9 +34,11 @@ const Register = () => {
       if (err.response?.data) {
         const errors = err.response.data;
         const messages = Object.keys(errors).map(key => `${key}: ${errors[key]}`);
-        setErrorMsg(messages.join(" | "));
+        setErrorMsg(messages.join(' | '));
+      } else if (!err.response) {
+        setErrorMsg('Cannot reach the server. Start Django on http://127.0.0.1:8001');
       } else {
-        setErrorMsg("Failed to register account. Please check your inputs.");
+        setErrorMsg('Failed to register account. Please check your inputs.');
       }
     } finally {
       setIsLoading(false);

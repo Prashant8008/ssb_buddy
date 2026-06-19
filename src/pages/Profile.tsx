@@ -413,7 +413,7 @@ const Profile = () => {
 
       {/* Edit Modal */}
       <AnimatePresence>
-        {showEdit && (
+        {showEdit && isOwnProfile && (
           <EditProfileModal
             profile={profile}
             onClose={() => setShowEdit(false)}
@@ -697,14 +697,16 @@ const Profile = () => {
                 <p className="font-bold text-navy-900">{item.value}</p>
               </Card>
             ))}
-            <div className="md:col-span-2">
-              <button
-                onClick={() => setShowEdit(true)}
-                className="w-full py-3 border-2 border-dashed border-navy-200 rounded-xl text-navy-500 text-sm font-medium hover:border-gold-400 hover:text-gold-500 transition-all"
-              >
-                + Update SSB Information
-              </button>
-            </div>
+            {isOwnProfile && (
+              <div className="md:col-span-2">
+                <button
+                  onClick={() => setShowEdit(true)}
+                  className="w-full py-3 border-2 border-dashed border-navy-200 rounded-xl text-navy-500 text-sm font-medium hover:border-gold-400 hover:text-gold-500 transition-all"
+                >
+                  + Update SSB Information
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -732,12 +734,14 @@ const Profile = () => {
                 </div>
               </Card>
             ))}
-            <button
-              onClick={() => setShowEdit(true)}
-              className="w-full py-3 border-2 border-dashed border-navy-200 rounded-xl text-navy-500 text-sm font-medium hover:border-gold-400 hover:text-gold-500 transition-all"
-            >
-              + Add / Edit Education
-            </button>
+            {isOwnProfile && (
+              <button
+                onClick={() => setShowEdit(true)}
+                className="w-full py-3 border-2 border-dashed border-navy-200 rounded-xl text-navy-500 text-sm font-medium hover:border-gold-400 hover:text-gold-500 transition-all"
+              >
+                + Add / Edit Education
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

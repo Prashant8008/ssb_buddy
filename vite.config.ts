@@ -26,6 +26,11 @@ function __dualiteSourceLoc({ types: t }) {
 }
 ] } })],
   
+  server: {
+    port: 5173,
+    strictPort: false,
+  },
+
   optimizeDeps: {
     exclude: ['lucide-react'],
   },

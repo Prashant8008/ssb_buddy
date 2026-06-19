@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Shield, Lock, User as UserIcon, ChevronRight, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import { AuthService } from '../../services/api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,17 +16,18 @@ const Login = () => {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const response = await axios.post('http://localhost:8001/api/auth/token/', {
-        username,
-        password
-      });
+      const response = await AuthService.login(username, password);
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       // Hard refresh or redirect to home page so App.tsx detects token
       window.location.href = '/';
     } catch (err: any) {
       console.error("Login failed:", err);
-      setErrorMsg(err.response?.data?.detail || "Invalid username or password. Please try again.");
+      if (!err.response) {
+        setErrorMsg('Cannot reach the server. Start Django on http://127.0.0.1:8001');
+      } else {
+        setErrorMsg(err.response?.data?.detail || 'Invalid username or password. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
