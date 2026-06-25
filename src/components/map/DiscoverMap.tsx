@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Link } from 'react-router-dom';
 import L from 'leaflet';
 import { DEFAULT_MAP_CENTER, getProfileCoords } from '../../lib/cityCoords';
+import { MapInvalidateSize } from './MapInvalidateSize';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -107,8 +108,10 @@ const DiscoverMap: React.FC<DiscoverMapProps> = ({
       center={center}
       zoom={6}
       className="h-full w-full z-0"
+      style={{ minHeight: 240 }}
       scrollWheelZoom
     >
+      <MapInvalidateSize />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

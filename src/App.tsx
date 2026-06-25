@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 import MainLayout from './components/layout/MainLayout';
 import Feed from './pages/Feed';
 import SSBHub from './pages/SSBHub';
@@ -19,47 +20,51 @@ import WATPractice from './pages/ssb/WATPractice';
 import SRTPractice from './pages/ssb/SRTPractice';
 import Connections from './pages/Connections';
 
-function App() {
-  const isAuthenticated = !!localStorage.getItem('access_token');
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
 
   return (
-    <Router>
-      <Routes>
-        {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-        {/* App Routes */}
-        <Route 
-          path="/*" 
-          element={
-            isAuthenticated ? (
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<Feed />} />
-                  <Route path="/ssb" element={<SSBHub />} />
-                  <Route path="/ssb/ppdt" element={<PPDTPractice />} />
-                  <Route path="/ssb/tat" element={<TATPractice />} />
-                  <Route path="/ssb/wat" element={<WATPractice />} />
-                  <Route path="/ssb/srt" element={<SRTPractice />} />
-                  <Route path="/fitness" element={<FitnessTracker />} />
-                  <Route path="/map" element={<LocalityMap />} />
-                  <Route path="/chat" element={<ChatPage />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile/:username" element={<Profile />} />
-                  <Route path="/connections" element={<Connections />} />
-                  <Route path="/settings/*" element={<Settings />} />
-                  <Route path="/ai-mentor" element={<AIMentor />} />
-                  <Route path="/groups" element={<Groups />} />
-                  <Route path="/events" element={<Events />} />
-                </Routes>
-              </MainLayout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          } 
-        />
-      </Routes>
+      <Route
+        path="/*"
+        element={
+          isAuthenticated ? (
+            <MainLayout>
+              <Routes>
+                <Route path="/" element={<Feed />} />
+                <Route path="/ssb" element={<SSBHub />} />
+                <Route path="/ssb/ppdt" element={<PPDTPractice />} />
+                <Route path="/ssb/tat" element={<TATPractice />} />
+                <Route path="/ssb/wat" element={<WATPractice />} />
+                <Route path="/ssb/srt" element={<SRTPractice />} />
+                <Route path="/fitness" element={<FitnessTracker />} />
+                <Route path="/map" element={<LocalityMap />} />
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:username" element={<Profile />} />
+                <Route path="/connections" element={<Connections />} />
+                <Route path="/settings/*" element={<Settings />} />
+                <Route path="/ai-mentor" element={<AIMentor />} />
+                <Route path="/groups" element={<Groups />} />
+                <Route path="/events" element={<Events />} />
+              </Routes>
+            </MainLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
     </Router>
   );
 }

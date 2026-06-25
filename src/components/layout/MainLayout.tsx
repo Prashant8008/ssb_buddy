@@ -181,7 +181,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 <X size={24} />
               </button>
             </div>
-            <nav className="flex-1 p-4 space-y-2">
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
               {navItems.map((item) => (
                 <NavLink
                   key={item.to}
@@ -197,6 +197,28 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 </NavLink>
               ))}
             </nav>
+            <div className="p-4 border-t border-navy-800 space-y-2 shrink-0 pb-safe">
+              <NavLink
+                to="/settings"
+                onClick={() => setIsSidebarOpen(false)}
+                className={({ isActive }) => cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors",
+                  isActive ? "bg-navy-800 text-white font-bold" : "text-navy-300 hover:text-white"
+                )}
+              >
+                <Settings size={20} /> Settings
+              </NavLink>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  AuthService.logout();
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 transition-colors text-sm rounded-xl"
+              >
+                <LogOut size={20} /> Logout
+              </button>
+            </div>
           </div>
         </div>
       )}

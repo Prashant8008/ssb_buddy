@@ -208,17 +208,22 @@ const LocalityMap = () => {
       </div>
 
       {/* Leaflet map — OpenStreetMap tiles, no API key needed */}
-      <div className="flex-1 min-h-[280px] md:min-h-0 relative bg-navy-100">
-        {!loading && visibleProfiles.length > 0 ? (
+      <div className="flex-1 min-h-[55vh] md:min-h-0 relative bg-navy-100">
+        {loading ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-navy-50">
+            <p className="text-sm text-navy-400">Loading map...</p>
+          </div>
+        ) : (
           <DiscoverMap
             profiles={visibleProfiles}
             selectedUserId={selectedUserId}
             onSelect={setSelectedUserId}
           />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-navy-50">
-            <p className="text-sm text-navy-400">
-              {loading ? 'Loading map...' : 'Add a city to your profile to appear on the map'}
+        )}
+        {!loading && visibleProfiles.length === 0 && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-4">
+            <p className="rounded-lg bg-white/90 px-4 py-2 text-sm text-navy-500 shadow">
+              No aspirants found — map shows India by default
             </p>
           </div>
         )}

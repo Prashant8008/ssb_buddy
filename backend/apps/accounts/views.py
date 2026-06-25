@@ -54,6 +54,7 @@ class ResendVerificationView(generics.GenericAPIView):
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.select_related('profile').all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
     search_fields = ['username', 'first_name', 'last_name', 'email', 'profile__city', 'profile__state']
     ordering_fields = ['date_joined', 'username']
 
@@ -67,7 +68,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(self.get_serializer(request.user).data)
 
 
-class ProfileViewSet(viewsets.ModelViewSet):
+class ProfileViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only profiles. Updates go through /profiles/me/ only."""
     serializer_class = ProfileSerializer
     filterset_fields = ['city', 'state', 'entry_type', 'preferred_service', 'recommended_status']
     search_fields = ['user__username', 'user__first_name', 'user__last_name', 'city', 'state', 'ssb_board']

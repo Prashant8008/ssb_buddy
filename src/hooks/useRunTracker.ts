@@ -314,6 +314,16 @@ export function useRunTracker() {
 
     }
 
+    if (!window.isSecureContext) {
+
+      setError(
+        'GPS needs a secure connection (HTTPS). On your phone, run npm run dev:mobile and open https://YOUR-PC-IP:5173 — accept the certificate warning once.'
+      );
+
+      return;
+
+    }
+
 
 
     watchIdRef.current = navigator.geolocation.watchPosition(

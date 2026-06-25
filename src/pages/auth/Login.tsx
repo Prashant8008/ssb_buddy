@@ -3,9 +3,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Shield, Lock, User as UserIcon, ChevronRight, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AuthService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -17,10 +19,8 @@ const Login = () => {
     setErrorMsg('');
     try {
       const response = await AuthService.login(username, password);
-      localStorage.setItem('access_token', response.data.access);
-      localStorage.setItem('refresh_token', response.data.refresh);
-      // Hard refresh or redirect to home page so App.tsx detects token
-      window.location.href = '/';
+      login(response.data.access, response.data.refresh);
+      navigate('/');
     } catch (err: any) {
       console.error("Login failed:", err);
       if (!err.response) {

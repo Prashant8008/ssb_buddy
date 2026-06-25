@@ -14,6 +14,16 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'full_name', 'is_email_verified']
         read_only_fields = ['id', 'is_email_verified']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        viewer = getattr(request, 'user', None) if request else None
+        if not viewer or not viewer.is_authenticated:
+            data.pop('email', None)
+        elif viewer.pk != instance.pk and not viewer.is_staff:
+            data.pop('email', None)
+        return data
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)

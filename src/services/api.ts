@@ -4,8 +4,21 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8001/api';
-const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ??
+  (import.meta.env.DEV ? '/api' : 'http://localhost:8001/api');
+
+const resolveApiOrigin = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return API_BASE_URL.replace(/\/api\/?$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return 'http://localhost:8001';
+};
+
+const API_ORIGIN = resolveApiOrigin();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -49,6 +62,7 @@ api.interceptors.response.use(
       } catch {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        window.dispatchEvent(new Event('auth:logout'));
         window.location.href = '/login';
       }
     }
@@ -107,6 +121,7 @@ export const AuthService = {
     }
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    window.dispatchEvent(new Event('auth:logout'));
     window.location.href = '/login';
   },
 };
@@ -269,8 +284,13 @@ export const ChatService = {
 /** Build a WebSocket URL for a conversation */
 export const getChatWebSocketUrl = (conversationId: number): string => {
   const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const token = localStorage.getItem('access_token');
+  const tokenQuery = token ? `?token=${encodeURIComponent(token)}` : '';
+  if (import.meta.env.DEV && !import.meta.env.VITE_API_BASE_URL) {
+    return `${wsProtocol}://${window.location.host}/ws/chat/${conversationId}/${tokenQuery}`;
+  }
   const wsHost = API_ORIGIN.replace(/^https?:\/\//, '');
-  return `${wsProtocol}://${wsHost}/ws/chat/${conversationId}/`;
+  return `${wsProtocol}://${wsHost}/ws/chat/${conversationId}/${tokenQuery}`;
 };
 
 export { API_BASE_URL, API_ORIGIN };

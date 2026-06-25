@@ -73,11 +73,12 @@ const CommentSection = ({ postId }: { postId: string }) => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     FeedService.getComments(postId)
       .then(res => setComments(res.data))
-      .catch(() => {})
+      .catch(() => setError('Could not load comments.'))
       .finally(() => setLoading(false));
   }, [postId]);
 
@@ -85,15 +86,19 @@ const CommentSection = ({ postId }: { postId: string }) => {
     e.preventDefault();
     if (!text.trim() || submitting) return;
     setSubmitting(true);
+    setError(null);
     try {
       const res = await FeedService.addComment(postId, text.trim());
       setComments(prev => [...prev, res.data]);
       setText('');
-    } catch { } finally { setSubmitting(false); }
+    } catch {
+      setError('Could not post comment. Please try again.');
+    } finally { setSubmitting(false); }
   };
 
   return (
     <div className="px-4 pb-4 space-y-3">
+      {error && <p className="text-xs text-red-600">{error}</p>}
       {loading ? (
         <div className="flex justify-center py-2"><Loader2 className="animate-spin text-navy-400" size={18} /></div>
       ) : (
@@ -408,6 +413,7 @@ const Feed = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [myId, setMyId] = useState(() => currentUserId());
   const [connectedCount, setConnectedCount] = useState(0);
   const pageSize = 20;
@@ -455,9 +461,12 @@ const Feed = () => {
   }, [feedTab, myId]);
 
   const handleLike = async (id: string) => {
+    const prev = posts.find(p => p.id === id);
+    if (!prev) return;
     try {
       const res = await FeedService.likePost(id);
-      setPosts(prev => prev.map(p => p.id === id
+      setActionError(null);
+      setPosts(prevPosts => prevPosts.map(p => p.id === id
         ? {
           ...p,
           likes_count: res.data.likes_count,
@@ -467,12 +476,15 @@ const Feed = () => {
         }
         : p
       ));
-    } catch { }
+    } catch {
+      setActionError('Could not update like. Check your connection and try again.');
+    }
   };
 
   const handleSave = async (id: string) => {
     try {
       const res = await FeedService.savePost(id);
+      setActionError(null);
       setPosts(prev => prev.map(p => p.id === id
         ? {
           ...p,
@@ -482,7 +494,9 @@ const Feed = () => {
         }
         : p
       ));
-    } catch { }
+    } catch {
+      setActionError('Could not save post. Check your connection and try again.');
+    }
   };
 
   const handleNewPost = (post: Post) => {
@@ -544,6 +558,15 @@ const Feed = () => {
       {loadError && (
         <Card className="mb-4 p-4 border border-red-200 bg-red-50 text-red-700 text-sm">
           {loadError}
+        </Card>
+      )}
+
+      {actionError && (
+        <Card className="mb-4 p-4 border border-red-200 bg-red-50 text-red-700 text-sm flex justify-between gap-3">
+          <span>{actionError}</span>
+          <button type="button" onClick={() => setActionError(null)} className="text-red-800 font-bold shrink-0">
+            Dismiss
+          </button>
         </Card>
       )}
 

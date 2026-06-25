@@ -199,10 +199,57 @@ REDIS_URL=redis://127.0.0.1:6379/0
 
 For production, configure a strong secret key, PostgreSQL, Redis, allowed hosts, CORS origins, CSRF trusted origins, email settings, and secure HTTPS settings.
 
+## Deploy on Railway
+
+This repo is a monorepo — create **two Railway services** from the same GitHub repo (`Prashant8008/ssb_buddy`, branch `main`).
+
+### 1. Backend (Django API)
+
+| Setting | Value |
+|---------|--------|
+| **Root Directory** | `backend` |
+| **Config file** | `/backend/railway.toml` |
+| **Builder** | Dockerfile (auto-detected) |
+
+Add plugins and variables:
+
+- **PostgreSQL** — link to backend; `DATABASE_URL` is injected automatically
+- **Redis** — link to backend; set `REDIS_URL` and `CHANNEL_LAYER_BACKEND=channels_redis.core.RedisChannelLayer`
+- **MongoDB Atlas** (external) — set `MONGO_URI` and `MONGO_DB_NAME`
+- **Variables:**
+  ```env
+  DJANGO_SETTINGS_MODULE=config.settings.production
+  SECRET_KEY=<long-random-secret>
+  GROQ_API_KEY=<your-groq-key>
+  CORS_ALLOWED_ORIGINS=https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}}
+  CSRF_TRUSTED_ORIGINS=https://${{Frontend.RAILWAY_PUBLIC_DOMAIN}}
+  ```
+- Generate a **public domain** for the backend service
+
+### 2. Frontend (React / Vite)
+
+| Setting | Value |
+|---------|--------|
+| **Root Directory** | `/` (repo root) |
+| **Config file** | `/railway.toml` |
+
+- **Variable:**
+  ```env
+  VITE_API_BASE_URL=https://${{Backend.RAILWAY_PUBLIC_DOMAIN}}/api
+  ```
+- Generate a **public domain** for the frontend service
+
+### 3. Deploy order
+
+1. Deploy **backend** first (PostgreSQL + Redis + MongoDB Atlas configured)
+2. Deploy **frontend** with `VITE_API_BASE_URL` pointing at the backend
+3. Redeploy backend if CORS/CSRF origins need the frontend URL
+
+See `backend/.env.example` for the full variable list.
+
 ## Notes
 
-- The frontend API base URL is defined in `src/services/api.ts`.
-- Login and registration currently call the backend directly from `src/pages/auth/Login.tsx` and `src/pages/auth/Register.tsx`.
+- The frontend API base URL is set via `VITE_API_BASE_URL` (see `src/services/api.ts`).
 - If you prefer Django on port `8000`, update those frontend URLs from `8001` to `8000`.
 - Local development uses `backend/db.sqlite3` by default.
 

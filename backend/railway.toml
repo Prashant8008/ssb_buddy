@@ -1,0 +1,10 @@
+# Railway backend service — set Root Directory to "backend" in the dashboard.
+# Config path (repo root): /backend/railway.toml
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+watchPatterns = ["**/*.py", "requirements.txt", "Dockerfile", "docker-entrypoint.sh"]
+
+[deploy]
+restartPolicyType = "ON_FAILURE"

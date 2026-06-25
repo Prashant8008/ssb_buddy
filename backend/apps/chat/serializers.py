@@ -13,6 +13,13 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = ['id', 'conversation', 'sender', 'body', 'image', 'created_at', 'read_by']
         read_only_fields = ['id', 'sender', 'created_at', 'read_by']
 
+    def validate_conversation(self, conversation):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            if not conversation.participants.filter(pk=request.user.pk).exists():
+                raise serializers.ValidationError('You are not a participant in this conversation.')
+        return conversation
+
 
 class ConversationSerializer(serializers.ModelSerializer):
     participants = UserSerializer(many=True, read_only=True)

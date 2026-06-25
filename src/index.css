@@ -23,7 +23,10 @@
 .leaflet-container {
   height: 100%;
   width: 100%;
+  min-height: 240px;
   font-family: inherit;
+  z-index: 0;
+  touch-action: pan-x pan-y;
 }
 
 .run-runner-marker {

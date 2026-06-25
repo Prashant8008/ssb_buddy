@@ -1,6 +1,7 @@
 from django.db.models import Max
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from .models import Conversation, Message
@@ -31,6 +32,22 @@ class ConversationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         conversation = serializer.save(created_by=self.request.user)
         conversation.participants.add(self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        if 'participant_ids' in request.data:
+            return Response(
+                {'detail': 'Cannot modify participants via this endpoint.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        if 'participant_ids' in request.data:
+            return Response(
+                {'detail': 'Cannot modify participants via this endpoint.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return super().partial_update(request, *args, **kwargs)
 
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def messages(self, request, pk=None):
@@ -87,5 +104,18 @@ class MessageViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
+        conversation = serializer.validated_data['conversation']
+        if not conversation.participants.filter(pk=self.request.user.pk).exists():
+            raise PermissionDenied('You are not a participant in this conversation.')
         message = serializer.save(sender=self.request.user)
         message.read_by.add(self.request.user)
+
+    def perform_update(self, serializer):
+        if serializer.instance.sender_id != self.request.user.id:
+            raise PermissionDenied('You can only edit your own messages.')
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.sender_id != self.request.user.id and not self.request.user.is_staff:
+            raise PermissionDenied('You can only delete your own messages.')
+        instance.delete()

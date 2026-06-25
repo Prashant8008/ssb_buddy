@@ -1,0 +1,12 @@
+# Railway frontend service — Root Directory = "/" (repo root).
+# Config path (repo root): /railway.toml
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm ci && npm run build"
+watchPatterns = ["src/**", "index.html", "package.json", "package-lock.json", "vite.config.ts", "tailwind.config.js"]
+
+[deploy]
+startCommand = "npx serve dist -s -l $PORT"
+healthcheckPath = "/"
+restartPolicyType = "ON_FAILURE"

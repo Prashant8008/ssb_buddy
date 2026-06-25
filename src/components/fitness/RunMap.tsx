@@ -8,6 +8,7 @@ import {
   SSB_RUN_TARGET_KM,
 } from '../../lib/geo';
 import { DEFAULT_MAP_CENTER } from '../../lib/cityCoords';
+import { MapInvalidateSize } from '../map/MapInvalidateSize';
 
 interface RunMapProps {
   points: TrackPoint[];
@@ -125,7 +126,14 @@ const RunMap: React.FC<RunMapProps> = ({
 
   return (
     <div className="relative h-full w-full">
-      <MapContainer center={center} zoom={17} className="h-full w-full" zoomControl={false}>
+      <MapContainer
+        center={center}
+        zoom={17}
+        className="h-full w-full"
+        style={{ minHeight: 240 }}
+        zoomControl={false}
+      >
+        <MapInvalidateSize />
         <TileLayer
           attribution="&copy; OpenStreetMap"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

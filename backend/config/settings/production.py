@@ -1,7 +1,18 @@
 from .base import *  # noqa: F401,F403
+from django.core.exceptions import ImproperlyConfigured
 
 DEBUG = False
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+
+_secret = config('SECRET_KEY', default='')
+if not _secret or _secret.startswith('dev-only'):
+    raise ImproperlyConfigured('Set a strong SECRET_KEY environment variable for production.')
+SECRET_KEY = _secret
+
+_allowed_hosts = list(config('ALLOWED_HOSTS', default='', cast=Csv()))
+_railway_domain = config('RAILWAY_PUBLIC_DOMAIN', default='')
+if _railway_domain:
+    _allowed_hosts.extend([_railway_domain, '.up.railway.app'])
+ALLOWED_HOSTS = _allowed_hosts or ['.up.railway.app']
 
 CHANNEL_LAYER_BACKEND = config('CHANNEL_LAYER_BACKEND', default='channels_redis.core.RedisChannelLayer')
 CHANNEL_LAYERS = {'default': {'BACKEND': CHANNEL_LAYER_BACKEND}}

@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
-export default defineConfig({
-  plugins: [react({ babel: { plugins: [
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react({ babel: { plugins: [
 function __dualiteSourceLoc({ types: t }) {
   return { visitor: { JSXOpeningElement(path, state) {
     var fn = state.filename || '';
@@ -24,14 +26,29 @@ function __dualiteSourceLoc({ types: t }) {
     attrs.push(t.jsxAttribute(t.jsxIdentifier('data-ds'), t.stringLiteral(rel + ':' + loc.start.line + ':' + loc.start.column)));
   } } };
 }
-] } })],
+] } }),
+    ...(mode === 'mobile' ? [basicSsl()] : []),
+  ],
   
   server: {
+    host: true,
     port: 5173,
     strictPort: false,
+    ...(mode === 'mobile' ? { https: true as const } : {}),
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8001',
+        changeOrigin: true,
+      },
+      '/ws': {
+        target: 'http://127.0.0.1:8001',
+        ws: true,
+        changeOrigin: true,
+      },
+    },
   },
 
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
-});
+}));
