@@ -1,0 +1,4 @@
+# Monorepo entrypoint — installs backend Python dependencies.
+# Railway backend service: set Root Directory to `backend` and use backend/requirements.txt via Dockerfile.
+# If building from repo root (Nixpacks), this file is used automatically.
+-r backend/requirements.txt
