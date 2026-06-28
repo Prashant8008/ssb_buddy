@@ -4,6 +4,8 @@ import { Search, Filter, Loader2 } from 'lucide-react';
 import { ProfileService } from '../services/api';
 import ConnectActions, { ConnectionStatus } from '../components/social/ConnectActions';
 import DiscoverMap from '../components/map/DiscoverMap';
+import LocationPromptModal from '../components/location/LocationPromptModal';
+import { wasLocationSkipped } from '../lib/userLocation';
 import { cn } from '../lib/utils';
 
 interface DiscoverProfile {
@@ -41,6 +43,39 @@ const LocalityMap = () => {
   const [entryFilter, setEntryFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [userPosition, setUserPosition] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+
+  const loadMyLocation = useCallback(async () => {
+    try {
+      const res = await ProfileService.getMe();
+      const { latitude, longitude } = res.data;
+      if (latitude != null && longitude != null && latitude !== '' && longitude !== '') {
+        setUserPosition({
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        });
+        return true;
+      }
+    } catch {
+      /* ignore */
+    }
+    return false;
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const hasCoords = await loadMyLocation();
+      if (!hasCoords && !wasLocationSkipped()) {
+        setShowLocationPrompt(true);
+      }
+    })();
+  }, [loadMyLocation]);
+
+  const handleLocationSaved = async () => {
+    await loadMyLocation();
+    setShowLocationPrompt(false);
+  };
 
   const loadProfiles = useCallback(async () => {
     setLoading(true);
@@ -109,7 +144,7 @@ const LocalityMap = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by name, city, board..."
-                className="w-full bg-navy-50 border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="w-full bg-navy-50 border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               />
             </div>
             <button type="button" className="p-2 bg-navy-50 rounded-lg text-navy-600">
@@ -218,6 +253,7 @@ const LocalityMap = () => {
             profiles={visibleProfiles}
             selectedUserId={selectedUserId}
             onSelect={setSelectedUserId}
+            userPosition={userPosition}
           />
         )}
         {!loading && visibleProfiles.length === 0 && (
@@ -228,6 +264,14 @@ const LocalityMap = () => {
           </div>
         )}
       </div>
+
+      <LocationPromptModal
+        open={showLocationPrompt}
+        title="Share location to discover people"
+        description="Allow location access to appear on the map and find SSB aspirants near you. You can skip and set your city later in Profile."
+        onClose={() => setShowLocationPrompt(false)}
+        onSaved={handleLocationSaved}
+      />
     </div>
   );
 };

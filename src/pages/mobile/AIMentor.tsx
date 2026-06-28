@@ -165,7 +165,7 @@ const AIMentor = () => {
             className="p-4 flex items-center gap-4 active:scale-95 transition-all cursor-pointer hover:border-gold-500 hover:shadow-md border border-navy-50"
             onClick={() => setSelectedModule(module.id)}
           >
-            <div className="w-12 h-12 bg-army-50 text-army-600 rounded-xl flex items-center justify-center border border-army-100 shadow-sm flex-shrink-0">
+            <div className="w-12 h-12 bg-accent-50 text-accent-600 rounded-xl flex items-center justify-center border border-accent-100 shadow-sm flex-shrink-0">
               {module.icon}
             </div>
             <div className="flex-1 min-w-0">

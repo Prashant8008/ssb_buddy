@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:mobile": "vite --mode mobile",
+    "tunnel": "npx localtunnel --port 5173",
     "build": "vite build",
     "start": "serve dist -s -l ${PORT:-4173}",
     "lint": "eslint .",

@@ -37,7 +37,7 @@ const Settings = () => {
               className={({ isActive }) => cn(
                 'flex items-center justify-between p-3 rounded-xl transition-all font-medium text-sm',
                 isActive
-                  ? 'bg-navy-900 text-white shadow-lg'
+                  ? 'bg-accent-500 text-white shadow-lg'
                   : 'text-navy-600 hover:bg-navy-100'
               )}
             >
@@ -127,7 +127,7 @@ const AccountSettings = () => {
               type="text"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+              className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
             />
           </div>
           <div className="space-y-2">
@@ -136,7 +136,7 @@ const AccountSettings = () => {
               type="text"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+              className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
             />
           </div>
         </div>
@@ -155,7 +155,7 @@ const AccountSettings = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+            className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
           />
         </div>
         {message && (
@@ -279,7 +279,7 @@ const PrivacyToggle = ({
           onClick={() => onSelect(opt)}
           className={cn(
             'px-3 py-1 text-[10px] font-bold rounded transition-colors',
-            active === opt ? 'bg-navy-900 text-white' : 'hover:bg-navy-50'
+            active === opt ? 'bg-accent-500 text-white' : 'hover:bg-navy-50'
           )}
         >
           {opt}

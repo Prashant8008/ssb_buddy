@@ -53,7 +53,15 @@ interface DiscoverMapProps {
   profiles: MapProfile[];
   selectedUserId: number | null;
   onSelect: (userId: number) => void;
+  userPosition?: { latitude: number; longitude: number } | null;
 }
+
+const userIcon = L.divIcon({
+  className: 'discover-user-marker',
+  html: '<div class="discover-user-marker-dot"></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
 
 function FlyToSelected({ coords }: { coords: [number, number] | null }) {
   const map = useMap();
@@ -63,17 +71,27 @@ function FlyToSelected({ coords }: { coords: [number, number] | null }) {
   return null;
 }
 
-function FitAllMarkers({ profiles }: { profiles: PlottedProfile[] }) {
+function FitAllMarkers({
+  profiles,
+  userPosition,
+}: {
+  profiles: PlottedProfile[];
+  userPosition?: { latitude: number; longitude: number } | null;
+}) {
   const map = useMap();
   useEffect(() => {
-    if (profiles.length === 0) return;
-    if (profiles.length === 1) {
-      map.setView(profiles[0].coords, 11);
+    const points: [number, number][] = profiles.map((p) => p.coords);
+    if (userPosition) {
+      points.push([userPosition.latitude, userPosition.longitude]);
+    }
+    if (points.length === 0) return;
+    if (points.length === 1) {
+      map.setView(points[0], 11);
       return;
     }
-    const bounds = L.latLngBounds(profiles.map((p) => p.coords));
+    const bounds = L.latLngBounds(points);
     map.fitBounds(bounds, { padding: [48, 48], maxZoom: 12 });
-  }, [profiles, map]);
+  }, [profiles, userPosition, map]);
   return null;
 }
 
@@ -84,6 +102,7 @@ const DiscoverMap: React.FC<DiscoverMapProps> = ({
   profiles,
   selectedUserId,
   onSelect,
+  userPosition = null,
 }) => {
   const plotted = useMemo(
     () =>
@@ -101,7 +120,11 @@ const DiscoverMap: React.FC<DiscoverMapProps> = ({
     return found?.coords ?? null;
   }, [plotted, selectedUserId]);
 
-  const center = plotted.length > 0 ? plotted[0].coords : DEFAULT_MAP_CENTER;
+  const center = useMemo((): [number, number] => {
+    if (userPosition) return [userPosition.latitude, userPosition.longitude];
+    if (plotted.length > 0) return plotted[0].coords;
+    return DEFAULT_MAP_CENTER;
+  }, [userPosition, plotted]);
 
   return (
     <MapContainer
@@ -120,7 +143,19 @@ const DiscoverMap: React.FC<DiscoverMapProps> = ({
       {selectedUserId ? (
         <FlyToSelected coords={selectedCoords} />
       ) : (
-        <FitAllMarkers profiles={plotted} />
+        <FitAllMarkers profiles={plotted} userPosition={userPosition} />
+      )}
+
+      {userPosition && (
+        <Marker
+          position={[userPosition.latitude, userPosition.longitude]}
+          icon={userIcon}
+          zIndexOffset={1000}
+        >
+          <Popup>
+            <p className="text-sm font-bold text-navy-900">You are here</p>
+          </Popup>
+        </Marker>
       )}
 
       {plotted.map((p) => {

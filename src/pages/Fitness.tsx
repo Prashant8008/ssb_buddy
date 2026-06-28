@@ -18,10 +18,10 @@ const Fitness = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={<Activity className="text-blue-500" />} label="2.4km Run" value="09:45" unit="min" trend="+12s" />
-        <StatCard icon={<Flame className="text-orange-500" />} label="Pushups" value="45" unit="reps" trend="+5" />
+        <StatCard icon={<Activity className="text-accent-600" />} label="2.4km Run" value="09:45" unit="min" trend="+12s" />
+        <StatCard icon={<Flame className="text-gold-600" />} label="Pushups" value="45" unit="reps" trend="+5" />
         <StatCard icon={<TrendingUp className="text-green-500" />} label="Pullups" value="12" unit="reps" trend="0" />
-        <StatCard icon={<Activity className="text-purple-500" />} label="BMI" value="22.4" unit="index" trend="Normal" />
+        <StatCard icon={<Activity className="text-accent-500" />} label="BMI" value="22.4" unit="index" trend="Normal" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -38,7 +38,7 @@ const Fitness = () => {
               {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-2">
                   <div 
-                    className="w-full bg-army-500 rounded-t-sm transition-all hover:bg-army-600 cursor-pointer" 
+                    className="w-full bg-accent-500 rounded-t-sm transition-all hover:bg-accent-600 cursor-pointer" 
                     style={{ height: `${h}%` }} 
                   />
                   <span className="text-[10px] font-bold text-navy-400">
@@ -61,7 +61,7 @@ const Fitness = () => {
               <ChevronRight className="ml-auto text-navy-300" />
             </Card>
             <Card className="p-4 flex items-center gap-4 cursor-pointer hover:bg-navy-50 transition-colors">
-              <div className="w-12 h-12 bg-army-100 rounded-full flex items-center justify-center text-army-900">
+              <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center text-accent-900">
                 <Users />
               </div>
               <div>

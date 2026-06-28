@@ -62,7 +62,7 @@ const sortFriendsFeed = (posts: Post[], myId: number) => {
 
 const POST_TYPE_COLORS: Record<string, string> = {
   TEXT: 'bg-navy-100 text-navy-700',
-  NOTE: 'bg-blue-100 text-blue-700',
+  NOTE: 'bg-accent-100 text-accent-800',
   EXPERIENCE: 'bg-green-100 text-green-700',
   CURRENT_AFFAIRS: 'bg-amber-100 text-amber-700',
 };
@@ -111,7 +111,7 @@ const CommentSection = ({ postId }: { postId: string }) => {
               <img src={getAvatar(c.author_username)} className="w-7 h-7 rounded-full flex-shrink-0" alt="" />
               <div className="bg-navy-50 rounded-2xl rounded-tl-none px-3 py-2 flex-1">
                 <p className="text-xs font-bold text-navy-900">{c.author_username}</p>
-                <p className="text-xs text-navy-700">{c.body}</p>
+                <p className="text-sm text-navy-800">{c.body}</p>
               </div>
             </div>
           ))}
@@ -122,13 +122,13 @@ const CommentSection = ({ postId }: { postId: string }) => {
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Write a comment..."
-          className="flex-1 bg-navy-50 border border-navy-100 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+          className="flex-1 bg-navy-50 border border-navy-100 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
           disabled={submitting}
         />
         <button
           type="submit"
           disabled={submitting || !text.trim()}
-          className="w-9 h-9 bg-navy-900 text-white rounded-full flex items-center justify-center hover:bg-navy-800 disabled:opacity-40 flex-shrink-0"
+          className="w-9 h-9 bg-accent-500 text-white rounded-full flex items-center justify-center hover:bg-accent-600 disabled:opacity-40 flex-shrink-0"
         >
           {submitting ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
         </button>
@@ -181,7 +181,7 @@ const PostCard = ({
                   </span>
                 )}
               </div>
-              <p className="text-xs text-navy-400">{timeAgo}</p>
+              <p className="text-xs text-navy-500">{timeAgo}</p>
             </div>
           </div>
           <button className="text-navy-300 hover:text-navy-700 transition-colors">
@@ -323,7 +323,7 @@ const CreatePost = ({ onCreated }: { onCreated: (post: Post) => void }) => {
   return (
     <Card className="mb-6 p-4">
       <div className="flex gap-3">
-        <div className="w-10 h-10 rounded-full bg-army-100 overflow-hidden flex-shrink-0 border-2 border-gold-300">
+        <div className="w-10 h-10 rounded-full bg-accent-100 overflow-hidden flex-shrink-0 border-2 border-gold-300">
           <img src={getAvatar(myUsername)} alt="Me" className="w-full h-full" />
         </div>
         <div className="flex-1 space-y-3">
@@ -331,7 +331,7 @@ const CreatePost = ({ onCreated }: { onCreated: (post: Post) => void }) => {
             value={body}
             onChange={e => { setBody(e.target.value); setError(''); }}
             placeholder="Share your SSB experience, ask a doubt, or post notes..."
-            className="w-full bg-navy-50 border border-navy-100 rounded-2xl p-3 text-sm resize-none focus:ring-2 focus:ring-gold-500 outline-none min-h-[90px] transition-all"
+            className="w-full bg-navy-50 border border-navy-100 rounded-2xl p-3 text-sm resize-none focus:ring-2 focus:ring-accent-400 outline-none min-h-[90px] transition-all"
           />
           {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
           {showAttach && (
@@ -341,21 +341,21 @@ const CreatePost = ({ onCreated }: { onCreated: (post: Post) => void }) => {
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="Image URL (jpg, png, gif...)"
-                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-gold-500 outline-none"
+                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-accent-400 outline-none"
               />
               <input
                 type="url"
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
                 placeholder="Video URL (mp4, webm...)"
-                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-gold-500 outline-none"
+                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-accent-400 outline-none"
               />
               <input
                 type="url"
                 value={documentUrl}
                 onChange={(e) => setDocumentUrl(e.target.value)}
                 placeholder="Document URL (pdf, notes...)"
-                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-gold-500 outline-none"
+                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-accent-400 outline-none"
               />
             </div>
           )}
@@ -381,7 +381,7 @@ const CreatePost = ({ onCreated }: { onCreated: (post: Post) => void }) => {
                   className={cn(
                     'text-[10px] font-bold px-2.5 py-1 rounded-full border transition-all',
                     postType === type
-                      ? 'bg-navy-900 text-white border-navy-900'
+                      ? 'bg-accent-500 text-white border-accent-500'
                       : 'bg-white text-navy-500 border-navy-200 hover:border-navy-400'
                   )}
                 >
@@ -393,7 +393,7 @@ const CreatePost = ({ onCreated }: { onCreated: (post: Post) => void }) => {
             <button
               onClick={handlePost}
               disabled={submitting || (!body.trim() && !imageUrl.trim() && !videoUrl.trim() && !documentUrl.trim())}
-              className="bg-navy-900 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-navy-800 transition-all disabled:opacity-50 flex items-center gap-2"
+              className="bg-accent-500 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-accent-600 transition-all disabled:opacity-50 flex items-center gap-2"
             >
               {submitting ? <><Loader2 className="animate-spin" size={14} /> Posting...</> : 'Post'}
             </button>
@@ -520,7 +520,7 @@ const Feed = () => {
   const ownPosts = feedTab === 'friends' ? posts.filter((p) => authorId(p) === myId) : [];
 
   return (
-    <div className="max-w-2xl mx-auto pt-20 pb-10 px-4">
+    <div className="max-w-2xl mx-auto pt-16 pb-24 px-4 sm:pt-20 sm:pb-10">
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -534,7 +534,7 @@ const Feed = () => {
             onClick={() => switchTab('friends')}
             className={cn(
               'flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all',
-              feedTab === 'friends' ? 'bg-white text-navy-900 shadow-sm' : 'text-navy-500'
+              feedTab === 'friends' ? 'bg-white text-accent-600 shadow-sm ring-1 ring-accent-200' : 'text-navy-500'
             )}
           >
             <Users size={14} /> Friends
@@ -544,7 +544,7 @@ const Feed = () => {
             onClick={() => switchTab('all')}
             className={cn(
               'flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all',
-              feedTab === 'all' ? 'bg-white text-navy-900 shadow-sm' : 'text-navy-500'
+              feedTab === 'all' ? 'bg-white text-accent-600 shadow-sm ring-1 ring-accent-200' : 'text-navy-500'
             )}
           >
             <Globe size={14} /> Community

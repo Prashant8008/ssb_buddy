@@ -38,7 +38,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const avatarSeed = currentUser?.username || 'user';
 
   const navItems = [
-    { icon: <Home size={20} />, label: 'Feed', to: '/' },
+    { icon: <Home size={20} />, label: 'Feed', to: '/feed' },
     { icon: <MapPin size={20} />, label: 'Discover', to: '/map' },
     { icon: <UserPlus size={20} />, label: 'Connections', to: '/connections' },
     { icon: <Shield size={20} />, label: 'SSB Practice', to: '/ssb' },
@@ -50,7 +50,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   ];
 
   const bottomNavItems = [
-    { icon: <Home size={24} />, label: 'Feed', to: '/' },
+    { icon: <Home size={24} />, label: 'Feed', to: '/feed' },
     { icon: <Shield size={24} />, label: 'SSB', to: '/ssb' },
     { icon: <Bot size={24} />, label: 'AI', to: '/ai-mentor' },
     { icon: <MessageSquare size={24} />, label: 'Chat', to: '/chat' },
@@ -62,7 +62,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-navy-900 text-white fixed h-full z-50">
         <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-gold-500 rounded-lg flex items-center justify-center font-bold text-navy-900 text-xl shadow-lg shadow-gold-500/20">
+          <div className="w-10 h-10 bg-accent-500 rounded-lg flex items-center justify-center font-bold text-white text-xl shadow-sm">
             SC
           </div>
           <span className="font-display font-bold text-xl tracking-tight">SSB CONNECT</span>
@@ -76,7 +76,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               className={({ isActive }) => cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group",
                 isActive 
-                  ? "bg-gold-500 text-navy-900 font-bold shadow-lg shadow-gold-500/10" 
+                  ? "bg-accent-500 text-white font-bold shadow-sm" 
                   : "text-navy-300 hover:bg-navy-800 hover:text-white"
               )}
             >
@@ -116,11 +116,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               <input 
                 type="text" 
                 placeholder="Search aspirants, boards, or groups..."
-                className="w-full bg-navy-50 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-gold-500 transition-all"
+                className="w-full bg-navy-50 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-accent-400 transition-all"
               />
             </div>
             <div className="lg:hidden flex items-center gap-2">
-              <div className="w-8 h-8 bg-gold-500 rounded flex items-center justify-center font-bold text-navy-900">SC</div>
+              <div className="w-8 h-8 bg-accent-500 rounded flex items-center justify-center font-bold text-white">SC</div>
               <span className="font-display font-bold text-navy-900">SSB CONNECT</span>
             </div>
           </div>
@@ -130,11 +130,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
-            <NavLink to="/profile" className="flex items-center gap-3 p-1 pr-3 hover:bg-navy-50 rounded-full transition-colors">
-              <div className="w-8 h-8 rounded-full border-2 border-gold-500 overflow-hidden">
+            <NavLink to="/profile" className="flex items-center gap-2 p-1 pr-2 sm:pr-3 hover:bg-navy-50 rounded-full transition-colors min-w-0 max-w-[52vw] sm:max-w-none">
+              <div className="w-8 h-8 rounded-full border-2 border-accent-400 overflow-hidden flex-shrink-0">
                 <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`} alt="Profile" />
               </div>
-              <span className="text-sm font-bold text-navy-900 hidden sm:block">{displayName}</span>
+              <span className="text-sm font-bold text-navy-900 truncate">{displayName}</span>
             </NavLink>
           </div>
         </header>
@@ -152,11 +152,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               to={item.to}
               className={({ isActive }) => cn(
                 "flex flex-col items-center justify-center w-full h-full transition-all",
-                isActive ? "text-gold-600" : "text-navy-400"
+                isActive ? "text-accent-600" : "text-navy-600"
               )}
             >
               {item.icon}
-              <span className="text-[10px] mt-1 font-bold uppercase tracking-tighter">{item.label}</span>
+              <span className="text-[10px] mt-1 font-bold uppercase tracking-tight">{item.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -174,7 +174,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           >
             <div className="p-6 flex items-center justify-between border-b border-navy-800">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gold-500 rounded flex items-center justify-center font-bold text-navy-900">SC</div>
+                <div className="w-8 h-8 bg-accent-500 rounded flex items-center justify-center font-bold text-white">SC</div>
                 <span className="text-white font-display font-bold">SSB CONNECT</span>
               </div>
               <button onClick={() => setIsSidebarOpen(false)} className="text-navy-400">
@@ -189,7 +189,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                   onClick={() => setIsSidebarOpen(false)}
                   className={({ isActive }) => cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
-                    isActive ? "bg-gold-500 text-navy-900 font-bold" : "text-navy-300"
+                    isActive ? "bg-accent-500 text-white font-bold" : "text-navy-300"
                   )}
                 >
                   {item.icon}

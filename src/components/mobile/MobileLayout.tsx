@@ -7,7 +7,7 @@ const MobileLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
   const navItems = [
-    { icon: <Home size={24} />, label: 'Feed', to: '/' },
+    { icon: <Home size={24} />, label: 'Feed', to: '/feed' },
     { icon: <MapPin size={24} />, label: 'Nearby', to: '/map' },
     { icon: <Shield size={24} />, label: 'SSB', to: '/ssb' },
     { icon: <Trophy size={24} />, label: 'Fitness', to: '/fitness' },
@@ -19,10 +19,10 @@ const MobileLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Mobile Header */}
       <header className="fixed top-0 left-0 right-0 h-14 bg-navy-900 text-white flex items-center justify-between px-4 z-50 border-b border-navy-800">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gold-500 rounded flex items-center justify-center font-bold text-navy-900">SC</div>
+          <div className="w-8 h-8 bg-accent-500 rounded flex items-center justify-center font-bold text-white">SC</div>
           <span className="font-display font-bold tracking-tight">SSB CONNECT</span>
         </div>
-        <NavLink to="/profile" className="w-8 h-8 rounded-full border-2 border-gold-500 overflow-hidden">
+        <NavLink to="/profile" className="w-8 h-8 rounded-full border-2 border-accent-400 overflow-hidden">
           <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aditya" alt="Profile" />
         </NavLink>
       </header>
@@ -40,7 +40,7 @@ const MobileLayout = ({ children }: { children: React.ReactNode }) => {
             to={item.to}
             className={({ isActive }) => cn(
               "flex flex-col items-center justify-center w-full h-full transition-all",
-              isActive ? "text-gold-600" : "text-navy-400"
+              isActive ? "text-accent-600" : "text-navy-500"
             )}
           >
             {item.icon}

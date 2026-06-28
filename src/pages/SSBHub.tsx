@@ -30,7 +30,7 @@ const SSBHub = () => {
   const [loadingExp, setLoadingExp] = useState(true);
 
   const modules = [
-    { id: 'ppdt', title: 'PPDT Practice', icon: <PenTool />, color: 'bg-army-500', desc: 'Picture Perception & Discussion Test', path: '/ssb/ppdt' },
+    { id: 'ppdt', title: 'PPDT Practice', icon: <PenTool />, color: 'bg-accent-500', desc: 'Picture Perception & Discussion Test', path: '/ssb/ppdt' },
     { id: 'tat', title: 'TAT Practice', icon: <Brain />, color: 'bg-navy-500', desc: 'Thematic Apperception Test', path: '/ssb/tat' },
     { id: 'wat', title: 'WAT Practice', icon: <Timer />, color: 'bg-gold-500', desc: 'Word Association Test', path: '/ssb/wat' },
     { id: 'srt', title: 'SRT Practice', icon: <Users />, color: 'bg-red-500', desc: 'Situation Reaction Test', path: '/ssb/srt' },
@@ -115,7 +115,7 @@ const SSBHub = () => {
             ) : experiences.length === 0 ? (
               <Card className="p-8 text-center">
                 <p className="text-sm text-navy-500">No experience posts yet. Share yours from the Feed!</p>
-                <Link to="/" className="text-sm font-bold text-gold-600 hover:underline mt-2 inline-block">
+                <Link to="/feed" className="text-sm font-bold text-gold-600 hover:underline mt-2 inline-block">
                   Go to Feed →
                 </Link>
               </Card>
@@ -148,7 +148,7 @@ const SSBHub = () => {
                         />
                         <span className="text-xs font-medium">@{post.author_username}</span>
                       </Link>
-                      <Link to="/" className="text-gold-600 text-xs font-bold hover:underline">
+                      <Link to="/feed" className="text-gold-600 text-xs font-bold hover:underline">
                         View on Feed
                       </Link>
                     </div>

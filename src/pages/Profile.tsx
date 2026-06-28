@@ -160,7 +160,7 @@ const EditProfileModal = ({
               onChange={e => set('bio', e.target.value)}
               placeholder="Tell your SSB story..."
               rows={3}
-              className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none resize-none"
+              className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none resize-none"
             />
           </div>
 
@@ -174,7 +174,7 @@ const EditProfileModal = ({
                   value={(form as any)[field]}
                   onChange={e => set(field, e.target.value)}
                   placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
                 />
               ))}
             </div>
@@ -189,12 +189,12 @@ const EditProfileModal = ({
                 value={form.age}
                 onChange={e => set('age', e.target.value)}
                 placeholder="Age"
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               />
               <select
                 value={form.gender}
                 onChange={e => set('gender', e.target.value)}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               >
                 <option value="">Select Gender</option>
                 {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
@@ -209,7 +209,7 @@ const EditProfileModal = ({
               <select
                 value={form.entry_type}
                 onChange={e => set('entry_type', e.target.value)}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               >
                 <option value="">Entry Type</option>
                 {ENTRY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -217,7 +217,7 @@ const EditProfileModal = ({
               <select
                 value={form.preferred_service}
                 onChange={e => set('preferred_service', e.target.value)}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               >
                 <option value="">Preferred Service</option>
                 {SERVICES.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
@@ -228,13 +228,13 @@ const EditProfileModal = ({
                 onChange={e => set('ssb_attempts', e.target.value)}
                 placeholder="SSB Attempts"
                 min={0}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               />
               <input
                 value={form.ssb_board}
                 onChange={e => set('ssb_board', e.target.value)}
                 placeholder="SSB Board (e.g. Allahabad 14 SSB)"
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               />
             </div>
           </div>
@@ -247,20 +247,20 @@ const EditProfileModal = ({
                 value={form.school}
                 onChange={e => set('school', e.target.value)}
                 placeholder="School name"
-                className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   value={form.college}
                   onChange={e => set('college', e.target.value)}
                   placeholder="College / University"
-                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
                 />
                 <input
                   value={form.degree}
                   onChange={e => set('degree', e.target.value)}
                   placeholder="Degree (e.g. B.Tech)"
-                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
                 />
               </div>
               <input
@@ -268,7 +268,7 @@ const EditProfileModal = ({
                 value={form.graduation_year}
                 onChange={e => set('graduation_year', e.target.value)}
                 placeholder="Graduation Year (e.g. 2025)"
-                className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 outline-none"
+                className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
               />
             </div>
           </div>
@@ -409,7 +409,7 @@ const Profile = () => {
   const location = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
 
   return (
-    <div className="max-w-5xl mx-auto pt-16 pb-10 px-4">
+    <div className="max-w-5xl mx-auto pt-16 pb-24 px-4 sm:pt-20 sm:pb-10">
 
       {/* Edit Modal */}
       <AnimatePresence>
@@ -425,14 +425,14 @@ const Profile = () => {
       {/* Header Card */}
       <Card className="relative mb-6 overflow-hidden">
         {/* Cover */}
-        <div className="h-48 w-full bg-gradient-to-r from-navy-900 via-navy-800 to-army-900 overflow-hidden">
+        <div className="h-48 w-full bg-gradient-to-r from-navy-900 via-navy-800 to-accent-900 overflow-hidden">
           {profile.cover_photo && (
             <img src={profile.cover_photo} className="w-full h-full object-cover opacity-60" alt="Cover" />
           )}
           <div className="absolute inset-0 h-48 bg-gradient-to-b from-transparent to-black/30" />
         </div>
 
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 bg-white relative">
           <div className="relative flex justify-between items-end -mt-16 mb-4">
             {/* Avatar */}
             <div className="relative">
@@ -500,7 +500,7 @@ const Profile = () => {
               <div className="flex flex-wrap gap-4 mt-4 text-sm text-navy-600">
                 {location && (
                   <div className="flex items-center gap-1.5">
-                    <MapPin size={15} className="text-army-500" /> {location}
+                    <MapPin size={15} className="text-accent-500" /> {location}
                   </div>
                 )}
                 {profile.entry_type && (
@@ -720,7 +720,7 @@ const Profile = () => {
             className="space-y-4"
           >
             {[
-              { icon: <GraduationCap size={20} className="text-army-500" />, label: 'College / University', value: profile.college, sub: profile.degree },
+              { icon: <GraduationCap size={20} className="text-accent-500" />, label: 'College / University', value: profile.college, sub: profile.degree },
               { icon: <GraduationCap size={20} className="text-navy-400" />, label: 'School', value: profile.school, sub: '' },
             ].map(item => (
               <Card key={item.label} className="p-5 flex items-start gap-4">

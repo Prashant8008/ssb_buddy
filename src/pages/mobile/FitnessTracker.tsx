@@ -68,15 +68,15 @@ const FitnessTracker = () => {
       <button
         type="button"
         onClick={tracker.startRun}
-        className="w-full bg-army-600 text-white p-4 rounded-2xl flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-army-600/20"
+        className="w-full bg-accent-500 text-white p-4 rounded-2xl flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-accent-500/20"
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-army-500 rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center">
             <Navigation size={24} />
           </div>
           <div className="text-left">
             <h4 className="font-bold">Start {SSB_RUN_TARGET_KM}km Run</h4>
-            <p className="text-xs text-army-200">Live map · GPS route tracking</p>
+            <p className="text-xs text-accent-200">Live map · GPS route tracking</p>
           </div>
         </div>
         <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -185,7 +185,7 @@ const RunSession = ({
             </div>
             <div className="h-2 bg-navy-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-army-500 transition-all duration-500"
+                className="h-full bg-accent-500 transition-all duration-500"
                 style={{ width: `${tracker.progressPct}%` }}
               />
             </div>
@@ -256,7 +256,7 @@ const RunSession = ({
                 <button
                   type="button"
                   onClick={tracker.resumeRun}
-                  className="flex-1 flex items-center justify-center gap-2 bg-army-600 text-white py-3.5 rounded-xl font-bold"
+                  className="flex-1 flex items-center justify-center gap-2 bg-accent-500 text-white py-3.5 rounded-xl font-bold"
                 >
                   <Play size={20} fill="white" /> Resume
                 </button>

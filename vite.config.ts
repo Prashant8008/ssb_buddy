@@ -32,6 +32,7 @@ function __dualiteSourceLoc({ types: t }) {
   
   server: {
     host: true,
+    allowedHosts: true,
     port: 5173,
     strictPort: false,
     ...(mode === 'mobile' ? { https: true as const } : {}),

@@ -11,6 +11,9 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r'^https?://127\.0\.0\.1:\d+$',
     r'^https?://192\.168\.\d{1,3}\.\d{1,3}:\d+$',
     r'^https?://10\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$',
+    r'^https?://172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}:\d+$',
+    r'^https?://[\w-]+\.loca\.lt$',
+    r'^https?://[\w-]+\.trycloudflare\.com$',
 ]
 CSRF_TRUSTED_ORIGINS += [
     'http://localhost:5174',

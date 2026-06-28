@@ -294,7 +294,7 @@ const Events = () => {
             )}
           </Card>
 
-          <Card className="p-6 bg-army-50 border-army-100">
+          <Card className="p-6 bg-accent-50 border-accent-100">
             <h3 className="font-bold text-navy-900 mb-2">Host a Session</h3>
             <p className="text-xs text-navy-600 mb-4">
               Recommended candidates and mentors can host mock sessions for the community.
@@ -302,7 +302,7 @@ const Events = () => {
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="w-full bg-army-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-army-700 transition-all"
+              className="w-full bg-accent-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-accent-600 transition-all"
             >
               Create Event
             </button>
@@ -373,19 +373,19 @@ const CreateEventModal = ({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Event title"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description"
             rows={3}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-gold-500 resize-none"
+            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400 resize-none"
           />
           <select
             value={eventType}
             onChange={(e) => setEventType(e.target.value)}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           >
             {EVENT_TYPES.filter((t) => t.value).map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
@@ -395,19 +395,19 @@ const CreateEventModal = ({
             type="datetime-local"
             value={startsAt}
             onChange={(e) => setStartsAt(e.target.value)}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="City (optional)"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
           <input
             value={onlineUrl}
             onChange={(e) => setOnlineUrl(e.target.value)}
             placeholder="Online meeting URL (optional)"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
         </div>
         <button

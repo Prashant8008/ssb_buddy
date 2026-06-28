@@ -31,4 +31,33 @@ class GroupMember(models.Model):
     class Meta:
         unique_together = ('group', 'user')
 
-# Create your models here.
+
+class GroupJoinRequest(models.Model):
+    STATUSES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    ]
+    group = models.ForeignKey(StudyGroup, on_delete=models.CASCADE, related_name='join_requests')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='group_join_requests',
+    )
+    status = models.CharField(max_length=20, choices=STATUSES, default='PENDING', db_index=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviewed_group_join_requests',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('group', 'user')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user_id} → {self.group_id} ({self.status})'

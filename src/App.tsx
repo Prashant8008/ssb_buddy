@@ -12,6 +12,7 @@ import ChatPage from './pages/ChatPage';
 import AIMentor from './pages/mobile/AIMentor';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import Landing from './pages/Landing';
 import Groups from './pages/Groups';
 import Events from './pages/Events';
 import PPDTPractice from './pages/ssb/PPDTPractice';
@@ -25,8 +26,18 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/"
+        element={isAuthenticated ? <Navigate to="/feed" replace /> : <Landing />}
+      />
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/feed" replace /> : <Login />}
+      />
+      <Route
+        path="/register"
+        element={isAuthenticated ? <Navigate to="/feed" replace /> : <Register />}
+      />
 
       <Route
         path="/*"
@@ -34,7 +45,7 @@ function AppRoutes() {
           isAuthenticated ? (
             <MainLayout>
               <Routes>
-                <Route path="/" element={<Feed />} />
+                <Route path="/feed" element={<Feed />} />
                 <Route path="/ssb" element={<SSBHub />} />
                 <Route path="/ssb/ppdt" element={<PPDTPractice />} />
                 <Route path="/ssb/tat" element={<TATPractice />} />
@@ -53,7 +64,7 @@ function AppRoutes() {
               </Routes>
             </MainLayout>
           ) : (
-            <Navigate to="/login" replace />
+            <Navigate to="/" replace />
           )
         }
       />

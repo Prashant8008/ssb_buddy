@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class PracticePrompt(models.Model):
@@ -7,7 +8,7 @@ class PracticePrompt(models.Model):
     prompt_type = models.CharField(max_length=10, choices=TYPES, db_index=True)
     title = models.CharField(max_length=180)
     text = models.TextField(blank=True)
-    image = models.ImageField(upload_to='practice/prompts/', blank=True)
+    image = CloudinaryField('image', blank=True, folder='practice/prompts')
     is_daily = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

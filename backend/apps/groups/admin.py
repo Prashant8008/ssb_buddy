@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import GroupMember, StudyGroup
+from .models import GroupJoinRequest, GroupMember, StudyGroup
 
 
 class GroupMemberInline(admin.TabularInline):
@@ -16,4 +16,9 @@ class StudyGroupAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     inlines = [GroupMemberInline]
 
-# Register your models here.
+
+@admin.register(GroupJoinRequest)
+class GroupJoinRequestAdmin(admin.ModelAdmin):
+    list_display = ('group', 'user', 'status', 'created_at', 'reviewed_by')
+    list_filter = ('status',)
+    search_fields = ('group__name', 'user__username')

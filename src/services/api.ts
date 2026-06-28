@@ -213,9 +213,14 @@ export const GroupService = {
     city?: string;
     state?: string;
     is_private?: boolean;
+    member_ids?: number[];
   }) => api.post('/groups/', data),
   join: (groupId: number) => api.post(`/groups/${groupId}/join/`),
   myMemberships: () => api.get('/group-members/'),
+  getJoinRequests: (groupId: number) => api.get(`/groups/${groupId}/join_requests/`),
+  respondJoinRequest: (groupId: number, requestId: number, status: 'APPROVED' | 'REJECTED') =>
+    api.post(`/groups/${groupId}/join-requests/${requestId}/respond/`, { status }),
+  myJoinRequests: () => api.get('/group-join-requests/'),
 };
 
 // ── Events ──────────────────────────────────────────────────────────────────

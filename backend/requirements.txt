@@ -21,6 +21,8 @@ redis>=5.0.0
 # Config & media
 python-decouple>=3.8
 Pillow>=10.0.0
+django-cloudinary-storage>=0.3.0
+cloudinary>=1.44.2
 pymupdf>=1.24.0
 
 # MongoDB feed

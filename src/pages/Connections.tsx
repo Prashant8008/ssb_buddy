@@ -79,7 +79,7 @@ const Connections = () => {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto pt-20 pb-10 px-4">
+    <div className="max-w-3xl mx-auto pt-16 pb-24 px-4 sm:pt-20 sm:pb-10">
       <div className="mb-8">
         <h1 className="text-2xl font-display font-bold text-navy-900">Connections</h1>
         <p className="text-sm text-navy-500 mt-1">
@@ -105,7 +105,7 @@ const Connections = () => {
             {t.count > 0 && (
               <span className={cn(
                 'text-[10px] px-1.5 py-0.5 rounded-full min-w-[18px] text-center',
-                tab === t.id ? 'bg-gold-500 text-navy-900' : 'bg-navy-100 text-navy-600'
+                tab === t.id ? 'bg-accent-500 text-white' : 'bg-navy-100 text-navy-600'
               )}>
                 {t.count}
               </span>

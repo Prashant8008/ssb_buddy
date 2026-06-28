@@ -324,7 +324,7 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
               </div>
               <h2 className="text-2xl font-bold text-navy-900 mb-4">Ready to Begin?</h2>
               {imageBankSize != null && imageBankSize > 0 && (
-                <p className="text-sm font-bold text-army-600 mb-4">
+                <p className="text-sm font-bold text-accent-600 mb-4">
                   {imageBankSize} pictures loaded from your {type} PDF — a random one each session.
                 </p>
               )}
@@ -459,18 +459,18 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                     placeholder="No. of characters"
                     value={characterCount}
                     onChange={(e) => setCharacterCount(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 col-span-2 sm:col-span-1"
+                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 col-span-2 sm:col-span-1"
                   />
                   <input
                     placeholder="Age"
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500"
+                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400"
                   />
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500"
+                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400"
                   >
                     <option>Male</option>
                     <option>Female</option>
@@ -480,14 +480,14 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                     placeholder="Mood (+/-/0)"
                     value={mood}
                     onChange={(e) => setMood(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500"
+                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400"
                   />
                 </div>
                 <input
                   placeholder="Action of the story..."
                   value={actionText}
                   onChange={(e) => setActionText(e.target.value)}
-                  className="w-full bg-navy-50 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-gold-500"
+                  className="w-full bg-navy-50 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-accent-400"
                 />
                 <button
                   type="button"
@@ -576,7 +576,7 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                     placeholder="Start writing your story here..."
                     value={storyText}
                     onChange={(e) => setStoryText(e.target.value)}
-                    className="w-full bg-navy-50 border-none rounded-2xl p-6 text-sm min-h-[300px] focus:ring-2 focus:ring-gold-500 resize-none"
+                    className="w-full bg-navy-50 border-none rounded-2xl p-6 text-sm min-h-[300px] focus:ring-2 focus:ring-accent-400 resize-none"
                   />
                 ) : (
                   <div className="space-y-4">
@@ -659,9 +659,9 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                   </p>
                 </Card>
               )}
-              <Card className="p-6 bg-army-900 text-white">
+              <Card className="p-6 bg-accent-900 text-white">
                 <h3 className="font-bold mb-4">OLQ Focus</h3>
-                <ul className="space-y-3 text-xs text-army-200">
+                <ul className="space-y-3 text-xs text-accent-200">
                   <li>• Effective Intelligence</li>
                   <li>• Power of Expression</li>
                   <li>• Social Adaptability</li>

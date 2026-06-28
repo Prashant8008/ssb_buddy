@@ -177,7 +177,7 @@ const TimedPromptPractice: React.FC<TimedPromptPracticeProps> = ({
             <Card className="p-10 text-center max-w-xl mx-auto">
               <h2 className="text-xl font-bold text-navy-900 mb-3">Session rules</h2>
               {bankSize != null && bankSize > 0 && (
-                <p className="text-sm font-bold text-army-600 mb-4">{bankSize} prompts in your {type} bank</p>
+                <p className="text-sm font-bold text-accent-600 mb-4">{bankSize} prompts in your {type} bank</p>
               )}
               <ul className="text-left text-sm text-navy-700 space-y-2 mb-8 bg-navy-50 p-5 rounded-2xl">
                 <li>• <b>{itemCount}</b> {promptLabel.toLowerCase()}s per session</li>
@@ -209,7 +209,7 @@ const TimedPromptPractice: React.FC<TimedPromptPracticeProps> = ({
                 value={currentAnswer}
                 onChange={(e) => setCurrentAnswer(e.target.value)}
                 placeholder={answerPlaceholder}
-                className="w-full bg-navy-50 border-none rounded-xl p-4 text-sm min-h-[100px] focus:ring-2 focus:ring-gold-500 resize-none"
+                className="w-full bg-navy-50 border-none rounded-xl p-4 text-sm min-h-[100px] focus:ring-2 focus:ring-accent-400 resize-none"
                 disabled={isPaused}
               />
             </Card>
