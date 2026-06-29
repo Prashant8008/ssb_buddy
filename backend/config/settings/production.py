@@ -17,6 +17,14 @@ _render_hostname = config('RENDER_EXTERNAL_HOSTNAME', default='')
 if _render_hostname:
     ALLOWED_HOSTS.append(_render_hostname)
 
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    "https://ssb-connect.onrender.com",
+]
+_csrf_origins = list(config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv()))
+if _csrf_origins:
+    CSRF_TRUSTED_ORIGINS.extend(_csrf_origins)
+
 CHANNEL_LAYER_BACKEND = config('CHANNEL_LAYER_BACKEND', default='channels_redis.core.RedisChannelLayer')
 CHANNEL_LAYERS = {'default': {'BACKEND': CHANNEL_LAYER_BACKEND}}
 if CHANNEL_LAYER_BACKEND == 'channels_redis.core.RedisChannelLayer':

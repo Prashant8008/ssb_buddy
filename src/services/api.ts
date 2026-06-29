@@ -6,11 +6,13 @@ import axios from 'axios';
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
+  import.meta.env.VITE_API_URL ??
   (import.meta.env.DEV ? '/api' : 'http://localhost:8001/api');
 
 const resolveApiOrigin = () => {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return API_BASE_URL.replace(/\/api\/?$/, '');
+  const url = import.meta.env.VITE_API_BASE_URL ?? import.meta.env.VITE_API_URL;
+  if (url) {
+    return url.replace(/\/api\/?$/, '');
   }
   if (typeof window !== 'undefined') {
     return window.location.origin;
