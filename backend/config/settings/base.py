@@ -39,7 +39,7 @@ SECRET_KEY = config('SECRET_KEY', default='dev-only-change-me-ssb-connect-local-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,ssb-connect.onrender.com,.onrender.com', cast=Csv())
 
 
 # Application definition
