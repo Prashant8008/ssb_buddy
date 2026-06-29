@@ -1,7 +1,7 @@
 from .base import *  # noqa: F401,F403
 
 DEBUG = env_bool('DEBUG', default=True)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,0.0.0.0', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,0.0.0.0,ssb-connect.onrender.com,.onrender.com,.up.railway.app', cast=Csv())
 
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
 

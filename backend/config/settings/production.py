@@ -12,6 +12,8 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "ssb-connect.onrender.com",
+    ".onrender.com",
+    ".up.railway.app",
 ]
 _render_hostname = config('RENDER_EXTERNAL_HOSTNAME', default='')
 if _render_hostname:
