@@ -199,7 +199,80 @@ REDIS_URL=redis://127.0.0.1:6379/0
 
 For production, configure a strong secret key, PostgreSQL, Redis, allowed hosts, CORS origins, CSRF trusted origins, email settings, and secure HTTPS settings.
 
-## Deploy on Railway
+## Deploy on Render + Netlify (recommended)
+
+### 1. Backend on Render
+
+1. Push this repo to GitHub.
+2. In [Render](https://render.com) → **New** → **Blueprint** → connect `Prashant8008/ssb_buddy`.
+3. Render reads `render.yaml` and creates:
+   - **PostgreSQL** (`ssb-connect-db`)
+   - **Redis** (`ssb-connect-redis`) — for chat/notifications WebSockets
+   - **Web service** (`ssb-connect-api`) — Docker build from `backend/`
+4. After the first deploy, open the **ssb-connect-api** service → **Environment** and set:
+
+   | Variable | Value |
+   |----------|--------|
+   | `MONGO_URI` | Your MongoDB Atlas connection string |
+   | `CORS_ALLOWED_ORIGINS` | `https://YOUR-SITE.netlify.app` (or Vercel URL) |
+   | `CSRF_TRUSTED_ORIGINS` | Same as CORS |
+   | `GROQ_API_KEY` | Optional — AI mentor |
+   | `CLOUDINARY_*` | Optional — practice images |
+
+5. Copy your API URL, e.g. `https://ssb-connect-api.onrender.com`.
+
+Health check: `GET /api/health/` → `{"status":"ok"}`
+
+#### Manual Render web service (Python, not Docker)
+
+| Setting | Value |
+|---------|--------|
+| **Root Directory** | `backend` |
+| **Build Command** | `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput` |
+| **Start Command** | `daphne -b 0.0.0.0 -p $PORT config.asgi:application` |
+
+Required env var (add in Render → Environment):
+
+```env
+DJANGO_SETTINGS_MODULE=config.settings.production
+```
+
+Do **not** use `gunicorn config.wsgi:application` — this project uses **Daphne + ASGI** for chat WebSockets.
+
+### 2. Frontend on Netlify
+
+1. [Netlify](https://netlify.com) → **Add new site** → **Import from Git** → same repo.
+2. Build settings (auto-detected from `netlify.toml`):
+   - **Build command:** `npm ci && npm run build`
+   - **Publish directory:** `dist`
+3. **Site settings → Environment variables:**
+
+   ```env
+   VITE_API_BASE_URL=https://ssb-connect-api.onrender.com/api
+   ```
+
+4. Deploy. Copy your site URL (e.g. `https://ssb-connect.netlify.app`).
+5. Go back to Render → update `CORS_ALLOWED_ORIGINS` and `CSRF_TRUSTED_ORIGINS` with that URL → **Manual Deploy**.
+
+### 3. Frontend on Vercel (alternative)
+
+1. [Vercel](https://vercel.com) → **Import** the repo (uses `vercel.json`).
+2. Set environment variable:
+
+   ```env
+   VITE_API_BASE_URL=https://ssb-connect-api.onrender.com/api
+   ```
+
+3. Deploy, then update Render CORS/CSRF with your `*.vercel.app` URL.
+
+### Notes
+
+- **MongoDB Atlas** is required for the social feed (posts, comments, likes).
+- **Cloudinary** is recommended on Render (no persistent disk for local `media/`).
+- Render free tier may **sleep** after inactivity — first request can be slow.
+- WebSockets (`/ws/chat/`, `/ws/notifications/`) connect to the Render API host via `VITE_API_BASE_URL`.
+
+## Deploy on Railway (alternative)
 
 This repo is a monorepo — create **two Railway services** from the same GitHub repo (`Prashant8008/ssb_buddy`, branch `main`).
 

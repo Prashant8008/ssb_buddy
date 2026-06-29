@@ -12,7 +12,10 @@ _allowed_hosts = list(config('ALLOWED_HOSTS', default='', cast=Csv()))
 _railway_domain = config('RAILWAY_PUBLIC_DOMAIN', default='')
 if _railway_domain:
     _allowed_hosts.extend([_railway_domain, '.up.railway.app'])
-ALLOWED_HOSTS = _allowed_hosts or ['.up.railway.app']
+_render_hostname = config('RENDER_EXTERNAL_HOSTNAME', default='')
+if _render_hostname:
+    _allowed_hosts.append(_render_hostname)
+ALLOWED_HOSTS = _allowed_hosts or ['.onrender.com', '.up.railway.app']
 
 CHANNEL_LAYER_BACKEND = config('CHANNEL_LAYER_BACKEND', default='channels_redis.core.RedisChannelLayer')
 CHANNEL_LAYERS = {'default': {'BACKEND': CHANNEL_LAYER_BACKEND}}
