@@ -132,7 +132,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } };
       if (!axiosErr.response) {
-        setErrorMsg('Cannot reach the server. Start Django on http://127.0.0.1:8001');
+        setErrorMsg('Cannot reach the server at https://ssb-connect.onrender.com');
       } else {
         setErrorMsg(axiosErr.response?.data?.detail || 'Invalid username or password.');
       }
@@ -171,7 +171,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
         const messages = Object.keys(errors).map((key) => `${key}: ${errors[key]}`);
         setErrorMsg(messages.join(' | '));
       } else if (!axiosErr.response) {
-        setErrorMsg('Cannot reach the server. Start Django on http://127.0.0.1:8001');
+        setErrorMsg('Cannot reach the server at https://ssb-connect.onrender.com');
       } else {
         setErrorMsg('Registration failed. Please check your inputs.');
       }

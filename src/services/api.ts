@@ -7,7 +7,7 @@ import axios from 'axios';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
   import.meta.env.VITE_API_URL ??
-  (import.meta.env.DEV ? '/api' : 'http://localhost:8001/api');
+  (import.meta.env.DEV ? '/api' : 'https://ssb-connect.onrender.com/api');
 
 const resolveApiOrigin = () => {
   const url = import.meta.env.VITE_API_BASE_URL ?? import.meta.env.VITE_API_URL;
@@ -17,7 +17,7 @@ const resolveApiOrigin = () => {
   if (typeof window !== 'undefined') {
     return window.location.origin;
   }
-  return 'http://localhost:8001';
+  return 'https://ssb-connect.onrender.com';
 };
 
 const API_ORIGIN = resolveApiOrigin();

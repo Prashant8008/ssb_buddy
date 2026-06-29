@@ -38,11 +38,11 @@ function __dualiteSourceLoc({ types: t }) {
     ...(mode === 'mobile' ? { https: true as const } : {}),
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8001',
+        target: 'https://ssb-connect.onrender.com',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'http://127.0.0.1:8001',
+        target: 'https://ssb-connect.onrender.com',
         ws: true,
         changeOrigin: true,
       },
