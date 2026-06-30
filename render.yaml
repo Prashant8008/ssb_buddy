@@ -24,6 +24,8 @@ services:
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
     startCommand: daphne -b 0.0.0.0 -p $PORT config.asgi:application
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.production
       - key: SECRET_KEY

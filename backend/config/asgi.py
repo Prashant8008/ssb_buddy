@@ -6,8 +6,10 @@ It exposes the ASGI callable as a module-level variable named ``application``.
 
 import os
 
+from config.settings_module import configure_default_settings_module
+
 # Must be set before any Django/Channels/app imports that touch settings.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+configure_default_settings_module()
 
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application

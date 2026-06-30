@@ -1,4 +1,5 @@
 from .base import *  # noqa: F401,F403
+import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 
 DEBUG = False
@@ -7,6 +8,29 @@ _secret = config('SECRET_KEY', default='')
 if not _secret or _secret.startswith('dev-only'):
     raise ImproperlyConfigured('Set a strong SECRET_KEY environment variable for production.')
 SECRET_KEY = _secret
+
+# PostgreSQL — required in production (Render injects DATABASE_URL when DB is linked).
+_database_url = config('DATABASE_URL', default='')
+if not _database_url:
+    raise ImproperlyConfigured(
+        'DATABASE_URL is required in production. On Render: create a PostgreSQL database '
+        'and link it to this web service (Environment → Link Database).'
+    )
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=_database_url,
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=True,
+    )
+}
+_db_host = (DATABASES['default'].get('HOST') or '').lower()
+if _db_host in ('', 'localhost', '127.0.0.1', '::1'):
+    raise ImproperlyConfigured(
+        f'DATABASE_URL points to "{_db_host or "localhost"}" — remove any local '
+        'postgres URL from Render env vars and use the linked database connection string.'
+    )
 
 ALLOWED_HOSTS = [
     "localhost",
