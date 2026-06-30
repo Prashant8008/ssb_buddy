@@ -8,7 +8,7 @@ import {
   Loader2,
   MapPin,
 } from 'lucide-react';
-import { AuthService } from '../../services/api';
+import { AuthService, getNetworkErrorMessage } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import LocationPromptModal from '../location/LocationPromptModal';
 import {
@@ -132,7 +132,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } };
       if (!axiosErr.response) {
-        setErrorMsg('Cannot reach the server at https://ssb-connect.onrender.com');
+        setErrorMsg(getNetworkErrorMessage());
       } else {
         setErrorMsg(axiosErr.response?.data?.detail || 'Invalid username or password.');
       }
@@ -171,7 +171,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
         const messages = Object.keys(errors).map((key) => `${key}: ${errors[key]}`);
         setErrorMsg(messages.join(' | '));
       } else if (!axiosErr.response) {
-        setErrorMsg('Cannot reach the server at https://ssb-connect.onrender.com');
+        setErrorMsg(getNetworkErrorMessage());
       } else {
         setErrorMsg('Registration failed. Please check your inputs.');
       }

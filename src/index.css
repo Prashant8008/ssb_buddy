@@ -48,11 +48,11 @@
 
 .leaflet-popup-content {
   margin: 12px 14px;
-  color: #2e2a26;
+  color: #1B2B3A;
 }
 
 .leaflet-popup-content a {
-  color: #0284c7;
+  color: #2E6BA8;
 }
 
 .run-runner-marker {
@@ -68,10 +68,10 @@
 .discover-user-marker-dot {
   width: 16px;
   height: 16px;
-  background: #0ea5e9;
+  background: #3B82C4;
   border: 3px solid #fff;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.35);
+  box-shadow: 0 2px 8px rgba(59, 130, 196, 0.35);
 }
 
 .run-start-marker,
@@ -81,7 +81,7 @@
 }
 
 .run-map-tooltip.leaflet-tooltip {
-  background: rgba(46, 42, 38, 0.92);
+  background: rgba(13, 27, 42, 0.92);
   border: none;
   color: white;
   font-size: 10px;
@@ -92,13 +92,13 @@
 }
 
 .run-map-tooltip.leaflet-tooltip::before {
-  border-top-color: rgba(46, 42, 38, 0.92);
+  border-top-color: rgba(13, 27, 42, 0.92);
 }
 ::-webkit-scrollbar {
   width: 4px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d5cfc4;
+  background: #a8b4c4;
   border-radius: 10px;
 }
 

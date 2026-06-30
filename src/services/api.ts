@@ -4,15 +4,29 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL =
+const normalizeApiBaseUrl = (url: string) => {
+  const trimmed = url.replace(/\/$/, '');
+  if (!trimmed) return '/api';
+  if (trimmed.endsWith('/api')) return trimmed;
+  // Absolute backend origin without /api — e.g. http://localhost:8001
+  if (/^https?:\/\//i.test(trimmed)) return `${trimmed}/api`;
+  return trimmed;
+};
+
+const API_BASE_URL = normalizeApiBaseUrl(
   import.meta.env.VITE_API_BASE_URL ??
-  import.meta.env.VITE_API_URL ??
-  (import.meta.env.DEV ? '/api' : 'https://ssb-connect.onrender.com/api');
+    import.meta.env.VITE_API_URL ??
+    (import.meta.env.DEV ? '/api' : 'https://ssb-connect.onrender.com/api')
+);
 
 const resolveApiOrigin = () => {
-  const url = import.meta.env.VITE_API_BASE_URL ?? import.meta.env.VITE_API_URL;
-  if (url) {
-    return url.replace(/\/api\/?$/, '');
+  const normalized = normalizeApiBaseUrl(
+    import.meta.env.VITE_API_BASE_URL ??
+      import.meta.env.VITE_API_URL ??
+      (import.meta.env.DEV ? '/api' : 'https://ssb-connect.onrender.com/api')
+  );
+  if (/^https?:\/\//i.test(normalized)) {
+    return normalized.replace(/\/api\/?$/, '');
   }
   if (typeof window !== 'undefined') {
     return window.location.origin;
@@ -301,5 +315,13 @@ export const getChatWebSocketUrl = (conversationId: number): string => {
 };
 
 export { API_BASE_URL, API_ORIGIN };
+
+/** User-facing hint when axios gets no HTTP response (network / CORS / timeout). */
+export const getNetworkErrorMessage = () => {
+  if (import.meta.env.DEV) {
+    return `Cannot reach the API (${API_BASE_URL}). Start the backend: cd backend && python manage.py runserver 0.0.0.0:8001 — then use the Vite dev URL (check terminal for port 5173/5174).`;
+  }
+  return `Cannot reach the API at ${API_ORIGIN}. If you use Render free tier, the server may be asleep — wait ~30s and try again.`;
+};
 
 export default api;

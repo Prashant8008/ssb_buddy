@@ -31,7 +31,7 @@ function createRunnerIcon(headingDeg: number) {
           width: 0; height: 0;
           border-left: 10px solid transparent;
           border-right: 10px solid transparent;
-          border-bottom: 22px solid #1e3a5f;
+          border-bottom: 22px solid #0D1B2A;
           filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         "></div>
       </div>
@@ -47,7 +47,7 @@ function createStartIcon() {
     html: `
       <div style="
         width: 28px; height: 28px;
-        background: #22c55e;
+        background: #556B2F;
         border: 3px solid white;
         border-radius: 50%;
         box-shadow: 0 2px 6px rgba(0,0,0,0.35);
@@ -67,9 +67,9 @@ function createSplitIcon(label: string, isCurrent: boolean) {
       <div style="
         min-width: ${isCurrent ? 52 : 36}px;
         padding: 2px 6px;
-        background: ${isCurrent ? '#1e3a5f' : 'white'};
-        color: ${isCurrent ? 'white' : '#1e3a5f'};
-        border: 2px solid ${isCurrent ? '#22c55e' : '#22c55e'};
+        background: ${isCurrent ? '#0D1B2A' : 'white'};
+        color: ${isCurrent ? 'white' : '#0D1B2A'};
+        border: 2px solid ${isCurrent ? '#556B2F' : '#556B2F'};
         border-radius: 999px;
         font-size: ${isCurrent ? 10 : 9}px;
         font-weight: 800;
@@ -143,11 +143,11 @@ const RunMap: React.FC<RunMapProps> = ({
           <>
             <Polyline
               positions={routeCoords}
-              pathOptions={{ color: '#14532d', weight: 8, opacity: 0.25 }}
+              pathOptions={{ color: '#3d5c2e', weight: 8, opacity: 0.25 }}
             />
             <Polyline
               positions={routeCoords}
-              pathOptions={{ color: '#22c55e', weight: 5, opacity: 0.9 }}
+              pathOptions={{ color: '#556B2F', weight: 5, opacity: 0.9 }}
             />
           </>
         )}

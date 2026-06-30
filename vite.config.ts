@@ -46,11 +46,11 @@ export default defineConfig(({ mode }) => ({
     ...(mode === 'mobile' ? { https: true as const } : {}),
     proxy: {
       '/api': {
-        target: 'https://ssb-connect.onrender.com',
+        target: 'http://127.0.0.1:8001',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'https://ssb-connect.onrender.com',
+        target: 'http://127.0.0.1:8001',
         ws: true,
         changeOrigin: true,
       },

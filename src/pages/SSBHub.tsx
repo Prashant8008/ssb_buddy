@@ -31,9 +31,9 @@ const SSBHub = () => {
 
   const modules = [
     { id: 'ppdt', title: 'PPDT Practice', icon: <PenTool />, color: 'bg-accent-500', desc: 'Picture Perception & Discussion Test', path: '/ssb/ppdt' },
-    { id: 'tat', title: 'TAT Practice', icon: <Brain />, color: 'bg-navy-500', desc: 'Thematic Apperception Test', path: '/ssb/tat' },
+    { id: 'tat', title: 'TAT Practice', icon: <Brain />, color: 'bg-army-700', desc: 'Thematic Apperception Test', path: '/ssb/tat' },
     { id: 'wat', title: 'WAT Practice', icon: <Timer />, color: 'bg-gold-500', desc: 'Word Association Test', path: '/ssb/wat' },
-    { id: 'srt', title: 'SRT Practice', icon: <Users />, color: 'bg-red-500', desc: 'Situation Reaction Test', path: '/ssb/srt' },
+    { id: 'srt', title: 'SRT Practice', icon: <Users />, color: 'bg-midnight-700', desc: 'Situation Reaction Test', path: '/ssb/srt' },
   ];
 
   useEffect(() => {

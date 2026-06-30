@@ -63,8 +63,8 @@ const sortFriendsFeed = (posts: Post[], myId: number) => {
 const POST_TYPE_COLORS: Record<string, string> = {
   TEXT: 'bg-navy-100 text-navy-700',
   NOTE: 'bg-accent-100 text-accent-800',
-  EXPERIENCE: 'bg-green-100 text-green-700',
-  CURRENT_AFFAIRS: 'bg-amber-100 text-amber-700',
+  EXPERIENCE: 'bg-army-100 text-army-800',
+  CURRENT_AFFAIRS: 'bg-gold-100 text-gold-800',
 };
 
 // ── Comment Section ───────────────────────────────────────────────────────────
