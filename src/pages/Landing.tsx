@@ -100,14 +100,18 @@ const successStories = [
   { seed: 'sana', name: 'Sana R.', quote: 'Events kept me disciplined through 8 months of prep.', entry: 'SSB Recommended' },
 ];
 
-const Logo = () => (
-  <Link to="/" className="flex items-center gap-2.5 group">
-    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-signal-500 to-signal-600 flex items-center justify-center shadow-lg shadow-signal-500/20 group-hover:shadow-signal-500/30 transition-shadow">
-      <Shield className="w-5 h-5 text-midnight-950" strokeWidth={2.2} />
-    </div>
-    <span className="font-display font-bold text-sm tracking-[0.12em] text-white">
-      SSB CONNECT
-    </span>
+const LOGO_SRC = '/ssb-connect-logo.png';
+
+const logoImageClass =
+  'rounded-full object-cover ring-1 ring-white/10 shadow-lg shadow-black/30 transition-transform duration-300 group-hover:scale-[1.02]';
+
+const Logo = ({ className, imageClassName }: { className?: string; imageClassName?: string }) => (
+  <Link to="/" className={cn('inline-flex items-center group', className)}>
+    <img
+      src={LOGO_SRC}
+      alt="SSB Connect — Army, Navy, Air Force"
+      className={cn('h-11 w-11', logoImageClass, imageClassName)}
+    />
   </Link>
 );
 
@@ -209,6 +213,14 @@ const Landing = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
+              <motion.img
+                src={LOGO_SRC}
+                alt="SSB Connect logo"
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="h-32 w-32 sm:h-40 sm:w-40 rounded-full object-cover ring-2 ring-white/10 shadow-2xl shadow-black/40 mb-6"
+              />
               <p className="text-signal-500/90 text-xs font-bold uppercase tracking-[0.25em] mb-5">
                 India&apos;s Armed Forces Community
               </p>
@@ -511,7 +523,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
             <div>
-              <Logo />
+              <Logo imageClassName="h-14 w-14" />
               <p className="mt-4 text-sm text-white/40 leading-relaxed">
                 India&apos;s community platform for SSB aspirants — connect, prepare, and grow together.
               </p>
