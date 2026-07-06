@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm ci && npm run build",
+  "buildCommand": "npm ci && VITE_API_BASE_URL=https://ssb-connect.onrender.com/api npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
   "env": {

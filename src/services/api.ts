@@ -4,6 +4,27 @@
  */
 import axios from 'axios';
 
+const PRODUCTION_API_BASE_URL = 'https://ssb-connect.onrender.com/api';
+
+const isUsableApiEnv = (value: unknown): value is string => {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  const v = value.trim();
+  if (v === 'VITE_API_BASE_URL' || v === '/VITE_API_BASE_URL') return false;
+  if (v.includes('YOUR-') || v.includes('<your-')) return false;
+  return true;
+};
+
+const resolveApiEnvUrl = (): string => {
+  if (isUsableApiEnv(import.meta.env.VITE_API_BASE_URL)) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  if (isUsableApiEnv(import.meta.env.VITE_API_URL)) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (import.meta.env.DEV) return '/api';
+  return PRODUCTION_API_BASE_URL;
+};
+
 const normalizeApiBaseUrl = (url: string) => {
   const trimmed = url.replace(/\/$/, '');
   if (!trimmed) return '/api';
@@ -13,25 +34,17 @@ const normalizeApiBaseUrl = (url: string) => {
   return trimmed;
 };
 
-const API_BASE_URL = normalizeApiBaseUrl(
-  import.meta.env.VITE_API_BASE_URL ??
-    import.meta.env.VITE_API_URL ??
-    (import.meta.env.DEV ? '/api' : 'https://ssb-connect.onrender.com/api')
-);
+const API_BASE_URL = normalizeApiBaseUrl(resolveApiEnvUrl());
 
 const resolveApiOrigin = () => {
-  const normalized = normalizeApiBaseUrl(
-    import.meta.env.VITE_API_BASE_URL ??
-      import.meta.env.VITE_API_URL ??
-      (import.meta.env.DEV ? '/api' : 'https://ssb-connect.onrender.com/api')
-  );
+  const normalized = normalizeApiBaseUrl(resolveApiEnvUrl());
   if (/^https?:\/\//i.test(normalized)) {
     return normalized.replace(/\/api\/?$/, '');
   }
   if (typeof window !== 'undefined') {
     return window.location.origin;
   }
-  return 'https://ssb-connect.onrender.com';
+  return PRODUCTION_API_BASE_URL.replace(/\/api\/?$/, '');
 };
 
 const API_ORIGIN = resolveApiOrigin();
