@@ -85,7 +85,8 @@ if _csrf_origins:
     CSRF_TRUSTED_ORIGINS.extend(_csrf_origins)
 
 # Keep CORS in sync with frontend URLs (Vercel / Netlify set via CSRF_TRUSTED_ORIGINS on Render).
-CORS_ALLOWED_ORIGINS = list(dict.fromkeys(list(CORS_ALLOWED_ORIGINS) + CSRF_TRUSTED_ORIGINS))
+_cors_origins = list(config('CORS_ALLOWED_ORIGINS', default='', cast=Csv()))
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(_cors_origins + CSRF_TRUSTED_ORIGINS))
 
 CHANNEL_LAYER_BACKEND = config('CHANNEL_LAYER_BACKEND', default='channels_redis.core.RedisChannelLayer')
 CHANNEL_LAYERS = {'default': {'BACKEND': CHANNEL_LAYER_BACKEND}}

@@ -16,8 +16,6 @@ from pathlib import Path
 
 import dj_database_url
 from decouple import config, Csv
-import cloudinary
-import cloudinary.uploader
 
 
 def env_bool(name, default=False):
