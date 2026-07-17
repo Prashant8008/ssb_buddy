@@ -39,3 +39,6 @@ Thumbs.db
 
 # Local Netlify
 .netlify/
+
+# Portable Node.js (large binary — use system Node instead)
+node_portable/
