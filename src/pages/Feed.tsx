@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from '../components/ui/Card';
 import {
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal,
   FileText, Send, Loader2, BookMarked,
-  ChevronDown, Flame, Users, Globe, Paperclip, ExternalLink
+  ChevronDown, Users, Globe, Paperclip, ExternalLink,
+  Shield, Brain, Map, Calendar, Zap, UserPlus,
+  Image as ImageIcon, Video as VideoIcon, AlignLeft,
+  Rss, Cpu, MessageSquare, Activity, Group,
+  Clock, Radio
 } from 'lucide-react';
-import { FeedService, AuthService, NetworkService } from '../services/api';
+import { FeedService, AuthService, NetworkService, ProfileService } from '../services/api';
 import { cn } from '../lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -60,11 +63,11 @@ const sortFriendsFeed = (posts: Post[], myId: number) => {
   return [...network, ...own];
 };
 
-const POST_TYPE_COLORS: Record<string, string> = {
-  TEXT: 'bg-navy-100 text-navy-700',
-  NOTE: 'bg-accent-100 text-accent-800',
-  EXPERIENCE: 'bg-army-100 text-army-800',
-  CURRENT_AFFAIRS: 'bg-gold-100 text-gold-800',
+const POST_TYPE_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
+  TEXT:           { label: 'Post',          bg: 'bg-slate-100',           text: 'text-slate-600' },
+  NOTE:           { label: 'Note',          bg: 'bg-amber-50',            text: 'text-amber-700' },
+  EXPERIENCE:     { label: 'Experience',    bg: 'bg-emerald-50',          text: 'text-emerald-700' },
+  CURRENT_AFFAIRS:{ label: 'Current Affairs', bg: 'bg-sky-50',           text: 'text-sky-700' },
 };
 
 // ── Comment Section ───────────────────────────────────────────────────────────
@@ -97,40 +100,40 @@ const CommentSection = ({ postId }: { postId: string }) => {
   };
 
   return (
-    <div className="px-4 pb-4 space-y-3">
+    <div className="px-5 pb-5 pt-3 space-y-3 border-t border-slate-100">
       {error && <p className="text-xs text-red-600">{error}</p>}
       {loading ? (
-        <div className="flex justify-center py-2"><Loader2 className="animate-spin text-navy-400" size={18} /></div>
+        <div className="flex justify-center py-2"><Loader2 className="animate-spin text-slate-400" size={18} /></div>
       ) : (
-        <div className="space-y-2 max-h-48 overflow-y-auto">
+        <div className="space-y-3 max-h-52 overflow-y-auto pr-1">
           {comments.length === 0 && (
-            <p className="text-xs text-navy-400 text-center py-2">No comments yet. Be the first!</p>
+            <p className="text-xs text-slate-400 text-center py-2">No comments yet. Be the first!</p>
           )}
           {comments.map(c => (
-            <div key={c.id} className="flex gap-2">
+            <div key={c.id} className="flex gap-2.5">
               <img src={getAvatar(c.author_username)} className="w-7 h-7 rounded-full flex-shrink-0" alt="" />
-              <div className="bg-navy-50 rounded-2xl rounded-tl-none px-3 py-2 flex-1">
-                <p className="text-xs font-bold text-navy-900">{c.author_username}</p>
-                <p className="text-sm text-navy-800">{c.body}</p>
+              <div className="bg-slate-50 rounded-2xl rounded-tl-none px-3 py-2 flex-1">
+                <p className="text-[11px] font-bold text-primary">{c.author_username}</p>
+                <p className="text-sm text-slate-600 mt-0.5 leading-relaxed">{c.body}</p>
               </div>
             </div>
           ))}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="flex gap-2 items-center mt-2">
+      <form onSubmit={handleSubmit} className="flex gap-2 items-center">
         <input
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Write a comment..."
-          className="flex-1 bg-navy-50 border border-navy-100 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+          className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-sm focus:ring-1 focus:ring-primary outline-none"
           disabled={submitting}
         />
         <button
           type="submit"
           disabled={submitting || !text.trim()}
-          className="w-9 h-9 bg-accent-500 text-white rounded-full flex items-center justify-center hover:bg-accent-600 disabled:opacity-40 flex-shrink-0"
+          className="w-9 h-9 bg-primary text-white rounded-full flex items-center justify-center hover:bg-[#1a3560] disabled:opacity-40 flex-shrink-0 transition-colors"
         >
-          {submitting ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
+          {submitting ? <Loader2 className="animate-spin" size={13} /> : <Send size={13} />}
         </button>
       </form>
     </div>
@@ -148,6 +151,7 @@ const PostCard = ({
   const [showComments, setShowComments] = useState(false);
   const isLiked = post.likes?.includes(myId);
   const isSaved = post.saved_by?.includes(myId);
+  const typeConfig = POST_TYPE_CONFIG[post.post_type] || POST_TYPE_CONFIG.TEXT;
 
   const timeAgo = (() => {
     try { return formatDistanceToNow(new Date(post.created_at), { addSuffix: true }); }
@@ -155,105 +159,112 @@ const PostCard = ({
   })();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="overflow-hidden">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-100 border-l-4 border-l-secondary-fixed hover:shadow-md transition-shadow">
         {/* Header */}
-        <div className="p-4 flex items-center justify-between">
+        <div className="px-5 pt-4 pb-3 flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-navy-100 flex-shrink-0 border-2 border-gold-200">
-              <img
-                src={post.author_avatar || getAvatar(post.author_username)}
-                alt={post.author_username}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <Link to={`/profile/${post.author_username}`}>
+              <div className="w-11 h-11 rounded-full overflow-hidden bg-slate-100 flex-shrink-0 border-2 border-slate-100 hover:border-secondary-fixed transition-colors">
+                <img
+                  src={post.author_avatar || getAvatar(post.author_username)}
+                  alt={post.author_username}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </Link>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Link
                   to={`/profile/${post.author_username}`}
-                  className="font-bold text-sm text-navy-900 hover:text-gold-600 transition-colors"
+                  className="font-bold text-sm text-primary hover:underline"
                 >
-                  @{post.author_username}
+                  {post.author_username}
                 </Link>
                 {post.post_type !== 'TEXT' && (
-                  <span className={cn('text-[10px] px-2 py-0.5 rounded-full font-bold uppercase', POST_TYPE_COLORS[post.post_type])}>
-                    {post.post_type.replace('_', ' ')}
+                  <span className={cn(
+                    'text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wider',
+                    typeConfig.bg, typeConfig.text
+                  )}>
+                    {typeConfig.label}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-navy-500">{timeAgo}</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">{timeAgo}</p>
             </div>
           </div>
-          <button className="text-navy-300 hover:text-navy-700 transition-colors">
-            <MoreHorizontal size={20} />
+          <button className="text-slate-400 hover:text-slate-700 transition-colors p-1">
+            <MoreHorizontal size={18} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="px-4 pb-3 space-y-1">
-          {post.title && <h3 className="font-bold text-navy-900">{post.title}</h3>}
-          <p className="text-sm text-navy-700 leading-relaxed">{post.body}</p>
+        <div className="px-5 pb-3">
+          {post.title && <h3 className="font-bold text-primary text-base mb-1">{post.title}</h3>}
+          <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{post.body}</p>
         </div>
 
-        {/* Uploads: image, video, document */}
+        {/* Media */}
         {post.image_url && (
-          <div className="aspect-video bg-navy-100 overflow-hidden">
-            <img src={post.image_url} alt="Post" className="w-full h-full object-cover" />
+          <div className="mx-5 mb-4 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+            <img src={post.image_url} alt="Post" className="w-full object-cover max-h-80" />
           </div>
         )}
         {post.video_url && (
-          <div className="bg-navy-900">
-            <video src={post.video_url} controls className="w-full max-h-96" preload="metadata">
+          <div className="mx-5 mb-4 rounded-lg overflow-hidden bg-primary">
+            <video src={post.video_url} controls className="w-full max-h-80" preload="metadata">
               <track kind="captions" />
             </video>
           </div>
         )}
         {post.document_url && (
-          <div className="px-4 pb-3">
+          <div className="px-5 pb-4">
             <a
               href={post.document_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-xl bg-navy-50 border border-navy-100 hover:border-gold-400 transition-colors"
+              className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-secondary-fixed transition-all"
             >
-              <div className="w-10 h-10 rounded-lg bg-gold-100 flex items-center justify-center text-gold-700">
-                <FileText size={20} />
+              <div className="w-9 h-9 rounded-lg bg-secondary-fixed/20 flex items-center justify-center text-[#785d00]">
+                <FileText size={18} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-navy-900 truncate">View attachment</p>
-                <p className="text-xs text-navy-500 truncate">{post.document_url}</p>
+                <p className="text-xs font-bold text-primary truncate">View Attachment</p>
+                <p className="text-[10px] text-slate-400 truncate">{post.document_url}</p>
               </div>
-              <ExternalLink size={16} className="text-navy-400 flex-shrink-0" />
+              <ExternalLink size={13} className="text-slate-400 flex-shrink-0" />
             </a>
           </div>
         )}
 
         {/* Actions */}
-        <div className="px-4 py-3 border-t border-navy-50 flex items-center justify-between">
+        <div className="px-5 py-3 border-t border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-5">
             <button
               onClick={() => onLike(post.id)}
-              className={cn('flex items-center gap-1.5 text-sm font-medium transition-all', isLiked ? 'text-red-500' : 'text-navy-500 hover:text-red-400')}
+              className={cn('flex items-center gap-1.5 text-xs font-semibold transition-all',
+                isLiked ? 'text-red-500' : 'text-slate-500 hover:text-red-400')}
             >
-              <Heart size={20} fill={isLiked ? 'currentColor' : 'none'} />
+              <Heart size={16} fill={isLiked ? 'currentColor' : 'none'} />
               <span>{post.likes_count}</span>
             </button>
             <button
               onClick={() => setShowComments(p => !p)}
-              className={cn('flex items-center gap-1.5 text-sm font-medium transition-colors', showComments ? 'text-navy-900' : 'text-navy-500 hover:text-navy-900')}
+              className={cn('flex items-center gap-1.5 text-xs font-semibold transition-colors',
+                showComments ? 'text-primary' : 'text-slate-500 hover:text-primary')}
             >
-              <MessageCircle size={20} />
+              <MessageCircle size={16} />
               <span>{post.comments_count}</span>
             </button>
-            <button className="text-navy-500 hover:text-navy-900 transition-colors">
-              <Share2 size={20} />
+            <button className="text-slate-500 hover:text-primary transition-colors text-xs font-semibold flex items-center gap-1.5">
+              <Share2 size={16} />
             </button>
           </div>
           <button
             onClick={() => onSave(post.id)}
-            className={cn('transition-colors', isSaved ? 'text-gold-500' : 'text-navy-400 hover:text-gold-500')}
+            className={cn('transition-colors', isSaved ? 'text-secondary-fixed' : 'text-slate-400 hover:text-secondary-fixed')}
           >
-            {isSaved ? <BookMarked size={20} fill="currentColor" /> : <Bookmark size={20} />}
+            {isSaved ? <BookMarked size={16} fill="currentColor" /> : <Bookmark size={16} />}
           </button>
         </div>
 
@@ -264,36 +275,28 @@ const PostCard = ({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="border-t border-navy-50 overflow-hidden"
+              className="overflow-hidden"
             >
               <CommentSection postId={post.id} />
             </motion.div>
           )}
         </AnimatePresence>
-      </Card>
+      </div>
     </motion.div>
   );
 };
 
 // ── Create Post Box ───────────────────────────────────────────────────────────
-const CreatePost = ({ onCreated }: { onCreated: (post: Post) => void }) => {
+const CreatePost = ({ onCreated, myUsername }: { onCreated: (post: Post) => void; myUsername: string }) => {
   const [body, setBody] = useState('');
   const [postType, setPostType] = useState('TEXT');
   const [imageUrl, setImageUrl] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [documentUrl, setDocumentUrl] = useState('');
   const [showAttach, setShowAttach] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-
-  const myUsername = (() => {
-    try {
-      const token = localStorage.getItem('access_token');
-      if (!token) return 'me';
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.username || 'me';
-    } catch { return 'me'; }
-  })();
 
   const handlePost = async () => {
     if (!body.trim() && !imageUrl.trim() && !videoUrl.trim() && !documentUrl.trim()) {
@@ -315,97 +318,137 @@ const CreatePost = ({ onCreated }: { onCreated: (post: Post) => void }) => {
       setVideoUrl('');
       setDocumentUrl('');
       setShowAttach(false);
+      setExpanded(false);
     } catch (e: any) {
       setError(e.response?.data?.detail || 'Failed to post. Please try again.');
     } finally { setSubmitting(false); }
   };
 
   return (
-    <Card className="mb-6 p-4">
-      <div className="flex gap-3">
-        <div className="w-10 h-10 rounded-full bg-accent-100 overflow-hidden flex-shrink-0 border-2 border-gold-300">
-          <img src={getAvatar(myUsername)} alt="Me" className="w-full h-full" />
+    <div className="bg-white rounded-xl shadow-sm border border-slate-100">
+      {/* Composer row */}
+      <div className="p-4 flex gap-3 items-center">
+        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-slate-100">
+          <img src={getAvatar(myUsername)} alt="Me" className="w-full h-full object-cover" />
         </div>
-        <div className="flex-1 space-y-3">
-          <textarea
-            value={body}
-            onChange={e => { setBody(e.target.value); setError(''); }}
-            placeholder="Share your SSB experience, ask a doubt, or post notes..."
-            className="w-full bg-navy-50 border border-navy-100 rounded-2xl p-3 text-sm resize-none focus:ring-2 focus:ring-accent-400 outline-none min-h-[90px] transition-all"
-          />
-          {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
-          {showAttach && (
-            <div className="space-y-2 p-3 rounded-xl bg-navy-50 border border-navy-100">
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Image URL (jpg, png, gif...)"
-                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-accent-400 outline-none"
-              />
-              <input
-                type="url"
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="Video URL (mp4, webm...)"
-                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-accent-400 outline-none"
-              />
-              <input
-                type="url"
-                value={documentUrl}
-                onChange={(e) => setDocumentUrl(e.target.value)}
-                placeholder="Document URL (pdf, notes...)"
-                className="w-full bg-white border border-navy-100 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-accent-400 outline-none"
-              />
-            </div>
-          )}
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex gap-2 items-center">
-            <button
-              type="button"
-              onClick={() => setShowAttach((v) => !v)}
-              className={cn(
-                'p-2 rounded-full border transition-all',
-                showAttach ? 'bg-gold-100 border-gold-300 text-gold-700' : 'border-navy-200 text-navy-500 hover:border-navy-400'
-              )}
-              title="Attach image, video, or document link"
-            >
-              <Paperclip size={16} />
-            </button>
-            {/* Post type selector */}
-            <div className="flex gap-2">
-              {(['TEXT', 'EXPERIENCE', 'NOTE', 'CURRENT_AFFAIRS'] as const).map(type => (
-                <button
-                  key={type}
-                  onClick={() => setPostType(type)}
-                  className={cn(
-                    'text-[10px] font-bold px-2.5 py-1 rounded-full border transition-all',
-                    postType === type
-                      ? 'bg-accent-500 text-white border-accent-500'
-                      : 'bg-white text-navy-500 border-navy-200 hover:border-navy-400'
-                  )}
-                >
-                  {type.replace('_', ' ')}
-                </button>
-              ))}
-            </div>
-            </div>
-            <button
-              onClick={handlePost}
-              disabled={submitting || (!body.trim() && !imageUrl.trim() && !videoUrl.trim() && !documentUrl.trim())}
-              className="bg-accent-500 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-accent-600 transition-all disabled:opacity-50 flex items-center gap-2"
-            >
-              {submitting ? <><Loader2 className="animate-spin" size={14} /> Posting...</> : 'Post'}
-            </button>
-          </div>
-        </div>
+        <button
+          onClick={() => setExpanded(true)}
+          className="flex-1 text-left bg-slate-100 hover:bg-slate-200 transition-colors rounded-full px-4 py-2.5 text-sm text-slate-400"
+        >
+          What's on your mind?
+        </button>
       </div>
-    </Card>
+
+      {/* Expanded composer */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden border-t border-slate-100"
+          >
+            <div className="p-4 space-y-3">
+              <textarea
+                value={body}
+                onChange={e => { setBody(e.target.value); setError(''); }}
+                placeholder="Share your SSB experience, ask a doubt, or post notes..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm resize-none focus:ring-1 focus:ring-primary outline-none min-h-[80px] text-slate-700"
+                autoFocus
+              />
+              {error && <p className="text-xs text-red-500">{error}</p>}
+
+              {showAttach && (
+                <div className="space-y-2 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                  {[
+                    { val: imageUrl, set: setImageUrl, ph: 'Image URL (jpg, png, gif...)' },
+                    { val: videoUrl, set: setVideoUrl, ph: 'Video URL (mp4, webm...)' },
+                    { val: documentUrl, set: setDocumentUrl, ph: 'Document URL (pdf, notes...)' },
+                  ].map(({ val, set, ph }) => (
+                    <input
+                      key={ph}
+                      type="url"
+                      value={val}
+                      onChange={e => set(e.target.value)}
+                      placeholder={ph}
+                      className="w-full bg-white border border-slate-200 rounded px-3 py-2 text-xs focus:ring-1 focus:ring-primary outline-none"
+                    />
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex gap-1.5 flex-wrap">
+                  {(['TEXT', 'EXPERIENCE', 'NOTE', 'CURRENT_AFFAIRS'] as const).map(type => (
+                    <button
+                      key={type}
+                      onClick={() => setPostType(type)}
+                      className={cn(
+                        'text-[9px] font-bold px-2.5 py-1 rounded-full border transition-all uppercase tracking-wider',
+                        postType === type
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-white text-slate-500 border-slate-200 hover:border-primary'
+                      )}
+                    >
+                      {type.replace('_', ' ')}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setShowAttach(v => !v)}
+                    className={cn('p-1.5 rounded-full border transition-all', showAttach ? 'bg-secondary-fixed/20 border-secondary-fixed text-[#785d00]' : 'border-slate-200 text-slate-400 hover:border-primary')}
+                  >
+                    <Paperclip size={13} />
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setExpanded(false); setBody(''); setError(''); }}
+                    className="px-4 py-1.5 rounded-full text-xs font-semibold text-slate-500 border border-slate-200 hover:bg-slate-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handlePost}
+                    disabled={submitting || (!body.trim() && !imageUrl.trim() && !videoUrl.trim() && !documentUrl.trim())}
+                    className="px-5 py-1.5 bg-primary hover:bg-[#1a3560] text-white rounded-full text-xs font-bold transition-all disabled:opacity-40 flex items-center gap-1.5"
+                  >
+                    {submitting ? <><Loader2 className="animate-spin" size={12} /> Posting...</> : 'Post'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Quick action buttons */}
+      <div className="px-4 pb-3 flex gap-1">
+        <button
+          onClick={() => setExpanded(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-500 text-xs font-semibold"
+        >
+          <ImageIcon size={16} className="text-emerald-500" /> Photo
+        </button>
+        <button
+          onClick={() => setExpanded(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-500 text-xs font-semibold"
+        >
+          <VideoIcon size={16} className="text-sky-500" /> Video
+        </button>
+        <button
+          onClick={() => setExpanded(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-500 text-xs font-semibold"
+        >
+          <AlignLeft size={16} className="text-amber-500" /> Article
+        </button>
+      </div>
+    </div>
   );
 };
 
 // ── Main Feed Page ────────────────────────────────────────────────────────────
 const Feed = () => {
+  const navigate = useNavigate();
   const [feedTab, setFeedTab] = useState<FeedTab>('friends');
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -415,16 +458,52 @@ const Feed = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [myId, setMyId] = useState(() => currentUserId());
-  const [connectedCount, setConnectedCount] = useState(0);
+  const [myProfile, setMyProfile] = useState<{
+    username: string;
+    entry_type: string;
+    attempts: number;
+    connectionsCount: number;
+    points: string;
+    batch: string;
+  }>({
+    username: 'aspirant',
+    entry_type: 'NDA',
+    attempts: 0,
+    connectionsCount: 842,
+    points: '2.4k',
+    batch: '2024',
+  });
+
   const pageSize = 20;
 
   useEffect(() => {
-    AuthService.me()
-      .then((res) => setMyId(res.data.id))
-      .catch(() => setMyId(currentUserId()));
-    NetworkService.getFriends()
-      .then((res) => setConnectedCount(Array.isArray(res.data) ? res.data.length : 0))
-      .catch(() => setConnectedCount(0));
+    const fetchMetadata = async () => {
+      try {
+        const meRes = await AuthService.me();
+        const me = meRes.data;
+        setMyId(me.id);
+
+        const profileRes = await ProfileService.getMe();
+        const prof = profileRes.data;
+
+        const connRes = await NetworkService.getFriends();
+        const conns = Array.isArray(connRes.data) ? connRes.data.length : 842;
+
+        const year = prof.graduation_year || new Date().getFullYear();
+
+        setMyProfile({
+          username: me.username,
+          entry_type: prof.entry_type || 'NDA',
+          attempts: prof.ssb_attempts || 0,
+          connectionsCount: conns,
+          points: prof.ssb_attempts > 0 ? `${Math.max(1.0, 2.4 - (prof.ssb_attempts * 0.2)).toFixed(1)}k` : '2.4k',
+          batch: String(year),
+        });
+      } catch (err) {
+        console.error('Failed to load user metadata on Feed:', err);
+      }
+    };
+    fetchMetadata();
   }, []);
 
   const loadPosts = async (pageNum: number, tab: FeedTab, replace = false) => {
@@ -437,16 +516,12 @@ const Feed = () => {
       if (tab === 'friends' && myId) {
         newPosts = sortFriendsFeed(newPosts, myId);
       }
-      if (replace) {
-        setPosts(newPosts);
-      } else {
-        setPosts((prev) => [...prev, ...newPosts]);
-      }
+      if (replace) setPosts(newPosts);
+      else setPosts((prev) => [...prev, ...newPosts]);
       setHasMore(pageNum * pageSize < count);
     } catch (e: any) {
-      const msg = e.response?.data?.detail || 'Could not load the feed. Is the backend and MongoDB running?';
+      const msg = e.response?.data?.detail || 'Could not load the feed.';
       setLoadError(msg);
-      console.error('Failed to load feed:', e);
       if (replace) setPosts([]);
     } finally {
       setLoading(false);
@@ -467,17 +542,11 @@ const Feed = () => {
       const res = await FeedService.likePost(id);
       setActionError(null);
       setPosts(prevPosts => prevPosts.map(p => p.id === id
-        ? {
-          ...p,
-          likes_count: res.data.likes_count,
-          likes: res.data.liked
-            ? [...(p.likes || []), myId]
-            : (p.likes || []).filter(uid => uid !== myId)
-        }
+        ? { ...p, likes_count: res.data.likes_count, likes: res.data.liked ? [...(p.likes || []), myId] : (p.likes || []).filter(uid => uid !== myId) }
         : p
       ));
     } catch {
-      setActionError('Could not update like. Check your connection and try again.');
+      setActionError('Could not update like.');
     }
   };
 
@@ -486,22 +555,15 @@ const Feed = () => {
       const res = await FeedService.savePost(id);
       setActionError(null);
       setPosts(prev => prev.map(p => p.id === id
-        ? {
-          ...p,
-          saved_by: res.data.saved
-            ? [...(p.saved_by || []), myId]
-            : (p.saved_by || []).filter(uid => uid !== myId)
-        }
+        ? { ...p, saved_by: res.data.saved ? [...(p.saved_by || []), myId] : (p.saved_by || []).filter(uid => uid !== myId) }
         : p
       ));
     } catch {
-      setActionError('Could not save post. Check your connection and try again.');
+      setActionError('Could not save post.');
     }
   };
 
-  const handleNewPost = (post: Post) => {
-    setPosts(prev => [post, ...prev]);
-  };
+  const handleNewPost = (post: Post) => setPosts(prev => [post, ...prev]);
 
   const loadMore = () => {
     if (loadingMore || !hasMore) return;
@@ -519,152 +581,282 @@ const Feed = () => {
   const networkPosts = feedTab === 'friends' ? posts.filter((p) => authorId(p) !== myId) : posts;
   const ownPosts = feedTab === 'friends' ? posts.filter((p) => authorId(p) === myId) : [];
 
-  return (
-    <div className="max-w-2xl mx-auto pt-16 pb-24 px-4 sm:pt-20 sm:pb-10">
+  // Nav items for left sidebar
+  const navItems = [
+    { icon: <Rss size={17} />, label: 'Feed', path: '/feed' },
+    { icon: <Shield size={17} />, label: 'SSB Hub', path: '/ssb' },
+    { icon: <MessageSquare size={17} />, label: 'Messaging', path: '/chat' },
+    { icon: <Map size={17} />, label: 'Map', path: '/map' },
+    { icon: <Activity size={17} />, label: 'Fitness', path: '/fitness' },
+    { icon: <Users size={17} />, label: 'Groups', path: '/groups' },
+    { icon: <Calendar size={17} />, label: 'Events', path: '/events' },
+  ];
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <Flame className="text-gold-500" size={22} />
-          <h1 className="font-display font-bold text-xl text-navy-900">SSB Connect Feed</h1>
-        </div>
-        <div className="flex bg-navy-100 p-1 rounded-xl self-start">
-          <button
-            type="button"
-            onClick={() => switchTab('friends')}
-            className={cn(
-              'flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all',
-              feedTab === 'friends' ? 'bg-white text-accent-600 shadow-sm ring-1 ring-accent-200' : 'text-navy-500'
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+          {/* ── Left Sidebar (col-span-3) ── */}
+          <aside className="lg:col-span-3 space-y-4">
+
+            {/* Profile Card */}
+            <div className="ssb-card">
+              {/* Cover — overflow-hidden here only, so avatar isn't clipped */}
+              <div className="h-24 bg-gradient-to-br from-primary to-[#1a3560] relative rounded-t-xl overflow-hidden">
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, secondary-fixed 0%, transparent 60%)' }} />
+              </div>
+              {/* Avatar — sits outside the cover, overlapping it */}
+              <div className="flex justify-center -mt-11 mb-2 relative z-10">
+                <div className="w-[88px] h-[88px] rounded-full border-4 border-white overflow-hidden shadow-lg bg-slate-100">
+                  <img src={getAvatar(myProfile.username)} alt="" className="w-full h-full object-cover" />
+                </div>
+              </div>
+              {/* Identity */}
+              <div className="text-center pb-4 px-4">
+                <h2 className="font-bold text-primary text-base">{myProfile.entry_type} Aspirant</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Batch of {myProfile.batch}</p>
+                {/* Stats */}
+                <div className="mt-4 pt-3 border-t border-slate-100 flex justify-around">
+                  <div className="text-center">
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">Connections</p>
+                    <p className="font-bold text-sm text-primary mt-0.5">{myProfile.connectionsCount}</p>
+                  </div>
+                  <div className="w-px bg-slate-100" />
+                  <div className="text-center">
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider">Hub Points</p>
+                    <p className="font-bold text-sm text-secondary-fixed mt-0.5">{myProfile.points}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-2">
+              {navItems.map(item => (
+                <button
+                  key={item.label}
+                  onClick={() => navigate(item.path)}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
+                    item.label === 'Feed'
+                      ? 'bg-primary text-white'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-primary'
+                  )}
+                >
+                  <span className={item.label === 'Feed' ? 'text-white' : 'text-slate-400'}>{item.icon}</span>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Practice Mode CTA */}
+            <div className="bg-primary rounded-xl p-5 relative overflow-hidden">
+              <div className="relative z-10">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-secondary-fixed/70 mb-1">Daily Drill</p>
+                <h3 className="text-base font-bold text-secondary-fixed">Practice Mode</h3>
+                <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed">Sharpen your OLQs daily.</p>
+                <Link
+                  to="/ssb"
+                  className="mt-4 w-full bg-secondary-fixed hover:bg-[#e0c060] text-primary font-bold py-2.5 rounded-lg text-xs uppercase tracking-wider flex items-center justify-center transition-all"
+                >
+                  Start Practice
+                </Link>
+              </div>
+              <Brain className="absolute bottom-0 right-0 w-24 h-24 text-white/5 translate-x-4 translate-y-4 pointer-events-none" />
+            </div>
+          </aside>
+
+          {/* ── Center Feed (col-span-6) ── */}
+          <section className="lg:col-span-6 space-y-4">
+            {/* Post Composer */}
+            <CreatePost onCreated={handleNewPost} myUsername={myProfile.username} />
+
+            {/* Feed Filter Tabs */}
+            <div className="flex gap-2 bg-white rounded-xl shadow-sm border border-slate-100 p-1.5">
+              {(['friends', 'all'] as FeedTab[]).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => switchTab(tab)}
+                  className={cn(
+                    'flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all',
+                    feedTab === tab
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'text-slate-500 hover:text-primary'
+                  )}
+                >
+                  {tab === 'friends' ? 'Friends' : 'All Aspirants'}
+                </button>
+              ))}
+            </div>
+
+            {/* Errors */}
+            {loadError && (
+              <div className="p-3 border border-red-200 bg-red-50 text-red-700 text-xs rounded-xl">{loadError}</div>
             )}
-          >
-            <Users size={14} /> Friends
-          </button>
-          <button
-            type="button"
-            onClick={() => switchTab('all')}
-            className={cn(
-              'flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all',
-              feedTab === 'all' ? 'bg-white text-accent-600 shadow-sm ring-1 ring-accent-200' : 'text-navy-500'
+            {actionError && (
+              <div className="p-3 border border-red-200 bg-red-50 text-red-700 text-xs rounded-xl flex justify-between">
+                <span>{actionError}</span>
+                <button onClick={() => setActionError(null)} className="font-bold">✕</button>
+              </div>
             )}
-          >
-            <Globe size={14} /> Community
-          </button>
+
+            {/* Posts */}
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <Loader2 className="animate-spin text-secondary-fixed" size={32} />
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Loading Posts...</p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="bg-white rounded-xl border border-slate-100 p-12 text-center shadow-sm">
+                <Users className="text-slate-200 mx-auto mb-3" size={36} />
+                <h3 className="font-bold text-primary mb-1">No posts yet</h3>
+                <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+                  {feedTab === 'friends'
+                    ? 'Connect with aspirants to see their updates here.'
+                    : 'No posts shared yet. Be the first to post!'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {feedTab === 'friends' && networkPosts.length > 0 && (
+                  <>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">
+                      From Your Network
+                    </p>
+                    {networkPosts.map(post => (
+                      <PostCard key={post.id} post={post} myId={myId} onLike={handleLike} onSave={handleSave} />
+                    ))}
+                  </>
+                )}
+
+                {feedTab === 'friends' && ownPosts.length > 0 && (
+                  <>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1 pt-2">
+                      Your Posts
+                    </p>
+                    {ownPosts.map(post => (
+                      <PostCard key={post.id} post={post} myId={myId} onLike={handleLike} onSave={handleSave} />
+                    ))}
+                  </>
+                )}
+
+                {feedTab === 'all' && posts.map(post => (
+                  <PostCard key={post.id} post={post} myId={myId} onLike={handleLike} onSave={handleSave} />
+                ))}
+
+                {hasMore && (
+                  <div className="flex justify-center pt-2">
+                    <button
+                      onClick={loadMore}
+                      disabled={loadingMore}
+                      className="flex items-center gap-2 text-xs text-slate-600 hover:text-primary font-bold uppercase tracking-wider py-2.5 px-6 rounded-full border border-slate-200 hover:border-primary transition-all bg-white shadow-sm disabled:opacity-50"
+                    >
+                      {loadingMore ? <Loader2 className="animate-spin" size={13} /> : <ChevronDown size={13} />}
+                      {loadingMore ? 'Loading...' : 'Load More Posts'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+
+          {/* ── Right Sidebar (col-span-3) ── */}
+          <aside className="lg:col-span-3 space-y-4">
+
+            {/* Suggested Connections */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4">
+              <h3 className="text-sm font-bold text-primary mb-3">Suggested Connections</h3>
+              <div className="space-y-3">
+                {[
+                  { name: 'Rahul Mehra', role: 'CDS Aspirant', seed: 'rahulmehra' },
+                  { name: 'Priya Sharma', role: 'Navy Tech Entry', seed: 'priyasharma' },
+                ].map(({ name, role, seed }) => (
+                  <div key={name} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <img className="w-10 h-10 rounded-full border-2 border-slate-100" src={getAvatar(seed)} alt="" />
+                      <div>
+                        <p className="font-bold text-xs text-primary">{name}</p>
+                        <p className="text-[10px] text-slate-400">{role}</p>
+                      </div>
+                    </div>
+                    <button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:border-primary hover:text-primary hover:bg-slate-50 transition-all">
+                      <UserPlus size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <Link
+                to="/map"
+                className="mt-4 w-full border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider py-2 rounded-lg flex items-center justify-center hover:border-primary hover:text-primary transition-all"
+              >
+                View All
+              </Link>
+            </div>
+
+            {/* Upcoming Events */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4">
+              <h3 className="text-sm font-bold text-primary mb-3">Upcoming Events</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary text-secondary-fixed w-11 h-11 rounded-lg flex flex-col items-center justify-center flex-shrink-0 text-center">
+                    <span className="text-[7px] font-bold uppercase tracking-wider">OCT</span>
+                    <span className="text-base font-extrabold leading-none">12</span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-xs text-primary line-clamp-1">GTO Task Mock Drill</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">10:00 AM • Zoom Meet</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="bg-secondary-fixed/10 text-[#785d00] w-11 h-11 rounded-lg flex flex-col items-center justify-center flex-shrink-0 text-center border border-secondary-fixed/20">
+                    <span className="text-[7px] font-bold uppercase tracking-wider">OCT</span>
+                    <span className="text-base font-extrabold leading-none">15</span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-xs text-primary line-clamp-1">Interview Prep with Col....</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">06:00 PM • Live</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Practice */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4">
+              <h3 className="text-sm font-bold text-primary mb-3">Quick Practice</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { icon: <Clock size={20} />, label: 'OIR Test', path: '/ssb' },
+                  { icon: <AlignLeft size={20} />, label: 'TAT/WAT', path: '/ssb' },
+                  { icon: <Users size={20} />, label: 'GD Topics', path: '/ssb' },
+                  { icon: <Radio size={20} />, label: 'Lecturette', path: '/ssb' },
+                ].map(({ icon, label, path }) => (
+                  <Link
+                    key={label}
+                    to={path}
+                    className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg border border-slate-100 hover:border-secondary-fixed hover:bg-secondary-fixed/5 transition-all text-center group"
+                  >
+                    <span className="text-slate-500 group-hover:text-primary transition-colors">{icon}</span>
+                    <p className="text-[10px] font-bold text-slate-600 group-hover:text-primary transition-colors">{label}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer links */}
+            <div className="px-1">
+              <p className="text-[9px] text-slate-400 leading-relaxed">
+                <Link to="#" className="hover:underline">About</Link> · {' '}
+                <Link to="#" className="hover:underline">Privacy</Link> · {' '}
+                <Link to="#" className="hover:underline">Terms</Link> · {' '}
+                <Link to="#" className="hover:underline">Help Center</Link>
+              </p>
+              <p className="text-[9px] text-slate-300 mt-1">© 2024 SSB CONNECT • FOR THE BRAVE</p>
+            </div>
+          </aside>
+
         </div>
       </div>
-
-      {/* Create Post */}
-      <CreatePost onCreated={handleNewPost} />
-
-      {loadError && (
-        <Card className="mb-4 p-4 border border-red-200 bg-red-50 text-red-700 text-sm">
-          {loadError}
-        </Card>
-      )}
-
-      {actionError && (
-        <Card className="mb-4 p-4 border border-red-200 bg-red-50 text-red-700 text-sm flex justify-between gap-3">
-          <span>{actionError}</span>
-          <button type="button" onClick={() => setActionError(null)} className="text-red-800 font-bold shrink-0">
-            Dismiss
-          </button>
-        </Card>
-      )}
-
-      {feedTab === 'friends' && !loading && !loadError && connectedCount > 0 && networkPosts.length === 0 && posts.length > 0 && (
-        <Card className="mb-4 p-4 border border-amber-200 bg-amber-50 text-amber-900 text-sm">
-          You are connected with {connectedCount} aspirant{connectedCount === 1 ? '' : 's'}, but they have not posted yet.
-          Your posts appear below — ask friends like Karan to share updates on the Community tab first.
-        </Card>
-      )}
-
-      {/* Feed */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <Loader2 className="animate-spin text-navy-400" size={36} />
-          <p className="text-navy-400 text-sm font-medium">Loading {feedTab === 'friends' ? 'friends' : 'community'} feed...</p>
-        </div>
-      ) : posts.length === 0 ? (
-        <Card className="p-12 text-center">
-          <div className="w-16 h-16 bg-navy-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            {feedTab === 'friends' ? <Users className="text-navy-300" size={32} /> : <FileText className="text-navy-300" size={32} />}
-          </div>
-          <h3 className="font-bold text-navy-900 mb-2">
-            {feedTab === 'friends' ? 'No posts from friends yet' : 'No posts yet'}
-          </h3>
-          <p className="text-sm text-navy-500 mb-4">
-            {feedTab === 'friends'
-              ? connectedCount === 0
-                ? 'Connect with aspirants on Discover or Connections — their posts will appear here along with yours.'
-                : 'Posts from connected aspirants you follow appear first, then your own posts.'
-              : 'Be the first to share your SSB journey!'}
-          </p>
-          {feedTab === 'friends' && (
-            <Link to="/map" className="text-sm font-bold text-gold-600 hover:underline">
-              Discover aspirants →
-            </Link>
-          )}
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {feedTab === 'friends' && networkPosts.length > 0 && (
-            <>
-              <p className="text-xs font-bold uppercase tracking-wider text-navy-400 px-1">
-                From your network ({networkPosts.length})
-              </p>
-              {networkPosts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  myId={myId}
-                  onLike={handleLike}
-                  onSave={handleSave}
-                />
-              ))}
-            </>
-          )}
-
-          {feedTab === 'friends' && ownPosts.length > 0 && (
-            <>
-              <p className="text-xs font-bold uppercase tracking-wider text-navy-400 px-1 pt-2">
-                Your posts ({ownPosts.length})
-              </p>
-              {ownPosts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  myId={myId}
-                  onLike={handleLike}
-                  onSave={handleSave}
-                />
-              ))}
-            </>
-          )}
-
-          {feedTab === 'all' && posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              myId={myId}
-              onLike={handleLike}
-              onSave={handleSave}
-            />
-          ))}
-
-          {/* Load More */}
-          {hasMore && (
-            <div className="flex justify-center pt-2">
-              <button
-                onClick={loadMore}
-                disabled={loadingMore}
-                className="flex items-center gap-2 text-navy-600 hover:text-navy-900 font-medium text-sm py-2 px-6 rounded-full border border-navy-200 hover:border-navy-400 transition-all disabled:opacity-50"
-              >
-                {loadingMore ? <Loader2 className="animate-spin" size={16} /> : <ChevronDown size={16} />}
-                {loadingMore ? 'Loading...' : 'Load more posts'}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

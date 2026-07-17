@@ -34,11 +34,11 @@ interface AuthPanelProps {
 }
 
 const inputHero =
-  'w-full bg-white/90 border border-white/30 rounded-xl py-3 pl-10 pr-3 text-sm text-navy-900 placeholder:text-navy-400 focus:ring-2 focus:ring-accent-400 outline-none';
+  'w-full bg-white/90 border border-white/30 rounded-xl py-3 pl-10 pr-3 text-sm text-primary placeholder:text-outline focus:ring-2 focus:ring-accent-400 outline-none';
 const inputHeroDark =
   'w-full bg-white/[0.08] border border-white/15 rounded-xl py-3 pl-10 pr-3 text-sm text-white placeholder:text-white/35 focus:ring-2 focus:ring-signal-500/50 focus:border-signal-500/30 outline-none transition-all';
 const inputPage =
-  'w-full bg-navy-50 border border-navy-200 rounded-xl py-3 pl-10 pr-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none';
+  'w-full bg-surface-container-low border border-navy-200 rounded-xl py-3 pl-10 pr-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none';
 
 const btnPrimary =
   'w-full bg-accent-500 hover:bg-accent-600 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50';
@@ -201,7 +201,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
         )}
       >
         <div className={cn('p-5 sm:p-6', isHero && 'lg:p-7')}>
-          <div className={cn('flex rounded-xl p-1 mb-5', isDark ? 'bg-white/[0.06]' : 'bg-navy-100/80')}>
+          <div className={cn('flex rounded-xl p-1 mb-5', isDark ? 'bg-white/[0.06]' : 'bg-surface-container/80')}>
             {(['login', 'signup'] as const).map((t) => (
               <button
                 key={t}
@@ -212,10 +212,10 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
                   tab === t
                     ? isDark
                       ? 'bg-white/12 text-white shadow-sm'
-                      : 'bg-white text-navy-900 shadow-sm'
+                      : 'bg-white text-primary shadow-sm'
                     : isDark
                       ? 'text-white/50 hover:text-white/80'
-                      : 'text-navy-500 hover:text-navy-800'
+                      : 'text-text-secondary hover:text-primary'
                 )}
               >
                 {t === 'login' ? 'Login' : 'Sign Up'}
@@ -237,7 +237,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
           {tab === 'login' ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
                 <input
                   type="text"
                   required
@@ -249,7 +249,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
                 <input
                   type="password"
                   required
@@ -302,7 +302,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
                   />
                 </div>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
                   <input
                     type="text"
                     required
@@ -314,7 +314,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
                   />
                 </div>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
                   <input
                     type="email"
                     required
@@ -326,7 +326,7 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
                   />
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
                   <input
                     type="password"
                     required
@@ -339,8 +339,8 @@ const AuthPanel: React.FC<AuthPanelProps> = ({
                 </div>
               </div>
 
-              <div className={cn('mt-5 rounded-xl p-3 space-y-3 shrink-0', isDark ? 'border border-white/10 bg-white/[0.04]' : 'border border-navy-200/80 bg-navy-50/80')}>
-                <p className={cn('text-xs font-bold flex items-center gap-1.5', isDark ? 'text-white/70' : 'text-navy-700')}>
+              <div className={cn('mt-5 rounded-xl p-3 space-y-3 shrink-0', isDark ? 'border border-white/10 bg-white/[0.04]' : 'border border-navy-200/80 bg-surface-container-low/80')}>
+                <p className={cn('text-xs font-bold flex items-center gap-1.5', isDark ? 'text-white/70' : 'text-primary')}>
                   <MapPin size={14} className={isDark ? 'text-signal-500' : 'text-accent-500'} />
                   Your location
                 </p>

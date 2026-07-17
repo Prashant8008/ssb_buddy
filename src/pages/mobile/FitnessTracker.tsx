@@ -38,51 +38,48 @@ const FitnessTracker = () => {
   const lastRun = tracker.history[0];
 
   return (
-    <div className="p-4 space-y-6 pb-24">
+    <div className="p-4 space-y-6 pb-24 bg-background min-h-screen">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-navy-900">Fitness Hub</h2>
+        <h2 className="text-xl font-bold text-primary">Fitness Hub</h2>
         <button
           type="button"
           onClick={() => setShowHistory((v) => !v)}
-          className="text-xs font-bold text-gold-600"
+          className="text-xs font-bold text-secondary"
         >
           {showHistory ? 'HIDE' : 'HISTORY'}
         </button>
       </div>
 
       {/* SSB 2.4km target */}
-      <Card className="p-4 bg-navy-900 text-white">
+      <Card className="p-5 border-2 border-secondary-fixed bg-secondary-fixed/10 shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-bold text-navy-400 uppercase">SSB Standard Run</p>
-          <Route size={16} className="text-gold-500" />
+          <p className="text-[10px] font-bold text-on-secondary-container uppercase tracking-widest">SSB Target Standard</p>
+          <Route size={18} className="text-secondary-fixed" />
         </div>
-        <h3 className="text-2xl font-bold">{SSB_RUN_TARGET_KM} km</h3>
-        <p className="text-xs text-navy-300 mt-1">GPS tracks your route, distance, pace & direction</p>
+        <h3 className="text-2xl font-bold text-primary">{SSB_RUN_TARGET_KM} km in under 7 mins</h3>
+        <p className="text-xs text-text-secondary mt-1">Enable location services for high-fidelity run diagnostics.</p>
         {lastRun && (
-          <p className="text-xs text-gold-400 mt-3 font-medium">
+          <p className="text-xs text-secondary mt-3 font-semibold">
             Last run: {formatDistance(lastRun.distanceM)} · {lastRun.avgPace} /km · {formatDuration(lastRun.durationSec)}
           </p>
         )}
       </Card>
 
-      <button
-        type="button"
-        onClick={tracker.startRun}
-        className="w-full bg-accent-500 text-white p-4 rounded-2xl flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-accent-500/20"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center">
-            <Navigation size={24} />
-          </div>
-          <div className="text-left">
-            <h4 className="font-bold">Start {SSB_RUN_TARGET_KM}km Run</h4>
-            <p className="text-xs text-accent-200">Live map · GPS route tracking</p>
-          </div>
-        </div>
-        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-          <Play size={20} fill="white" />
-        </div>
-      </button>
+      <div className="flex flex-col items-center justify-center py-6 bg-white rounded-3xl border border-outline-variant/30 p-6 shadow-sm">
+        <p className="text-xs font-bold text-outline uppercase tracking-wider mb-4 font-sans">Enlist Session</p>
+        <button
+          type="button"
+          onClick={() => {
+            if (navigator.vibrate) navigator.vibrate(12);
+            tracker.startRun();
+          }}
+          className="w-20 h-20 bg-primary hover:bg-primary-container text-white rounded-full flex flex-col items-center justify-center border-4 border-secondary-fixed shadow-xl transition-all hover:scale-105 active:scale-95 text-glow relative group"
+        >
+          <Play size={24} fill="#ffe08f" className="text-secondary-fixed translate-x-0.5" />
+          <span className="text-[9px] font-bold text-secondary-fixed-dim mt-1 uppercase tracking-wider font-sans">Start</span>
+        </button>
+        <p className="text-[10px] text-outline mt-4 font-medium">GPS location coordinates are verified in real time</p>
+      </div>
 
       <AnimatePresence>
         {showHistory && (
@@ -92,20 +89,20 @@ const FitnessTracker = () => {
             exit={{ height: 0, opacity: 0 }}
           >
             <Card className="p-4">
-              <h4 className="font-bold text-navy-900 mb-3">Recent Runs</h4>
+              <h4 className="font-bold text-primary mb-3">Recent Runs</h4>
               {tracker.history.length === 0 ? (
-                <p className="text-sm text-navy-500">No runs recorded yet.</p>
+                <p className="text-sm text-text-secondary">No runs recorded yet.</p>
               ) : (
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {tracker.history.map((run) => (
-                    <div key={run.id} className="flex justify-between items-center p-3 bg-navy-50 rounded-xl">
+                    <div key={run.id} className="flex justify-between items-center p-3 bg-surface-container-low rounded-xl">
                       <div>
-                        <p className="text-sm font-bold text-navy-900">{formatDistance(run.distanceM)}</p>
-                        <p className="text-xs text-navy-500">
+                        <p className="text-sm font-bold text-primary">{formatDistance(run.distanceM)}</p>
+                        <p className="text-xs text-text-secondary">
                           {new Date(run.startedAt).toLocaleDateString()} · {formatDuration(run.durationSec)}
                         </p>
                       </div>
-                      <span className="text-sm font-bold text-gold-600">{run.avgPace}/km</span>
+                      <span className="text-sm font-bold text-secondary">{run.avgPace}/km</span>
                     </div>
                   ))}
                 </div>
@@ -117,11 +114,11 @@ const FitnessTracker = () => {
 
       <Card className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-bold text-navy-900 flex items-center gap-2">
-            <Trophy size={18} className="text-gold-500" /> Tips
+          <h4 className="font-bold text-primary flex items-center gap-2">
+            <Trophy size={18} className="text-secondary-fixed" /> Tips
           </h4>
         </div>
-        <ul className="text-xs text-navy-600 space-y-2">
+        <ul className="text-xs text-on-surface-variant space-y-2">
           <li>• Allow location access when prompted for accurate GPS tracking</li>
           <li>• Run outdoors for best signal; map follows your direction in real time</li>
           <li>• SSB 2.4km run target — aim for steady pace under 13 min/km</li>
@@ -142,14 +139,14 @@ const RunSession = ({
   const finished = tracker.status === 'finished';
 
   return (
-    <div className="fixed inset-0 top-16 z-30 flex flex-col bg-navy-900 md:relative md:top-0 md:min-h-[calc(100vh-4rem)]">
+    <div className="fixed inset-0 top-16 z-30 flex flex-col bg-primary md:relative md:top-0 md:min-h-[calc(100vh-4rem)]">
       {/* Map */}
       <div className="flex-1 relative min-h-[50vh]">
         {tracker.error ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-navy-50 p-6 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-container-low p-6 text-center">
             <AlertCircle className="text-red-500 mb-3" size={40} />
-            <p className="text-sm text-navy-700 font-medium">{tracker.error}</p>
-            <button type="button" onClick={onDone} className="mt-4 text-sm font-bold text-gold-600">
+            <p className="text-sm text-primary font-medium">{tracker.error}</p>
+            <button type="button" onClick={onDone} className="mt-4 text-sm font-bold text-secondary">
               Go back
             </button>
           </div>
@@ -168,22 +165,22 @@ const RunSession = ({
           <div className="absolute top-4 right-4 bg-white/95 backdrop-blur rounded-2xl p-3 shadow-lg text-center min-w-[72px]">
             <Compass
               size={28}
-              className="mx-auto text-navy-900 transition-transform duration-300"
+              className="mx-auto text-primary transition-transform duration-300"
               style={{ transform: `rotate(${tracker.heading}deg)` }}
             />
-            <p className="text-lg font-bold text-navy-900 mt-1">{tracker.direction}</p>
-            <p className="text-[10px] text-navy-500">{Math.round(tracker.heading)}°</p>
+            <p className="text-lg font-bold text-primary mt-1">{tracker.direction}</p>
+            <p className="text-[10px] text-text-secondary">{Math.round(tracker.heading)}°</p>
           </div>
         )}
 
         {/* Progress to 2.4km */}
         {!finished && (
           <div className="absolute top-4 left-4 right-24 bg-white/95 backdrop-blur rounded-2xl px-4 py-2 shadow-lg">
-            <div className="flex justify-between text-[10px] font-bold text-navy-500 mb-1">
+            <div className="flex justify-between text-[10px] font-bold text-text-secondary mb-1">
               <span>{SSB_RUN_TARGET_KM}km target</span>
               <span>{Math.round(tracker.progressPct)}%</span>
             </div>
-            <div className="h-2 bg-navy-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-surface-container rounded-full overflow-hidden">
               <div
                 className="h-full bg-accent-500 transition-all duration-500"
                 style={{ width: `${tracker.progressPct}%` }}
@@ -194,84 +191,95 @@ const RunSession = ({
       </div>
 
       {/* Stats panel */}
-      <div className="bg-white rounded-t-3xl shadow-2xl -mt-4 relative z-10">
-        <button
-          type="button"
-          onClick={() => setStatsExpanded((v) => !v)}
-          className="w-full flex justify-center py-2 text-navy-300"
-        >
-          {statsExpanded ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
-        </button>
-
-        {finished ? (
-          <div className="px-6 pb-8 text-center">
-            <Activity className="mx-auto text-green-500 mb-2" size={36} />
-            <h3 className="text-xl font-bold text-navy-900">Run Complete</h3>
-            <p className="text-3xl font-display font-bold text-navy-900 mt-2">
-              {formatDistance(tracker.distanceM)}
-            </p>
-            <p className="text-sm text-navy-500 mt-1">
-              {formatDuration(tracker.elapsedSec)} · {tracker.pace}/km avg pace
-            </p>
-            <button
-              type="button"
-              onClick={onDone}
-              className="mt-6 w-full bg-navy-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"
-            >
-              <RotateCcw size={18} /> Done
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-4 gap-2 px-4 pb-2">
-              <StatPill icon={<Route size={14} />} label="Distance" value={formatDistance(tracker.distanceM)} />
-              <StatPill icon={<Timer size={14} />} label="Time" value={formatDuration(tracker.elapsedSec)} />
-              <StatPill icon={<Gauge size={14} />} label="Pace" value={`${tracker.pace}`} sub="/km" />
-              <StatPill icon={<Navigation size={14} />} label="Speed" value={tracker.speedKmh} sub="km/h" />
+      {finished ? (
+        <div className="bg-white rounded-t-3xl shadow-2xl -mt-4 relative z-10 px-6 py-8 text-center border-t border-outline-variant/30">
+          <Activity className="mx-auto text-green-600 mb-2 animate-bounce" size={40} />
+          <h3 className="text-xl font-bold text-primary font-display">Run Session Complete</h3>
+          <p className="text-3xl font-display font-bold text-primary mt-2">
+            {formatDistance(tracker.distanceM)}
+          </p>
+          <p className="text-sm text-text-secondary mt-1">
+            {formatDuration(tracker.elapsedSec)} · {tracker.pace}/km avg pace
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(10);
+              onDone();
+            }}
+            className="mt-6 w-full bg-primary hover:bg-primary-container text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+          >
+            <RotateCcw size={18} /> Done & Save Run
+          </button>
+        </div>
+      ) : (
+        <div className="glass-dark border-t border-white/10 rounded-t-[24px] shadow-2xl -mt-6 relative z-10 p-5 space-y-5">
+          <div className="grid grid-cols-2 gap-4 text-white text-center">
+            <div className="border-r border-white/10">
+              <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest font-sans">Distance</p>
+              <p className="text-3xl font-extrabold font-practice-word text-glow mt-1 text-white">
+                {formatDistance(tracker.distanceM)}
+              </p>
             </div>
+            <div>
+              <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest font-sans">Duration</p>
+              <p className="text-3xl font-extrabold font-practice-word text-glow mt-1 text-white">
+                {formatDuration(tracker.elapsedSec)}
+              </p>
+            </div>
+          </div>
 
-            {statsExpanded && (
-              <div className="px-4 pb-4 grid grid-cols-2 gap-3">
-                <div className="bg-navy-50 rounded-xl p-3 text-center">
-                  <p className="text-[10px] font-bold text-navy-400 uppercase">Direction</p>
-                  <p className="text-xl font-bold text-navy-900">{tracker.direction}</p>
-                </div>
-                <div className="bg-navy-50 rounded-xl p-3 text-center">
-                  <p className="text-[10px] font-bold text-navy-400 uppercase">GPS points</p>
-                  <p className="text-xl font-bold text-navy-900">{tracker.points.length}</p>
-                </div>
-              </div>
-            )}
+          <div className="grid grid-cols-2 gap-4 text-white text-center border-t border-white/10 pt-4">
+            <div className="border-r border-white/10">
+              <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest font-sans">Current Pace</p>
+              <p className="text-xl font-bold mt-1 text-secondary-fixed font-sans">{tracker.pace || '0:00'} <span className="text-xs font-normal text-outline-variant">/km</span></p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest font-sans">Speed</p>
+              <p className="text-xl font-bold mt-1 text-gold-400 font-sans">{tracker.speedKmh} <span className="text-xs font-normal text-outline-variant">km/h</span></p>
+            </div>
+          </div>
 
-            <div className="flex gap-3 px-4 pb-6 pt-2">
-              {tracker.status === 'running' ? (
-                <button
-                  type="button"
-                  onClick={tracker.pauseRun}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gold-500 text-navy-900 py-3.5 rounded-xl font-bold"
-                >
-                  <Pause size={20} /> Pause
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={tracker.resumeRun}
-                  className="flex-1 flex items-center justify-center gap-2 bg-accent-500 text-white py-3.5 rounded-xl font-bold"
-                >
-                  <Play size={20} fill="white" /> Resume
-                </button>
-              )}
+          {/* Action buttons with haptic touch loops */}
+          <div className="flex gap-3 pt-2">
+            {tracker.status === 'running' ? (
               <button
                 type="button"
-                onClick={tracker.stopRun}
-                className="flex items-center justify-center gap-2 bg-red-500 text-white px-6 py-3.5 rounded-xl font-bold"
+                onClick={() => {
+                  if (navigator.vibrate) navigator.vibrate(10);
+                  tracker.pauseRun();
+                }}
+                className="flex-1 bg-secondary-fixed hover:bg-secondary-container text-on-secondary-fixed font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 uppercase text-xs tracking-wider transition-all"
               >
-                <Square size={18} fill="white" /> Stop
+                <Pause size={16} fill="currentColor" /> Pause
               </button>
-            </div>
-          </>
-        )}
-      </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (navigator.vibrate) navigator.vibrate(10);
+                  tracker.resumeRun();
+                }}
+                className="flex-1 bg-accent-500 hover:bg-accent-400 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 uppercase text-xs tracking-wider transition-all"
+              >
+                <Play size={16} fill="currentColor" /> Resume
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                if (navigator.vibrate) navigator.vibrate(15);
+                if (confirm('Are you sure you want to end your run session?')) {
+                  tracker.stopRun();
+                }
+              }}
+              className="bg-red-500 hover:bg-red-400 text-white font-bold px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 uppercase text-xs tracking-wider transition-all"
+            >
+              <Square size={14} fill="currentColor" /> Stop
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -288,11 +296,11 @@ const StatPill = ({
   sub?: string;
 }) => (
   <div className="text-center p-2">
-    <div className="flex items-center justify-center gap-1 text-navy-400 mb-1">{icon}</div>
-    <p className="text-[10px] font-bold text-navy-400 uppercase">{label}</p>
-    <p className="text-sm font-bold text-navy-900 leading-tight">
+    <div className="flex items-center justify-center gap-1 text-outline mb-1">{icon}</div>
+    <p className="text-[10px] font-bold text-outline uppercase">{label}</p>
+    <p className="text-sm font-bold text-primary leading-tight">
       {value}
-      {sub && <span className="text-[10px] text-navy-400 font-medium">{sub}</span>}
+      {sub && <span className="text-[10px] text-outline font-medium">{sub}</span>}
     </p>
   </div>
 );

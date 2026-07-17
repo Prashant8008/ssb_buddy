@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Calendar, GraduationCap, Shield, Award, Edit3,
   Share2, CheckCircle2, Trophy, Grid, Heart,
-  Loader2, Save, X, MessageCircle, FileText, ExternalLink, ChevronDown
+  Loader2, Save, X, MessageCircle, FileText, ExternalLink, ChevronDown,
+  BookOpen, Info, CheckCircle
 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { cn } from '../lib/utils';
@@ -101,7 +102,6 @@ const EditProfileModal = ({
     setSaving(true);
     setError('');
     try {
-      // Convert empty strings to null for numeric fields (Django rejects '' for IntegerFields)
       const payload: Record<string, any> = { ...form };
       const numericFields = ['age', 'graduation_year', 'ssb_attempts'];
       for (const field of numericFields) {
@@ -115,7 +115,6 @@ const EditProfileModal = ({
       onSaved(res.data);
       onClose();
     } catch (e: any) {
-      // Show field-level validation errors from DRF
       const data = e.response?.data;
       if (data && typeof data === 'object' && !data.detail) {
         const messages = Object.entries(data)
@@ -131,17 +130,17 @@ const EditProfileModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-[#000317]/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
       >
-        <div className="sticky top-0 bg-white border-b border-navy-100 px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
-          <h2 className="font-display font-bold text-navy-900 text-lg">Edit Profile</h2>
-          <button onClick={onClose} className="p-2 hover:bg-navy-50 rounded-xl transition-colors">
-            <X size={20} className="text-navy-600" />
+        <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-3xl z-10">
+          <h2 className="font-bold text-[#000317] text-lg">Edit Profile Details</h2>
+          <button onClick={onClose} className="p-2 hover:bg-slate-50 rounded-xl transition-colors">
+            <X size={20} className="text-[#6B7280]" />
           </button>
         </div>
 
@@ -154,19 +153,19 @@ const EditProfileModal = ({
 
           {/* Bio */}
           <div>
-            <label className="text-xs font-bold text-navy-500 uppercase tracking-wider mb-2 block">Bio</label>
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-2 block">Candidate Bio</label>
             <textarea
               value={form.bio}
               onChange={e => set('bio', e.target.value)}
-              placeholder="Tell your SSB story..."
+              placeholder="Tell the community about your SSB story..."
               rows={3}
-              className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none resize-none"
+              className="w-full bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none resize-none"
             />
           </div>
 
           {/* Location */}
           <div>
-            <label className="text-xs font-bold text-navy-500 uppercase tracking-wider mb-2 block">Location</label>
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-2 block">Location</label>
             <div className="grid grid-cols-3 gap-3">
               {['city', 'state', 'country'].map(field => (
                 <input
@@ -174,7 +173,7 @@ const EditProfileModal = ({
                   value={(form as any)[field]}
                   onChange={e => set(field, e.target.value)}
                   placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                  className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
                 />
               ))}
             </div>
@@ -182,19 +181,19 @@ const EditProfileModal = ({
 
           {/* Personal */}
           <div>
-            <label className="text-xs font-bold text-navy-500 uppercase tracking-wider mb-2 block">Personal</label>
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-2 block">Personal Info</label>
             <div className="grid grid-cols-2 gap-3">
               <input
                 type="number"
                 value={form.age}
                 onChange={e => set('age', e.target.value)}
                 placeholder="Age"
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               />
               <select
                 value={form.gender}
                 onChange={e => set('gender', e.target.value)}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               >
                 <option value="">Select Gender</option>
                 {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
@@ -204,12 +203,12 @@ const EditProfileModal = ({
 
           {/* SSB Info */}
           <div>
-            <label className="text-xs font-bold text-navy-500 uppercase tracking-wider mb-2 block">SSB Information</label>
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-2 block">SSB Target & Wing</label>
             <div className="grid grid-cols-2 gap-3">
               <select
                 value={form.entry_type}
                 onChange={e => set('entry_type', e.target.value)}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               >
                 <option value="">Entry Type</option>
                 {ENTRY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -217,7 +216,7 @@ const EditProfileModal = ({
               <select
                 value={form.preferred_service}
                 onChange={e => set('preferred_service', e.target.value)}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               >
                 <option value="">Preferred Service</option>
                 {SERVICES.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
@@ -228,63 +227,63 @@ const EditProfileModal = ({
                 onChange={e => set('ssb_attempts', e.target.value)}
                 placeholder="SSB Attempts"
                 min={0}
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               />
               <input
                 value={form.ssb_board}
                 onChange={e => set('ssb_board', e.target.value)}
-                placeholder="SSB Board (e.g. Allahabad 14 SSB)"
-                className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                placeholder="SSB Board (e.g. Bhopal 22 SSB)"
+                className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               />
             </div>
           </div>
 
           {/* Education */}
           <div>
-            <label className="text-xs font-bold text-navy-500 uppercase tracking-wider mb-2 block">Education</label>
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-2 block">Education Profile</label>
             <div className="space-y-3">
               <input
                 value={form.school}
                 onChange={e => set('school', e.target.value)}
                 placeholder="School name"
-                className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                className="w-full bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   value={form.college}
                   onChange={e => set('college', e.target.value)}
                   placeholder="College / University"
-                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                  className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
                 />
                 <input
                   value={form.degree}
                   onChange={e => set('degree', e.target.value)}
-                  placeholder="Degree (e.g. B.Tech)"
-                  className="bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                  placeholder="Degree (e.g. B.Sc, B.Tech)"
+                  className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
                 />
               </div>
               <input
                 type="number"
                 value={form.graduation_year}
                 onChange={e => set('graduation_year', e.target.value)}
-                placeholder="Graduation Year (e.g. 2025)"
-                className="w-full bg-navy-50 border border-navy-100 rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+                placeholder="Graduation Year"
+                className="w-full bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#000317] outline-none"
               />
             </div>
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-navy-100 px-6 py-4 flex gap-3 rounded-b-3xl">
+        <div className="sticky bottom-0 bg-white border-t border-slate-100 px-6 py-4 flex gap-3 rounded-b-3xl">
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl border border-navy-200 text-navy-700 font-bold text-sm hover:bg-navy-50 transition-colors"
+            className="flex-1 py-3 rounded-xl border border-slate-200 text-[#6B7280] font-bold text-sm hover:bg-slate-50 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 py-3 rounded-xl bg-navy-900 text-white font-bold text-sm hover:bg-navy-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 py-3 rounded-xl bg-[#000317] text-white font-bold text-sm hover:bg-[#0f1c3f] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {saving ? <><Loader2 className="animate-spin" size={16} /> Saving...</> : <><Save size={16} /> Save Changes</>}
           </button>
@@ -381,17 +380,17 @@ const Profile = () => {
   };
 
   const tabs = [
-    { id: 'posts', label: 'Posts', icon: <Grid size={18} /> },
-    { id: 'ssb', label: 'SSB Info', icon: <Shield size={18} /> },
-    { id: 'education', label: 'Education', icon: <GraduationCap size={18} /> },
+    { id: 'posts', label: 'Posts', icon: <Grid size={16} /> },
+    { id: 'ssb', label: 'SSB Info', icon: <Shield size={16} /> },
+    { id: 'education', label: 'Education', icon: <GraduationCap size={16} /> },
   ];
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[70vh]">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-gold-500" size={40} />
-          <p className="text-navy-500 font-medium">Loading your profile...</p>
+          <Loader2 className="animate-spin text-[#ffe08f]" size={36} />
+          <p className="text-xs text-[#6B7280] uppercase tracking-wider font-semibold">Loading Profile...</p>
         </div>
       </div>
     );
@@ -399,18 +398,18 @@ const Profile = () => {
 
   if (!profile || !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-red-500">Failed to load profile. Please refresh.</p>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <p className="text-red-500 font-bold text-sm">Failed to load candidate profile.</p>
       </div>
     );
   }
 
   const fullName = user.full_name || `${user.first_name} ${user.last_name}`.trim() || user.username;
-  const location = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
+  const locationStr = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
 
   return (
-    <div className="max-w-5xl mx-auto pt-16 pb-24 px-4 sm:pt-20 sm:pb-10">
-
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      
       {/* Edit Modal */}
       <AnimatePresence>
         {showEdit && isOwnProfile && (
@@ -422,329 +421,342 @@ const Profile = () => {
         )}
       </AnimatePresence>
 
-      {/* Header Card */}
-      <Card className="relative mb-6 overflow-hidden">
-        {/* Cover */}
-        <div className="h-48 w-full bg-gradient-to-r from-navy-900 via-navy-800 to-accent-900 overflow-hidden">
-          {profile.cover_photo && (
+      {/* Header Profile Section */}
+      <header className="relative w-full rounded-2xl overflow-hidden border border-[#c6c6cf]/20 bg-white mb-8">
+        {/* Cover Photo */}
+        <div className="h-48 md:h-60 w-full relative overflow-hidden bg-[#000317]">
+          {profile.cover_photo ? (
             <img src={profile.cover_photo} className="w-full h-full object-cover opacity-60" alt="Cover" />
+          ) : (
+            <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-cover bg-bottom" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBQ2TITOkKD0F6Q6UzXC9TOOucC3uQqjuIF8YT3FL6hqcZkspLDWMxjrJ140XIJu35UjZw0Npxm4HVGWhsXD6a9yiQsVh707t9ByAd0fYrmEWHZ49vedf6siMAmH8YuQCLLo2Yavg08-4OPf0uQvoQJEpEpu21FeSTbUrgnoScwr7IuzHdl1jIKf-QqbBjSda9DmdwAOopEQhuS0iERFdmpgBwyaZ57BvtmcGpwKsVnbLrSe5jsMMjocYoAU5Kkhso0YrY-1u6EWFDd')" }}></div>
           )}
-          <div className="absolute inset-0 h-48 bg-gradient-to-b from-transparent to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#000317]/80 to-transparent"></div>
         </div>
 
-        <div className="px-6 pb-6 bg-white relative">
-          <div className="relative flex justify-between items-end -mt-16 mb-4">
-            {/* Avatar */}
-            <div className="relative">
-              <div className="w-32 h-32 rounded-2xl border-4 border-white overflow-hidden bg-white shadow-xl">
-                <img
-                  src={profile.profile_picture || getAvatar(user.username)}
-                  className="w-full h-full object-cover"
-                  alt="Avatar"
-                />
-              </div>
-              {profile.recommended_status && (
-                <div className="absolute -bottom-2 -right-2 bg-gold-500 p-1.5 rounded-lg border-2 border-white shadow">
-                  <Shield size={16} className="text-navy-900" />
+        {/* Identity & Stats Row */}
+        <div className="px-6 pb-6 relative">
+          <div className="flex flex-col md:flex-row items-stretch md:items-end justify-between gap-4 -mt-16 md:-mt-20">
+            {/* Avatar block */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 text-center sm:text-left">
+              <div className="relative">
+                <div className="w-32 h-32 rounded-full border-[3px] border-[#ffe08f] overflow-hidden shadow-xl bg-white flex-shrink-0">
+                  <img
+                    src={profile.profile_picture || getAvatar(user.username)}
+                    className="w-full h-full object-cover"
+                    alt="Avatar"
+                  />
                 </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-2 justify-end">
-              {isOwnProfile ? (
-                <>
-                  <button
-                    onClick={() => setShowEdit(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-navy-900 text-white rounded-xl text-sm font-bold hover:bg-navy-800 transition-colors shadow-sm"
-                  >
-                    <Edit3 size={16} /> Edit Profile
-                  </button>
-                  <button className="p-2 bg-navy-50 text-navy-600 rounded-xl hover:bg-navy-100 transition-colors">
-                    <Share2 size={18} />
-                  </button>
-                </>
-              ) : user && connection && (
-                <ConnectActions
-                  userId={user.id}
-                  username={user.username}
-                  connection={connection}
-                  onConnectionChange={setConnection}
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              {/* Name */}
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-display font-bold text-navy-900">{fullName}</h1>
-                {user.is_email_verified && <CheckCircle2 size={20} className="text-gold-500" />}
+                {profile.recommended_status && (
+                  <div className="absolute -bottom-1 right-1 bg-[#ffe08f] text-[#241a00] p-1.5 rounded-full border-2 border-white shadow-md">
+                    <Shield size={14} className="fill-current" />
+                  </div>
+                )}
               </div>
-              <p className="text-navy-500 font-medium">@{user.username}</p>
+              <div className="pb-1">
+                <div className="flex items-center justify-center sm:justify-start gap-1.5 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl font-bold text-white md:drop-shadow-md">{fullName}</h1>
+                  {profile.recommended_status && (
+                    <span className="bg-[#ffe08f]/20 text-[#ffe08f] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Recommended</span>
+                  )}
+                </div>
+                <p className="text-xs text-[#7984ad] mt-0.5 md:drop-shadow">@{user.username}</p>
+              </div>
+            </div>
 
-              {/* Bio */}
-              {profile.bio ? (
-                <p className="mt-3 text-navy-800 leading-relaxed max-w-xl">{profile.bio}</p>
-              ) : isOwnProfile ? (
+            {/* Connection Actions & Stats */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 self-center md:self-end">
+              <div className="flex gap-6 py-3 px-6 bg-slate-50 border border-slate-100 rounded-2xl text-center shadow-sm">
+                <div>
+                  <div className="text-sm font-extrabold text-[#000317]">{posts.length}</div>
+                  <div className="text-[9px] text-[#6B7280] uppercase tracking-wider font-semibold">Posts</div>
+                </div>
+                <div>
+                  <div className="text-sm font-extrabold text-[#000317]">
+                    {connection ? connection.followers_count : profile.ssb_attempts * 12 + 10}
+                  </div>
+                  <div className="text-[9px] text-[#6B7280] uppercase tracking-wider font-semibold">Connections</div>
+                </div>
+                <div>
+                  <div className="text-sm font-extrabold text-[#000317]">{profile.ssb_attempts}</div>
+                  <div className="text-[9px] text-[#6B7280] uppercase tracking-wider font-semibold">Attempts</div>
+                </div>
+              </div>
+
+              {isOwnProfile ? (
                 <button
                   onClick={() => setShowEdit(true)}
-                  className="mt-3 text-sm text-navy-400 italic hover:text-gold-500 transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-[#000317] hover:bg-[#0f1c3f] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
                 >
-                  + Add a bio to tell your SSB story
+                  <Edit3 size={14} /> Edit Profile
                 </button>
-              ) : null}
+              ) : (
+                connection && (
+                  <ConnectActions
+                    userId={user.id}
+                    username={user.username}
+                    connection={connection}
+                    onConnectionChange={setConnection}
+                  />
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
 
-              {/* Meta */}
-              <div className="flex flex-wrap gap-4 mt-4 text-sm text-navy-600">
-                {location && (
-                  <div className="flex items-center gap-1.5">
-                    <MapPin size={15} className="text-accent-500" /> {location}
-                  </div>
-                )}
-                {profile.entry_type && (
-                  <div className="flex items-center gap-1.5">
-                    <Shield size={15} className="text-navy-500" /> {profile.entry_type} Aspirant
-                  </div>
-                )}
-                {profile.preferred_service && (
-                  <div className="flex items-center gap-1.5">
-                    <Trophy size={15} className="text-gold-600" /> {profile.preferred_service.replace('_', ' ')}
-                  </div>
-                )}
-                <div className="flex items-center gap-1.5">
-                  <Calendar size={15} className="text-navy-400" />
-                  Joined {new Date().getFullYear()}
-                </div>
+      {/* Main 2-Column Body Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Left column: Details Sidebar (col-span-4) */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          {/* About Bio Card */}
+          <div className="bg-white rounded-2xl p-6 border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] border-l-4 border-[#000317]">
+            <h3 className="text-sm font-bold text-[#000317] mb-3 uppercase tracking-wider flex items-center gap-2">
+              <BookOpen size={16} className="text-[#ffe08f]" /> About Candidate
+            </h3>
+            <p className="text-xs text-[#45464e] leading-relaxed whitespace-pre-line">
+              {profile.bio || "No candidate details added yet. Tap edit to update."}
+            </p>
+          </div>
+
+          {/* SSB Target Profile Card */}
+          <div className="bg-white rounded-2xl p-6 border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+            <h3 className="text-sm font-bold text-[#000317] mb-4 uppercase tracking-wider flex items-center gap-2">
+              <Shield size={16} className="text-[#ffe08f]" /> SSB Profile
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 bg-[#f2f3f7] rounded-lg">
+                <span className="text-[11px] text-[#6B7280] uppercase tracking-wider font-semibold">Target Entry</span>
+                <span className="text-xs font-bold text-[#000317]">{profile.entry_type || '—'}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-[#f2f3f7] rounded-lg">
+                <span className="text-[11px] text-[#6B7280] uppercase tracking-wider font-semibold">Preferred Service</span>
+                <span className="text-xs font-bold text-[#000317]">{profile.preferred_service?.replace('_', ' ') || '—'}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-[#f2f3f7] rounded-lg">
+                <span className="text-[11px] text-[#6B7280] uppercase tracking-wider font-semibold">SSB Board</span>
+                <span className="text-xs font-bold text-[#000317]">{profile.ssb_board || '—'}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-[#f2f3f7] rounded-lg">
+                <span className="text-[11px] text-[#6B7280] uppercase tracking-wider font-semibold">Attempts</span>
+                <span className="text-xs font-bold text-[#000317]">{profile.ssb_attempts}</span>
               </div>
             </div>
+          </div>
 
-            {/* Stats */}
-            <div className="bg-navy-50 rounded-2xl p-4 flex items-center">
-              <div className={cn('grid gap-4 text-center w-full', isOwnProfile ? 'grid-cols-3' : 'grid-cols-4')}>
-                <div>
-                  <p className="text-xl font-bold text-navy-900">{posts.length}</p>
-                  <p className="text-[10px] uppercase tracking-wider font-bold text-navy-400">Posts</p>
-                </div>
-                {!isOwnProfile && connection && (
-                  <>
-                    <div>
-                      <p className="text-xl font-bold text-navy-900">{connection.followers_count}</p>
-                      <p className="text-[10px] uppercase tracking-wider font-bold text-navy-400">Followers</p>
-                    </div>
-                    <div>
-                      <p className="text-xl font-bold text-navy-900">{connection.following_count}</p>
-                      <p className="text-[10px] uppercase tracking-wider font-bold text-navy-400">Following</p>
-                    </div>
-                  </>
-                )}
-                <div>
-                  <p className="text-xl font-bold text-navy-900">{profile.ssb_attempts}</p>
-                  <p className="text-[10px] uppercase tracking-wider font-bold text-navy-400">SSB Attempts</p>
-                </div>
-                {isOwnProfile && (
-                  <div>
-                    <p className="text-xl font-bold text-navy-900">
-                      {profile.recommended_status ? '✓' : '–'}
-                    </p>
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-navy-400">Recommended</p>
+          {/* Education & Location */}
+          <div className="bg-white rounded-2xl p-6 border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-3">Education Info</h4>
+                <div className="flex gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-[#000317] border border-slate-100 flex-shrink-0">
+                    <GraduationCap size={16} />
                   </div>
-                )}
+                  <div>
+                    <p className="text-xs font-bold text-[#000317]">{profile.degree || '—'}</p>
+                    <p className="text-[10px] text-[#6B7280]">{profile.college || '—'}{profile.graduation_year ? ` · ${profile.graduation_year}` : ''}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-3">Candidate Location</h4>
+                <div className="flex gap-2 items-center text-xs text-[#000317] font-semibold mb-3">
+                  <MapPin size={14} className="text-[#ffe08f]" /> {locationStr || 'India'}
+                </div>
+                <div className="rounded-xl overflow-hidden h-28 bg-[#edeef2] border border-[#c6c6cf]/40 relative bg-cover bg-center grayscale" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYNj-3mrkrWBEE-88771SOfJ-k5uCVqinP1hehZEadRuvqzIOYdDegZ-aWryt5jHIOseb_q51fMnSbikImYP5v7AyrDvhYtDm4dI9ABD8-NAJmgIiiNkRKeKPVbSq5oix_U-IlzeZlVy-F31Vg460vVv4bp4gz04HZzfe1r5UjSD__XZPxdge4wke5IELMiYa-PolsVNoOXpx4X64_O2OE-QTRT-H7RvRGN-ikz6etET8vtWCdjtImWqdfM91kiBZXPmNyM9gKBFr9')" }}></div>
               </div>
             </div>
           </div>
         </div>
-      </Card>
 
-      {/* Tabs */}
-      <div className="flex border-b border-navy-100 mb-6 overflow-x-auto scrollbar-hide">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              'flex items-center gap-2 px-6 py-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap',
-              activeTab === tab.id
-                ? 'border-gold-500 text-navy-900'
-                : 'border-transparent text-navy-400 hover:text-navy-600'
-            )}
-          >
-            {tab.icon} {tab.label}
-          </button>
-        ))}
-      </div>
+        {/* Right column: Tabs & Dynamic Lists (col-span-8) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Tabs bar */}
+          <div className="bg-white rounded-2xl shadow-sm border border-[#c6c6cf]/20 p-1 flex">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider rounded-xl transition-all border-b-2',
+                  activeTab === tab.id
+                    ? 'border-[#ffe08f] text-[#000317] bg-slate-50'
+                    : 'border-transparent text-[#76767f] hover:text-[#000317]'
+                )}
+              >
+                {tab.icon} {tab.label}
+              </button>
+            ))}
+          </div>
 
-      {/* Tab Content */}
-      <AnimatePresence mode="wait">
-        {/* Posts Tab */}
-        {activeTab === 'posts' && (
-          <motion.div
-            key="posts"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
-          >
-            {postsLoading ? (
-              <div className="flex justify-center py-10">
-                <Loader2 className="animate-spin text-navy-400" size={28} />
-              </div>
-            ) : posts.length === 0 ? (
-              <Card className="p-12 text-center">
-                <Grid className="text-navy-200 mx-auto mb-3" size={40} />
-                <p className="font-bold text-navy-700">No posts yet</p>
-                <p className="text-sm text-navy-400 mt-1">
-                  {isOwnProfile
-                    ? 'Share your first SSB experience from the Feed!'
-                    : `${fullName} hasn't posted anything yet.`}
-                </p>
-              </Card>
-            ) : (
-              <>
-                {posts.map(post => (
-                  <Card key={post.id} className="p-4 overflow-hidden">
-                    <div className="flex items-center gap-3 mb-3">
-                      <img
-                        src={profile.profile_picture || getAvatar(user.username)}
-                        className="w-8 h-8 rounded-full"
-                        alt=""
-                      />
-                      <div>
-                        <p className="text-sm font-bold text-navy-900">{post.title || post.post_type}</p>
-                        <p className="text-[10px] text-navy-400">
-                          {(() => { try { return formatDistanceToNow(new Date(post.created_at), { addSuffix: true }); } catch { return ''; } })()}
-                        </p>
-                      </div>
-                      {post.post_type !== 'TEXT' && (
-                        <span className="ml-auto text-[10px] font-bold bg-navy-100 text-navy-600 px-2 py-0.5 rounded-full">
-                          {post.post_type.replace('_', ' ')}
-                        </span>
-                      )}
-                    </div>
-                    {post.body && (
-                      <p className="text-sm text-navy-700 leading-relaxed mb-3">{post.body}</p>
-                    )}
-                    {post.image_url && (
-                      <img src={post.image_url} alt="" className="rounded-xl w-full object-cover max-h-80 mb-3" />
-                    )}
-                    {post.video_url && (
-                      <video src={post.video_url} controls className="rounded-xl w-full max-h-80 mb-3" preload="metadata">
-                        <track kind="captions" />
-                      </video>
-                    )}
-                    {post.document_url && (
-                      <a
-                        href={post.document_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 rounded-xl bg-navy-50 border border-navy-100 hover:border-gold-400 transition-colors mb-3"
-                      >
-                        <div className="w-9 h-9 rounded-lg bg-gold-100 flex items-center justify-center text-gold-700">
-                          <FileText size={18} />
+          {/* Dynamic Tab content rendering */}
+          <AnimatePresence mode="wait">
+            
+            {/* Posts Tab */}
+            {activeTab === 'posts' && (
+              <motion.div
+                key="posts"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6"
+              >
+                {postsLoading ? (
+                  <div className="flex justify-center py-10">
+                    <Loader2 className="animate-spin text-[#ffe08f]" size={28} />
+                  </div>
+                ) : posts.length === 0 ? (
+                  <div className="bg-white border border-[#c6c6cf]/20 p-12 rounded-2xl text-center shadow-sm">
+                    <Grid className="text-slate-300 mx-auto mb-3" size={32} />
+                    <p className="font-bold text-xs text-[#000317] uppercase tracking-wider">No Posts Yet</p>
+                    <p className="text-xs text-[#6B7280] mt-1">
+                      {isOwnProfile
+                        ? 'Write notes or share an experience on the feed!'
+                        : `This candidate has not posted yet.`}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {posts.map(post => (
+                      <div key={post.id} className="bg-white rounded-2xl overflow-hidden border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] hover:-translate-y-1 transition-transform">
+                        {post.image_url ? (
+                          <div className="h-40 relative">
+                            <img src={post.image_url} className="w-full h-full object-cover" alt="" />
+                            <div className="absolute top-3 right-3 bg-[#000317]/80 text-white text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                              {post.post_type.replace('_', ' ')}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                            <span className="text-[9px] font-bold text-[#ffe08f] bg-[#000317] px-2.5 py-0.5 rounded uppercase tracking-wider">
+                              {post.post_type.replace('_', ' ')}
+                            </span>
+                            <span className="text-[9px] text-[#6B7280]">
+                              {(() => { try { return formatDistanceToNow(new Date(post.created_at), { addSuffix: true }); } catch { return ''; } })()}
+                            </span>
+                          </div>
+                        )}
+                        <div className="p-5 flex flex-col h-fit">
+                          <h4 className="font-bold text-sm text-[#000317] mb-2 line-clamp-1">{post.title || 'Candidate Note'}</h4>
+                          <p className="text-xs text-[#45464e] leading-relaxed line-clamp-3 mb-4">{post.body}</p>
+                          
+                          {post.document_url && (
+                            <a
+                              href={post.document_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 p-2.5 rounded-lg bg-[#f2f3f7] border border-[#c6c6cf]/30 hover:border-[#ffe08f] transition-all text-[11px] font-semibold text-[#000317] mb-4"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                              <span className="flex-1 truncate">View Attached Document</span>
+                            </a>
+                          )}
+
+                          <div className="mt-auto pt-3 border-t border-slate-100 flex justify-between items-center text-[#6B7280]">
+                            <span className="flex items-center gap-1 text-[10px] font-semibold">
+                              <Heart size={14} /> {post.likes_count} Likes
+                            </span>
+                            <span className="text-[10px] text-[#6B7280] flex items-center gap-1 font-semibold">
+                              <MessageCircle size={14} /> {post.comments_count} Comments
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-sm font-bold text-navy-900 flex-1 truncate">Open attachment</span>
-                        <ExternalLink size={14} className="text-navy-400" />
-                      </a>
+                      </div>
+                    ))}
+                    {postsHasMore && (
+                      <div className="md:col-span-2 flex justify-center pt-2">
+                        <button
+                          type="button"
+                          onClick={loadMorePosts}
+                          disabled={postsLoadingMore}
+                          className="flex items-center gap-2 text-xs font-bold text-[#000317] hover:text-[#ffe08f] uppercase tracking-wider py-2 px-6 rounded-full border border-[#c6c6cf] hover:border-[#000317] bg-white transition-all"
+                        >
+                          {postsLoadingMore ? <Loader2 className="animate-spin" size={14} /> : <ChevronDown size={14} />}
+                          {postsLoadingMore ? 'Loading...' : 'Load More Posts'}
+                        </button>
+                      </div>
                     )}
-                    <div className="flex items-center gap-5 text-navy-400">
-                      <span className="flex items-center gap-1.5 text-xs">
-                        <Heart size={15} /> {post.likes_count}
-                      </span>
-                      <span className="flex items-center gap-1.5 text-xs">
-                        <MessageCircle size={15} /> {post.comments_count}
-                      </span>
-                    </div>
-                  </Card>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* SSB Info Tab */}
+            {activeTab === 'ssb' && (
+              <motion.div
+                key="ssb"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
+                {[
+                  { label: 'Target Entry Type', value: profile.entry_type || '—' },
+                  { label: 'Preferred Service Wing', value: profile.preferred_service?.replace('_', ' ') || '—' },
+                  { label: 'SSB Attempts Count', value: profile.ssb_attempts?.toString() || '0' },
+                  { label: 'Allotted Board Details', value: profile.ssb_board || '—' },
+                  { label: 'Recommended Status', value: profile.recommended_status ? '✓ Recommended Candidate' : 'No recommendations yet' },
+                  { label: 'Reporting Date', value: profile.reporting_date || '—' },
+                ].map(item => (
+                  <div key={item.label} className="bg-white border border-[#c6c6cf]/20 p-5 rounded-2xl shadow-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280] mb-1">{item.label}</p>
+                    <p className="font-bold text-sm text-[#000317]">{item.value}</p>
+                  </div>
                 ))}
-                {postsHasMore && (
-                  <div className="flex justify-center pt-2">
+                {isOwnProfile && (
+                  <div className="md:col-span-2 mt-2">
                     <button
-                      type="button"
-                      onClick={loadMorePosts}
-                      disabled={postsLoadingMore}
-                      className="flex items-center gap-2 text-navy-600 hover:text-navy-900 font-medium text-sm py-2 px-6 rounded-full border border-navy-200 hover:border-navy-400 disabled:opacity-50"
+                      onClick={() => setShowEdit(true)}
+                      className="w-full py-3 border-2 border-dashed border-[#c6c6cf] rounded-2xl text-[#6B7280] hover:text-[#000317] hover:border-[#000317] text-xs font-bold uppercase tracking-wider transition-all"
                     >
-                      {postsLoadingMore ? <Loader2 className="animate-spin" size={16} /> : <ChevronDown size={16} />}
-                      {postsLoadingMore ? 'Loading...' : 'Load more posts'}
+                      Update SSB Profile Information
                     </button>
                   </div>
                 )}
-              </>
+              </motion.div>
             )}
-          </motion.div>
-        )}
 
-        {/* SSB Info Tab */}
-        {activeTab === 'ssb' && (
-          <motion.div
-            key="ssb"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-4"
-          >
-            {[
-              { label: 'Entry Type', value: profile.entry_type || '—' },
-              { label: 'Preferred Service', value: profile.preferred_service?.replace('_', ' ') || '—' },
-              { label: 'SSB Attempts', value: profile.ssb_attempts?.toString() || '0' },
-              { label: 'SSB Board', value: profile.ssb_board || '—' },
-              { label: 'Recommended', value: profile.recommended_status ? '✅ Yes' : '❌ Not Yet' },
-              { label: 'Reporting Date', value: profile.reporting_date || '—' },
-            ].map(item => (
-              <Card key={item.label} className="p-5">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-navy-400 mb-1">{item.label}</p>
-                <p className="font-bold text-navy-900">{item.value}</p>
-              </Card>
-            ))}
-            {isOwnProfile && (
-              <div className="md:col-span-2">
-                <button
-                  onClick={() => setShowEdit(true)}
-                  className="w-full py-3 border-2 border-dashed border-navy-200 rounded-xl text-navy-500 text-sm font-medium hover:border-gold-400 hover:text-gold-500 transition-all"
-                >
-                  + Update SSB Information
-                </button>
-              </div>
-            )}
-          </motion.div>
-        )}
-
-        {/* Education Tab */}
-        {activeTab === 'education' && (
-          <motion.div
-            key="education"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-4"
-          >
-            {[
-              { icon: <GraduationCap size={20} className="text-accent-500" />, label: 'College / University', value: profile.college, sub: profile.degree },
-              { icon: <GraduationCap size={20} className="text-navy-400" />, label: 'School', value: profile.school, sub: '' },
-            ].map(item => (
-              <Card key={item.label} className="p-5 flex items-start gap-4">
-                <div className="w-10 h-10 bg-navy-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                  {item.icon}
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-navy-400">{item.label}</p>
-                  <p className="font-bold text-navy-900 mt-1">{item.value || '—'}</p>
-                  {item.sub && <p className="text-sm text-navy-500">{item.sub}{profile.graduation_year ? ` • ${profile.graduation_year}` : ''}</p>}
-                </div>
-              </Card>
-            ))}
-            {isOwnProfile && (
-              <button
-                onClick={() => setShowEdit(true)}
-                className="w-full py-3 border-2 border-dashed border-navy-200 rounded-xl text-navy-500 text-sm font-medium hover:border-gold-400 hover:text-gold-500 transition-all"
+            {/* Education Tab */}
+            {activeTab === 'education' && (
+              <motion.div
+                key="education"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-4"
               >
-                + Add / Edit Education
-              </button>
+                {[
+                  { icon: <GraduationCap size={18} className="text-[#000317]" />, label: 'College / University', value: profile.college, sub: profile.degree },
+                  { icon: <BookOpen size={18} className="text-[#000317]" />, label: 'School', value: profile.school, sub: '' },
+                ].map(item => (
+                  <div key={item.label} className="bg-white border border-[#c6c6cf]/20 p-5 rounded-2xl shadow-sm flex items-start gap-4">
+                    <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">{item.label}</p>
+                      <p className="font-bold text-sm text-[#000317] mt-1">{item.value || '—'}</p>
+                      {item.sub && <p className="text-xs text-[#6B7280] mt-0.5">{item.sub}{profile.graduation_year ? ` • Class of ${profile.graduation_year}` : ''}</p>}
+                    </div>
+                  </div>
+                ))}
+                {isOwnProfile && (
+                  <button
+                    onClick={() => setShowEdit(true)}
+                    className="w-full py-3 border-2 border-dashed border-[#c6c6cf] rounded-2xl text-[#6B7280] hover:text-[#000317] hover:border-[#000317] text-xs font-bold uppercase tracking-wider transition-all"
+                  >
+                    Update Education Profile
+                  </button>
+                )}
+              </motion.div>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            
+          </AnimatePresence>
+        </div>
+
+      </div>
     </div>
   );
 };

@@ -10,9 +10,11 @@ import {
   Play,
   Award,
   Loader2,
+  Lightbulb,
 } from 'lucide-react';
 import { FeedService } from '../services/api';
 import { formatDistanceToNow } from 'date-fns';
+import { cn } from '../lib/utils';
 
 interface ExperiencePost {
   id: string;
@@ -23,18 +25,17 @@ interface ExperiencePost {
   created_at: string;
 }
 
+const modules = [
+  { id: 'ppdt', title: 'PPDT Practice', icon: PenTool, accent: 'bg-accent-500', desc: 'Picture Perception & Discussion Test', path: '/ssb/ppdt' },
+  { id: 'tat', title: 'TAT Practice', icon: Brain, accent: 'bg-tertiary-container text-tertiary-fixed', desc: 'Thematic Apperception Test', path: '/ssb/tat' },
+  { id: 'wat', title: 'WAT Practice', icon: Timer, accent: 'bg-secondary-fixed text-on-secondary-fixed', desc: 'Word Association Test', path: '/ssb/wat' },
+  { id: 'srt', title: 'SRT Practice', icon: Users, accent: 'bg-primary-container text-on-primary', desc: 'Situation Reaction Test', path: '/ssb/srt' },
+];
+
 const SSBHub = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('practice');
   const [experiences, setExperiences] = useState<ExperiencePost[]>([]);
   const [loadingExp, setLoadingExp] = useState(true);
-
-  const modules = [
-    { id: 'ppdt', title: 'PPDT Practice', icon: <PenTool />, color: 'bg-accent-500', desc: 'Picture Perception & Discussion Test', path: '/ssb/ppdt' },
-    { id: 'tat', title: 'TAT Practice', icon: <Brain />, color: 'bg-army-700', desc: 'Thematic Apperception Test', path: '/ssb/tat' },
-    { id: 'wat', title: 'WAT Practice', icon: <Timer />, color: 'bg-gold-500', desc: 'Word Association Test', path: '/ssb/wat' },
-    { id: 'srt', title: 'SRT Practice', icon: <Users />, color: 'bg-midnight-700', desc: 'Situation Reaction Test', path: '/ssb/srt' },
-  ];
 
   useEffect(() => {
     FeedService.getPosts(1, { postType: 'EXPERIENCE', feed: 'all' })
@@ -46,32 +47,23 @@ const SSBHub = () => {
       .finally(() => setLoadingExp(false));
   }, []);
 
-  const handleModuleStart = (path: string) => {
-    if (path.includes('ai-mentor')) {
-      navigate(path);
-    } else {
-      navigate(path);
-    }
-  };
-
   return (
-    <div className="max-w-7xl mx-auto pt-20 pb-10 px-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-display font-bold text-navy-900">SSB Practice Hub</h1>
-            <div className="flex bg-navy-100 p-1 rounded-lg">
-              <button
-                type="button"
-                onClick={() => setActiveTab('practice')}
-                className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeTab === 'practice' ? 'bg-white text-navy-900 shadow-sm' : 'text-navy-500'}`}
-              >
+    <div className="max-w-7xl mx-auto pt-20 pb-10 px-4 md:px-8 bg-background min-h-screen">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <h1 className="ssb-page-title">SSB Practice Hub</h1>
+              <p className="ssb-page-sub">Sharpen your OLQs through structured practice modules.</p>
+            </div>
+            <div className="flex bg-surface-container p-1 rounded-full border border-outline-variant/20">
+              <button type="button" className="px-5 py-2 rounded-full text-xs font-bold bg-primary text-on-primary shadow-sm">
                 Practice
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/ai-mentor')}
-                className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeTab === 'ai' ? 'bg-white text-navy-900 shadow-sm' : 'text-navy-500'}`}
+                className="px-5 py-2 rounded-full text-xs font-bold text-text-secondary hover:text-primary transition-colors"
               >
                 AI Mentor
               </button>
@@ -79,79 +71,75 @@ const SSBHub = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {modules.map((module) => (
-              <Card
-                key={module.id}
-                className="p-6 hover:shadow-md transition-shadow cursor-pointer group"
-                onClick={() => handleModuleStart(module.path)}
-              >
-                <div className="flex items-start justify-between">
-                  <div className={`w-12 h-12 ${module.color} text-white rounded-xl flex items-center justify-center shadow-lg`}>
-                    {module.icon}
+            {modules.map((module) => {
+              const Icon = module.icon;
+              return (
+                <Card
+                  key={module.id}
+                  className="p-6 card-hover cursor-pointer group border-outline-variant/20"
+                  onClick={() => navigate(module.path)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center shadow-md', module.accent)}>
+                      <Icon size={22} />
+                    </div>
+                    <ChevronRight className="text-outline group-hover:text-primary transition-colors" />
                   </div>
-                  <ChevronRight className="text-navy-300 group-hover:text-navy-900 transition-colors" />
-                </div>
-                <h3 className="mt-4 font-bold text-lg text-navy-900">{module.title}</h3>
-                <p className="text-sm text-navy-500 mt-1">{module.desc}</p>
-                <div className="mt-6 flex items-center justify-end">
+                  <h3 className="mt-4 font-bold text-lg text-primary">{module.title}</h3>
+                  <p className="text-sm text-text-secondary mt-1">{module.desc}</p>
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); handleModuleStart(module.path); }}
-                    className="flex items-center gap-2 text-sm font-bold text-navy-900 hover:text-gold-600"
+                    onClick={(e) => { e.stopPropagation(); navigate(module.path); }}
+                    className="mt-6 flex items-center gap-2 text-sm font-bold text-primary hover:text-secondary transition-colors"
                   >
-                    <Play size={16} fill="currentColor" /> Start Session
+                    <Play size={16} fill="currentColor" /> Start Practice
                   </button>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
 
-          <div className="mt-10">
-            <h2 className="text-xl font-bold text-navy-900 mb-4">Recent SSB Experiences</h2>
+          <div>
+            <h2 className="text-headline-sm font-bold text-primary mb-4">Recent Experiences</h2>
             {loadingExp ? (
               <div className="flex justify-center py-10">
-                <Loader2 className="animate-spin text-navy-400" size={28} />
+                <Loader2 className="animate-spin text-secondary-fixed" size={28} />
               </div>
             ) : experiences.length === 0 ? (
               <Card className="p-8 text-center">
-                <p className="text-sm text-navy-500">No experience posts yet. Share yours from the Feed!</p>
-                <Link to="/feed" className="text-sm font-bold text-gold-600 hover:underline mt-2 inline-block">
+                <p className="text-sm text-text-secondary">No experience posts yet. Share yours from the Feed!</p>
+                <Link to="/feed" className="text-sm font-bold text-secondary hover:underline mt-2 inline-block">
                   Go to Feed →
                 </Link>
               </Card>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {experiences.map((post) => (
-                  <Card key={post.id} className="p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="px-2 py-1 bg-navy-900 text-white text-[10px] font-bold rounded uppercase">
-                        {post.post_type.replace('_', ' ')}
+                  <Card key={post.id} className="p-5 hover:translate-y-[-2px] transition-all">
+                    <div className="flex items-center gap-3 mb-2">
+                      <img
+                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author_username}`}
+                        alt=""
+                        className="w-8 h-8 rounded-full border border-secondary-fixed/30"
+                      />
+                      <div>
+                        <p className="text-xs font-bold text-primary">@{post.author_username}</p>
+                        <p className="text-[10px] text-text-secondary">
+                          {(() => {
+                            try { return formatDistanceToNow(new Date(post.created_at), { addSuffix: true }); }
+                            catch { return ''; }
+                          })()}
+                        </p>
                       </div>
-                      <span className="text-xs text-navy-500">
-                        {(() => {
-                          try { return formatDistanceToNow(new Date(post.created_at), { addSuffix: true }); }
-                          catch { return ''; }
-                        })()}
+                      <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-tertiary-fixed/30 text-tertiary-container px-2 py-0.5 rounded-full">
+                        {post.post_type.replace('_', ' ')}
                       </span>
                     </div>
-                    <h4 className="font-bold text-navy-900">{post.title || 'SSB Experience'}</h4>
-                    <p className="text-sm text-navy-600 mt-2 line-clamp-2">{post.body}</p>
-                    <div className="mt-4 flex items-center justify-between">
-                      <Link
-                        to={`/profile/${post.author_username}`}
-                        className="flex items-center gap-2 hover:opacity-80"
-                      >
-                        <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author_username}`}
-                          alt=""
-                          className="w-6 h-6 rounded-full"
-                        />
-                        <span className="text-xs font-medium">@{post.author_username}</span>
-                      </Link>
-                      <Link to="/feed" className="text-gold-600 text-xs font-bold hover:underline">
-                        View on Feed
-                      </Link>
-                    </div>
+                    <h4 className="font-bold text-primary">{post.title || 'SSB Experience'}</h4>
+                    <p className="text-sm text-on-surface-variant mt-2 line-clamp-2">{post.body}</p>
+                    <Link to="/feed" className="text-secondary text-xs font-bold hover:underline mt-3 inline-block">
+                      Read More
+                    </Link>
                   </Card>
                 ))}
               </div>
@@ -159,51 +147,56 @@ const SSBHub = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <Card className="p-6 bg-navy-900 text-white">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold">Your OLQ Profile</h3>
-              <Award className="text-gold-500" />
+        <aside className="space-y-6">
+          <Card className="p-6 bg-primary text-on-primary border-0">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-secondary-fixed">Your OLQ Profile</h3>
+              <Award className="text-secondary-fixed" />
             </div>
-            <p className="text-sm text-navy-300 mb-4">
-              Complete PPDT practice with AI evaluation to build your OLQ profile.
+            <p className="text-sm text-on-primary-container mb-5">
+              Complete PPDT practice with AI evaluation to build your officer-like qualities profile.
             </p>
             <button
               type="button"
               onClick={() => navigate('/ssb/ppdt')}
-              className="w-full bg-gold-500 text-navy-900 py-3 rounded-lg font-bold hover:bg-gold-600 transition-colors"
+              className="w-full ssb-btn-gold py-3"
             >
               Start PPDT Evaluation
             </button>
           </Card>
 
-          <Card className="p-6">
-            <h3 className="font-bold text-navy-900 mb-4">Quick Links</h3>
-            <div className="space-y-3">
-              <button
-                type="button"
-                onClick={() => navigate('/ai-mentor')}
-                className="w-full text-left p-3 bg-navy-50 rounded-lg text-sm font-medium text-navy-900 hover:bg-navy-100"
-              >
-                AI Mentor Chat →
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/groups')}
-                className="w-full text-left p-3 bg-navy-50 rounded-lg text-sm font-medium text-navy-900 hover:bg-navy-100"
-              >
-                Study Groups →
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/events')}
-                className="w-full text-left p-3 bg-navy-50 rounded-lg text-sm font-medium text-navy-900 hover:bg-navy-100"
-              >
-                Mock Sessions & Events →
-              </button>
+          <Card className="p-5 border-secondary-fixed/20 bg-secondary-fixed/5">
+            <div className="flex items-start gap-3">
+              <Lightbulb className="text-secondary flex-shrink-0" size={20} />
+              <div>
+                <h3 className="font-bold text-primary text-sm mb-1">Daily SSB Tip</h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  In WAT, respond with the first positive association — hesitation signals lack of spontaneity.
+                </p>
+              </div>
             </div>
           </Card>
-        </div>
+
+          <Card className="p-6">
+            <h3 className="font-bold text-primary mb-4">Quick Links</h3>
+            <div className="space-y-2">
+              {[
+                { label: 'AI Mentor Chat', path: '/ai-mentor' },
+                { label: 'Study Groups', path: '/groups' },
+                { label: 'Mock Sessions & Events', path: '/events' },
+              ].map((link) => (
+                <button
+                  key={link.path}
+                  type="button"
+                  onClick={() => navigate(link.path)}
+                  className="w-full text-left p-3 bg-surface-container-low rounded-xl text-sm font-medium text-primary hover:bg-surface-container transition-colors"
+                >
+                  {link.label} →
+                </button>
+              ))}
+            </div>
+          </Card>
+        </aside>
       </div>
     </div>
   );

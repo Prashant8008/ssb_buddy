@@ -7,25 +7,35 @@ import { MapInvalidateSize } from './MapInvalidateSize';
 
 import 'leaflet/dist/leaflet.css';
 
-// Fix default marker icons with Vite bundler
-const markerIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
+// Custom HTML/SVG shield markers matching ssb connect mockup
+const standardShieldIcon = L.divIcon({
+  className: 'custom-map-shield-standard',
+  html: `
+    <div class="relative flex items-center justify-center w-8 h-10">
+      <div class="shield-pin absolute inset-0 bg-[#0F1C3F] border-2 border-[#C9A84C] shadow-lg"></div>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="white" class="relative z-10 translate-y-[-2px]">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+  `,
+  iconSize: [32, 40],
+  iconAnchor: [16, 40],
+  popupAnchor: [0, -40],
 });
 
-const selectedIcon = L.icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
-  iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
+const selectedShieldIcon = L.divIcon({
+  className: 'custom-map-shield-selected',
+  html: `
+    <div class="relative flex items-center justify-center w-8 h-10 animate-pulse-gold">
+      <div class="shield-pin absolute inset-0 bg-[#C9A84C] border-2 border-white shadow-xl"></div>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="#0F1C3F" class="relative z-10 translate-y-[-2px]">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+  `,
+  iconSize: [32, 40],
+  iconAnchor: [16, 40],
+  popupAnchor: [0, -40],
 });
 
 export interface MapProfile {
@@ -164,7 +174,7 @@ const DiscoverMap: React.FC<DiscoverMapProps> = ({
           <Marker
             key={p.id}
             position={p.coords}
-            icon={isSelected ? selectedIcon : markerIcon}
+            icon={isSelected ? selectedShieldIcon : standardShieldIcon}
             eventHandlers={{
               click: () => onSelect(p.user.id),
             }}

@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  Home,
-  MapPin,
-  Shield,
-  Trophy,
+  Bell,
   MessageSquare,
-  User,
+  LogOut,
   Settings,
-  Users,
-  UserPlus,
-  Calendar,
+  User,
   Menu,
   X,
-  Search,
-  Bell,
-  LogOut,
-  Bot,
+  Home,
+  Shield,
+  Users,
+  Calendar,
+  Zap,
+  ChevronDown,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { AuthService } from '../../services/api';
-import { BrandLogo } from '../brand/BrandLogo';
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ username: string; first_name: string; last_name: string } | null>(null);
+  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{
+    username: string;
+    first_name: string;
+    last_name: string;
+  } | null>(null);
 
   useEffect(() => {
     AuthService.me()
@@ -34,184 +36,263 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   const displayName = currentUser
     ? `${currentUser.first_name} ${currentUser.last_name}`.trim() || currentUser.username
-    : 'Loading...';
+    : '';
   const avatarSeed = currentUser?.username || 'user';
 
-  const navItems = [
-    { icon: <Home size={20} />, label: 'Feed', to: '/feed' },
-    { icon: <MapPin size={20} />, label: 'Discover', to: '/map' },
-    { icon: <UserPlus size={20} />, label: 'Connections', to: '/connections' },
-    { icon: <Shield size={20} />, label: 'SSB Practice', to: '/ssb' },
-    { icon: <Bot size={20} />, label: 'AI Mentor', to: '/ai-mentor' },
-    { icon: <Trophy size={20} />, label: 'Fitness', to: '/fitness' },
-    { icon: <Users size={20} />, label: 'Groups', to: '/groups' },
-    { icon: <Calendar size={20} />, label: 'Events', to: '/events' },
-    { icon: <MessageSquare size={20} />, label: 'Messages', to: '/chat' },
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const close = () => setProfileOpen(false);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, []);
+
+  const handleLogout = () => {
+    AuthService.logout();
+    navigate('/login');
+  };
+
+  // Primary nav links shown in top bar
+  const topNavLinks = [
+    { label: 'Feed', to: '/feed' },
+    { label: 'Hub', to: '/ssb' },
+    { label: 'Groups', to: '/groups' },
+    { label: 'Events', to: '/events' },
   ];
 
-  const bottomNavItems = [
-    { icon: <Home size={24} />, label: 'Feed', to: '/feed' },
-    { icon: <Shield size={24} />, label: 'SSB', to: '/ssb' },
-    { icon: <Bot size={24} />, label: 'AI', to: '/ai-mentor' },
-    { icon: <MessageSquare size={24} />, label: 'Chat', to: '/chat' },
-    { icon: <User size={24} />, label: 'Profile', to: '/profile' },
+  // Full nav for mobile drawer
+  const allNavLinks = [
+    { icon: <Home size={18} />, label: 'Feed', to: '/feed' },
+    { icon: <Shield size={18} />, label: 'SSB Hub', to: '/ssb' },
+    { icon: <MessageSquare size={18} />, label: 'Messaging', to: '/chat' },
+    { icon: <Users size={18} />, label: 'Connections', to: '/connections' },
+    { icon: <Users size={18} />, label: 'Groups', to: '/groups' },
+    { icon: <Calendar size={18} />, label: 'Events', to: '/events' },
+    { icon: <Settings size={18} />, label: 'Settings', to: '/settings' },
   ];
-
-  const navLinkClass = (isActive: boolean) =>
-    cn(
-      'flex items-center gap-3 px-4 py-3 rounded-xl transition-all group',
-      isActive
-        ? 'bg-accent-500 text-white font-bold shadow-md shadow-accent-500/25'
-        : 'text-white/60 hover:bg-midnight-800 hover:text-white'
-    );
 
   return (
-    <div className="min-h-screen bg-navy-50 flex">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-midnight-900 text-white fixed h-full z-50 border-r border-midnight-700">
-        <div className="p-5 border-b border-midnight-700">
-          <BrandLogo className="text-white" to="/feed" />
-        </div>
+    <div className="min-h-screen bg-background">
+      {/* ── Top Navbar ──────────────────────────────────────── */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-primary/90 backdrop-blur-md border-b border-white/5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
 
-        <nav className="flex-1 px-4 py-4 space-y-1">
-          {navItems.map((item) => (
-            <NavLink key={item.to} to={item.to} className={({ isActive }) => navLinkClass(isActive)}>
-              {item.icon}
-              <span className="text-sm">{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-midnight-700 space-y-2">
+          {/* Logo */}
           <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm',
-                isActive ? 'bg-army-800 text-white font-bold' : 'text-white/60 hover:text-white hover:bg-midnight-800'
-              )
-            }
+            to="/feed"
+            className="flex items-center gap-2 flex-shrink-0 group"
           >
-            <Settings size={20} /> Settings
+            <div className="w-8 h-8 rounded-lg bg-secondary-fixed flex items-center justify-center flex-shrink-0">
+              <Shield size={16} className="text-primary" />
+            </div>
+            <span className="font-bold text-lg text-secondary-fixed tracking-tight hidden sm:block">
+              SSB Connect
+            </span>
           </NavLink>
-          <button
-            type="button"
-            onClick={() => AuthService.logout()}
-            className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-midnight-800 rounded-xl transition-colors text-sm"
-          >
-            <LogOut size={20} /> Logout
-          </button>
-        </div>
-      </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        <header className="h-16 bg-white border-b border-navy-100 sticky top-0 z-40 px-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-2 text-navy-600 hover:bg-navy-50 rounded-lg"
-            >
-              <Menu size={24} />
-            </button>
-            <div className="hidden md:flex relative w-96">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
-              <input
-                type="text"
-                placeholder="Search aspirants, boards, or groups..."
-                className="w-full bg-navy-50 border border-navy-100 rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-accent-400 focus:border-accent-300 transition-all"
-              />
-            </div>
-            <div className="lg:hidden">
-              <BrandLogo className="text-navy-900" imageClassName="h-8 w-8" to="/feed" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 md:gap-4">
-            <button className="p-2 text-navy-500 hover:bg-navy-50 rounded-full relative">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-gold-500 rounded-full border-2 border-white" />
-            </button>
-            <NavLink
-              to="/profile"
-              className="flex items-center gap-2 p-1 pr-2 sm:pr-3 hover:bg-navy-50 rounded-full transition-colors min-w-0 max-w-[52vw] sm:max-w-none"
-            >
-              <div className="w-8 h-8 rounded-full border-2 border-accent-400 overflow-hidden flex-shrink-0">
-                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`} alt="Profile" />
-              </div>
-              <span className="text-sm font-bold text-navy-900 truncate">{displayName}</span>
-            </NavLink>
-          </div>
-        </header>
-
-        <main className="flex-1 pb-20 lg:pb-0">{children}</main>
-
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-navy-100 flex items-center justify-around px-2 z-50 pb-safe">
-          {bottomNavItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                cn(
-                  'flex flex-col items-center justify-center w-full h-full transition-all',
-                  isActive ? 'text-accent-600' : 'text-navy-500'
-                )
-              }
-            >
-              {item.icon}
-              <span className="text-[10px] mt-1 font-bold uppercase tracking-tight">{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-      </div>
-
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-midnight-900/60 z-[60] lg:hidden backdrop-blur-sm"
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          <div className="w-72 bg-midnight-900 h-full flex flex-col border-r border-midnight-700" onClick={(e) => e.stopPropagation()}>
-            <div className="p-5 flex items-center justify-between border-b border-midnight-700">
-              <BrandLogo className="text-white" to="/feed" />
-              <button onClick={() => setIsSidebarOpen(false)} className="text-white/50 hover:text-white">
-                <X size={24} />
-              </button>
-            </div>
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setIsSidebarOpen(false)}
-                  className={({ isActive }) => navLinkClass(isActive)}
-                >
-                  {item.icon}
-                  {item.label}
-                </NavLink>
-              ))}
-            </nav>
-            <div className="p-4 border-t border-midnight-700 space-y-2 shrink-0 pb-safe">
+          {/* Center nav links — desktop */}
+          <nav className="hidden md:flex items-center gap-1">
+            {topNavLinks.map(({ label, to }) => (
               <NavLink
-                to="/settings"
-                onClick={() => setIsSidebarOpen(false)}
+                key={to}
+                to={to}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors',
-                    isActive ? 'bg-army-800 text-white font-bold' : 'text-white/60 hover:text-white hover:bg-midnight-800'
+                    'px-4 py-1.5 text-sm font-semibold rounded-md transition-all relative',
+                    isActive
+                      ? 'text-secondary-fixed after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-secondary-fixed after:rounded-full'
+                      : 'text-on-primary-container hover:text-on-primary'
                   )
                 }
               >
-                <Settings size={20} /> Settings
+                {label}
               </NavLink>
+            ))}
+          </nav>
+
+          {/* Right actions */}
+          <div className="flex items-center gap-1 md:gap-2">
+            {/* Upgrade pill */}
+            <button className="hidden sm:flex items-center gap-1.5 px-4 py-1.5 bg-secondary-fixed hover:bg-secondary-container text-on-secondary-fixed text-xs font-bold rounded-full transition-all">
+              <Zap size={12} />
+              Upgrade
+            </button>
+
+            {/* Bell */}
+            <button className="w-9 h-9 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors relative">
+              <Bell size={18} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-secondary-fixed rounded-full border border-primary" />
+            </button>
+
+            {/* Message */}
+            <button
+              onClick={() => navigate('/chat')}
+              className="w-9 h-9 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <MessageSquare size={18} />
+            </button>
+
+            {/* Profile avatar dropdown */}
+            <div className="relative" onClick={(e) => e.stopPropagation()}>
               <button
-                type="button"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  AuthService.logout();
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-midnight-800 transition-colors text-sm rounded-xl"
+                onClick={() => setProfileOpen((v) => !v)}
+                className="flex items-center gap-2 p-1 pl-1 rounded-full hover:bg-white/10 transition-colors"
               >
-                <LogOut size={20} /> Logout
+                <div className="w-8 h-8 rounded-full border-2 border-secondary-fixed/50 overflow-hidden bg-primary-container">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="hidden lg:block text-sm font-semibold text-white/80 max-w-[120px] truncate">
+                  {displayName}
+                </span>
+                <ChevronDown size={14} className="hidden lg:block text-white/40" />
+              </button>
+
+              {/* Dropdown */}
+              {profileOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-surface rounded-xl shadow-xl border border-outline-variant/30 py-1 z-50">
+                  <NavLink
+                    to="/profile"
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
+                    onClick={() => setProfileOpen(false)}
+                  >
+                    <User size={15} className="text-slate-400" />
+                    View Profile
+                  </NavLink>
+                  <NavLink
+                    to="/settings"
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
+                    onClick={() => setProfileOpen(false)}
+                  >
+                    <Settings size={15} className="text-on-surface-variant" />
+                    Settings
+                  </NavLink>
+                  <div className="border-t border-slate-100 my-1" />
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut size={15} />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Main Content ────────────────────────────────────── */}
+      <main className="pt-14 min-h-screen">{children}</main>
+
+      {/* ── Mobile Bottom Nav ───────────────────────────────── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-primary border-t border-white/10 flex items-center justify-around px-2 z-50 pb-safe">
+        {[
+          { icon: <Home size={22} />, label: 'Feed', to: '/feed' },
+          { icon: <Shield size={22} />, label: 'Hub', to: '/ssb' },
+          { icon: <MessageSquare size={22} />, label: 'Chat', to: '/chat' },
+          { icon: <Users size={22} />, label: 'Groups', to: '/groups' },
+          { icon: <User size={22} />, label: 'Profile', to: '/profile' },
+        ].map(({ icon, label, to }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              cn(
+                'flex flex-col items-center justify-center gap-0.5 flex-1 py-2 transition-all',
+                isActive ? 'text-secondary-fixed' : 'text-white/40 hover:text-white/70'
+              )
+            }
+          >
+            {icon}
+            <span className="text-[9px] font-bold uppercase tracking-tight">{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* ── Mobile Drawer ────────────────────────────────────── */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        >
+          <div
+            className="w-72 bg-primary h-full flex flex-col border-r border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer header */}
+            <div className="p-5 flex items-center justify-between border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-secondary-fixed flex items-center justify-center">
+                  <Shield size={16} className="text-primary" />
+                </div>
+                <span className="font-bold text-secondary-fixed text-base">SSB Connect</span>
+              </div>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="text-white/40 hover:text-white transition-colors"
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            {/* User chip */}
+            {currentUser && (
+              <div className="px-5 py-4 border-b border-white/5 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full border-2 border-secondary-fixed/40 overflow-hidden">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-white truncate">{displayName}</p>
+                  <p className="text-xs text-white/40">@{currentUser.username}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Nav links */}
+            <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+              {allNavLinks.map(({ icon, label, to }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all',
+                      isActive
+                        ? 'bg-secondary-fixed/15 text-secondary-fixed font-bold'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                    )
+                  }
+                >
+                  {icon}
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+
+            {/* Logout */}
+            <div className="p-4 border-t border-white/10">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 rounded-xl transition-colors"
+              >
+                <LogOut size={18} />
+                Logout
               </button>
             </div>
           </div>

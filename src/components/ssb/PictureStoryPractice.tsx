@@ -31,14 +31,168 @@ interface PictureStoryPracticeProps {
 const OLQProgress = ({ label, value }: { label: string; value: number }) => (
   <div>
     <div className="flex justify-between text-xs mb-1">
-      <span className="text-navy-600 font-medium">{label}</span>
-      <span className="text-gold-600 font-bold">{value}%</span>
+      <span className="text-on-surface-variant font-medium">{label}</span>
+      <span className="text-secondary font-bold">{value}%</span>
     </div>
-    <div className="h-1.5 bg-navy-100 rounded-full overflow-hidden">
-      <div className="h-full bg-gold-500" style={{ width: `${value}%` }} />
+    <div className="h-1.5 bg-surface-container rounded-full overflow-hidden">
+      <div className="h-full bg-secondary-fixed" style={{ width: `${value}%` }} />
     </div>
   </div>
 );
+
+const CircularScoreRing = ({ score }: { score: number }) => {
+  const strokeWidth = 6;
+  const radius = 32;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+
+  return (
+    <div className="relative flex items-center justify-center w-20 h-20 shrink-0">
+      <svg className="w-full h-full transform -rotate-90">
+        {/* Background track */}
+        <circle
+          cx="40"
+          cy="40"
+          r={radius}
+          stroke="rgba(255, 255, 255, 0.1)"
+          strokeWidth={strokeWidth}
+          fill="transparent"
+        />
+        {/* Progress track */}
+        <circle
+          cx="40"
+          cy="40"
+          r={radius}
+          stroke="secondary-fixed"
+          strokeWidth={strokeWidth}
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          className="transition-all duration-1000 ease-out"
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center">
+        <span className="text-xl font-bold text-white text-glow">{score}</span>
+        <span className="text-[8px] uppercase font-bold text-outline-variant">Score</span>
+      </div>
+    </div>
+  );
+};
+
+const RadarChart = ({ scores }: { scores: { [key: string]: number } }) => {
+  const cx = 100;
+  const cy = 100;
+  const r = 60;
+  const axes = [
+    { label: 'Intelligence', key: 'effective_intelligence', angle: -Math.PI / 2 },
+    { label: 'Expression', key: 'expression', angle: 0 },
+    { label: 'Adaptability', key: 'social_adaptability', angle: Math.PI / 2 },
+    { label: 'Initiative', key: 'initiative', angle: Math.PI },
+  ];
+
+  // Draw grid polygons (at 25%, 50%, 75%, 100%)
+  const gridLevels = [0.25, 0.5, 0.75, 1];
+  const gridPolygons = gridLevels.map((level) => {
+    return axes
+      .map((axis) => {
+        const x = cx + r * level * Math.cos(axis.angle);
+        const y = cy + r * level * Math.sin(axis.angle);
+        return `${x},${y}`;
+      })
+      .join(' ');
+  });
+
+  // Calculate user data points
+  const points = axes
+    .map((axis) => {
+      const val = scores[axis.key] ?? 50;
+      const x = cx + r * (val / 100) * Math.cos(axis.angle);
+      const y = cy + r * (val / 100) * Math.sin(axis.angle);
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  return (
+    <svg viewBox="0 0 200 200" className="w-full max-w-[180px] mx-auto">
+      {/* Background grids */}
+      {gridPolygons.map((pts, idx) => (
+        <polygon
+          key={idx}
+          points={pts}
+          fill="none"
+          stroke="#e2e8f0"
+          strokeWidth="1"
+          strokeDasharray={idx < 3 ? "2 2" : "none"}
+        />
+      ))}
+      
+      {/* Axes lines */}
+      {axes.map((axis, idx) => {
+        const x = cx + r * Math.cos(axis.angle);
+        const y = cy + r * Math.sin(axis.angle);
+        return (
+          <line
+            key={idx}
+            x1={cx}
+            y1={cy}
+            x2={x}
+            y2={y}
+            stroke="#cbd5e1"
+            strokeWidth="1"
+          />
+        );
+      })}
+
+      {/* User score polygon */}
+      <polygon
+        points={points}
+        fill="rgba(201, 168, 76, 0.2)"
+        stroke="secondary-fixed"
+        strokeWidth="2"
+      />
+
+      {/* User score dots */}
+      {axes.map((axis, idx) => {
+        const val = scores[axis.key] ?? 50;
+        const x = cx + r * (val / 100) * Math.cos(axis.angle);
+        const y = cy + r * (val / 100) * Math.sin(axis.angle);
+        return (
+          <circle
+            key={idx}
+            cx={x}
+            cy={y}
+            r="3.5"
+            className="fill-navy-900 stroke-gold-500 stroke-2"
+          />
+        );
+      })}
+
+      {/* Axis Labels */}
+      {axes.map((axis, idx) => {
+        const offset = 14;
+        const x = cx + (r + offset) * Math.cos(axis.angle);
+        const y = cy + (r + offset) * Math.sin(axis.angle);
+        
+        let textAnchor = "middle";
+        if (axis.angle === 0) textAnchor = "start";
+        if (axis.angle === Math.PI) textAnchor = "end";
+
+        return (
+          <text
+            key={idx}
+            x={x}
+            y={y + 3}
+            textAnchor={textAnchor}
+            className="text-[8px] font-bold fill-navy-600 uppercase tracking-wider font-sans"
+          >
+            {axis.label}
+          </text>
+        );
+      })}
+    </svg>
+  );
+};
 
 const VIEWING_SECONDS = 30;
 const DETAILS_SECONDS = 60;
@@ -267,8 +421,8 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
     <div className="max-w-5xl mx-auto p-4 md:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-display font-bold text-navy-900">{title}</h1>
-          <p className="text-navy-500 text-sm">{subtitle}</p>
+          <h1 className="text-2xl font-display font-bold text-primary">{title}</h1>
+          <p className="text-text-secondary text-sm">{subtitle}</p>
         </div>
         {stage === 'writing' && (
           <div className="flex items-center gap-2">
@@ -278,8 +432,8 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
               className={cn(
                 'px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-all',
                 isPaused
-                  ? 'bg-gold-500 text-navy-900 hover:bg-gold-400'
-                  : 'bg-white text-navy-900 border border-navy-200 hover:bg-navy-50'
+                  ? 'bg-secondary-fixed text-primary hover:bg-gold-400'
+                  : 'bg-white text-primary border border-navy-200 hover:bg-surface-container-low'
               )}
               title={isPaused ? 'Resume timer' : 'Pause timer (emergency)'}
             >
@@ -301,8 +455,8 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
       </div>
 
       {isPaused && (stage === 'viewing' || stage === 'details' || stage === 'writing') && (
-        <div className="mb-6 flex items-center gap-3 rounded-2xl border border-gold-200 bg-gold-50 px-4 py-3 text-sm text-navy-800">
-          <Pause size={18} className="text-gold-600 flex-shrink-0" />
+        <div className="mb-6 flex items-center gap-3 rounded-2xl border border-gold-200 bg-secondary-fixed/10 px-4 py-3 text-sm text-primary">
+          <Pause size={18} className="text-secondary flex-shrink-0" />
           <p>
             <span className="font-bold">Timer paused.</span> Use this for emergencies — press{' '}
             <span className="font-bold">Resume</span> when you are ready to continue.
@@ -319,48 +473,48 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
             exit={{ opacity: 0, scale: 0.95 }}
           >
             <Card className="p-12 text-center max-w-2xl mx-auto">
-              <div className="w-20 h-20 bg-gold-100 rounded-3xl flex items-center justify-center text-gold-600 mx-auto mb-6">
+              <div className="w-20 h-20 bg-gold-100 rounded-3xl flex items-center justify-center text-secondary mx-auto mb-6">
                 <Icon size={40} />
               </div>
-              <h2 className="text-2xl font-bold text-navy-900 mb-4">Ready to Begin?</h2>
+              <h2 className="text-2xl font-bold text-primary mb-4">Ready to Begin?</h2>
               {imageBankSize != null && imageBankSize > 0 && (
                 <p className="text-sm font-bold text-accent-600 mb-4">
                   {imageBankSize} pictures loaded from your {type} PDF — a random one each session.
                 </p>
               )}
-              <div className="text-left bg-navy-50 p-6 rounded-2xl mb-8 space-y-3">
+              <div className="text-left bg-surface-container-low p-6 rounded-2xl mb-8 space-y-3">
                 <div className="flex gap-3 text-sm">
-                  <Info className="text-navy-400 flex-shrink-0" size={18} />
-                  <p className="text-navy-700">
+                  <Info className="text-outline flex-shrink-0" size={18} />
+                  <p className="text-primary">
                     A random picture from your <b>{type}</b> image bank is shown for <b>30 seconds</b>.
                   </p>
                 </div>
                 {showCharacterFields ? (
                   <>
                     <div className="flex gap-3 text-sm">
-                      <Info className="text-navy-400 flex-shrink-0" size={18} />
-                      <p className="text-navy-700">
+                      <Info className="text-outline flex-shrink-0" size={18} />
+                      <p className="text-primary">
                         Then <b>1 minute</b> to write action &amp; character details — <b>image hidden</b>.
                       </p>
                     </div>
                     <div className="flex gap-3 text-sm">
-                      <Info className="text-navy-400 flex-shrink-0" size={18} />
-                      <p className="text-navy-700">
+                      <Info className="text-outline flex-shrink-0" size={18} />
+                      <p className="text-primary">
                         Finally <b>4 minutes</b> to write your story (image stays hidden).
                       </p>
                     </div>
                   </>
                 ) : (
                   <div className="flex gap-3 text-sm">
-                    <Info className="text-navy-400 flex-shrink-0" size={18} />
-                    <p className="text-navy-700">
+                    <Info className="text-outline flex-shrink-0" size={18} />
+                    <p className="text-primary">
                       After that, you will have <b>4 minutes</b> to write your story.
                     </p>
                   </div>
                 )}
                 <div className="flex gap-3 text-sm">
-                  <Pause className="text-navy-400 flex-shrink-0" size={18} />
-                  <p className="text-navy-700">
+                  <Pause className="text-outline flex-shrink-0" size={18} />
+                  <p className="text-primary">
                     Use <b>Pause / Resume</b> anytime during viewing or writing for emergencies.
                   </p>
                 </div>
@@ -369,7 +523,7 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                 type="button"
                 onClick={startPractice}
                 disabled={loadingImage}
-                className="bg-navy-900 text-white px-12 py-4 rounded-2xl font-bold hover:bg-navy-800 transition-all flex items-center gap-3 mx-auto shadow-xl shadow-navy-900/20 disabled:opacity-50"
+                className="bg-primary text-white px-12 py-4 rounded-2xl font-bold hover:bg-primary-container transition-all flex items-center gap-3 mx-auto shadow-xl shadow-navy-900/20 disabled:opacity-50"
               >
                 {loadingImage ? (
                   <>
@@ -386,145 +540,154 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
         )}
 
         {stage === 'viewing' && (
-          <motion.div key="viewing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-            {imageError && (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                {imageError} Using a placeholder image for now.
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#000317]/95 backdrop-blur-md p-4 overflow-y-auto">
+            <div className="w-full max-w-3xl bg-[#161B22]/90 border border-white/10 rounded-[24px] shadow-[0_0_50px_rgba(201,168,76,0.15)] flex flex-col p-6 space-y-6">
+              <div className="flex justify-between items-center bg-[#000317] p-4 rounded-xl border border-white/5">
+                <span className="text-xs font-bold uppercase tracking-wider text-gold-400">
+                  {type} - Picture Observation Stage
+                </span>
+                <div className="flex items-center gap-2 text-gold-400">
+                  <Timer size={16} />
+                  <span className="font-bold text-glow text-lg">
+                    {isPaused ? 'Paused' : `${timeLeft}s`}
+                  </span>
+                </div>
               </div>
-            )}
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch">
-              <div className="flex-1 min-w-0 aspect-video bg-navy-50 rounded-3xl overflow-hidden border border-navy-100">
-                <img
-                  src={imageSrc}
-                  className="w-full h-full object-contain"
-                  alt={`${type} practice`}
+              <div className="h-1 bg-white/10 rounded-full overflow-hidden w-full">
+                <div
+                  className="h-full bg-secondary-fixed transition-all duration-1000"
+                  style={{ width: `${(timeLeft / VIEWING_SECONDS) * 100}%` }}
                 />
               </div>
-              <div className="sm:w-48 md:w-52 flex sm:flex-col justify-center gap-3 p-4 bg-white rounded-2xl border border-navy-100 shadow-sm shrink-0">
-                <div className="text-center sm:text-left">
-                  <p className="text-[10px] font-bold text-navy-400 uppercase tracking-wide mb-1">
-                    {isPaused ? 'Paused' : 'Time left'}
-                  </p>
-                  <p className="text-lg font-bold text-navy-900 leading-tight">
-                    {isPaused ? 'Observe when ready' : formatTime(timeLeft)}
-                  </p>
-                </div>
-                {prompt?.title && (
-                  <p className="text-xs font-medium text-navy-500 text-center sm:text-left">{prompt.title}</p>
+              <div className="relative bg-black rounded-2xl overflow-hidden aspect-[3/2] max-h-[400px] flex items-center justify-center border border-white/5">
+                <img
+                  src={imageSrc}
+                  className={cn(
+                    "w-full h-full object-contain transition-all duration-300",
+                    isPaused ? "blur-md select-none opacity-20" : ""
+                  )}
+                  alt="Observation print"
+                />
+                {isPaused && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <p className="text-sm font-bold text-white uppercase tracking-wider">
+                      Click resume to observe
+                    </p>
+                  </div>
                 )}
+              </div>
+              <div className="flex items-center justify-between gap-4 pt-2">
+                <p className="text-xs text-outline-variant">
+                  Observe the image details: characters, setting, and mood.
+                </p>
                 <button
                   type="button"
                   onClick={togglePause}
                   className={cn(
-                    'flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all w-full',
+                    "flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs transition-all tracking-wide uppercase",
                     isPaused
-                      ? 'bg-gold-500 text-navy-900 hover:bg-gold-400'
-                      : 'bg-navy-900 text-white hover:bg-navy-800'
+                      ? "bg-secondary-fixed text-primary hover:bg-gold-400"
+                      : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
                   )}
                 >
-                  {isPaused ? <Play size={16} fill="currentColor" /> : <Pause size={16} />}
-                  {isPaused ? 'Resume' : 'Pause'}
+                  {isPaused ? <Play size={14} fill="currentColor" /> : <Pause size={14} />}
+                  {isPaused ? "Resume" : "Pause"}
                 </button>
               </div>
             </div>
-            {showCharacterFields && (
-              <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 bg-white rounded-2xl border border-navy-100 text-center">
-                  <p className="text-xs font-bold text-navy-400 uppercase">Characters</p>
-                  <p className="text-lg font-bold text-navy-900">?</p>
-                </div>
-                <div className="p-4 bg-white rounded-2xl border border-navy-100 text-center">
-                  <p className="text-xs font-bold text-navy-400 uppercase">Mood</p>
-                  <p className="text-lg font-bold text-navy-900">?</p>
-                </div>
-                <div className="p-4 bg-white rounded-2xl border border-navy-100 text-center">
-                  <p className="text-xs font-bold text-navy-400 uppercase">Action</p>
-                  <p className="text-lg font-bold text-navy-900">?</p>
-                </div>
-              </div>
-            )}
-          </motion.div>
+          </div>
         )}
 
         {stage === 'details' && (
-          <motion.div key="details" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-            <div className="rounded-2xl border border-navy-200 bg-navy-50 px-4 py-3 text-sm text-navy-700">
-              <span className="font-bold">Image hidden.</span> Write the number of characters and details you observed.
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch">
-              <div className="flex-1 bg-white rounded-3xl border border-navy-100 p-6 shadow-sm space-y-4">
-                <h3 className="font-bold text-navy-900">Character &amp; Action Details</h3>
+          <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#000317]/95 backdrop-blur-md p-4 overflow-y-auto">
+            <div className="w-full max-w-2xl bg-[#161B22]/90 border border-white/10 rounded-[24px] shadow-[0_0_50px_rgba(201,168,76,0.15)] flex flex-col p-6 space-y-6">
+              <div className="flex justify-between items-center bg-[#000317] p-4 rounded-xl border border-white/5">
+                <span className="text-xs font-bold uppercase tracking-wider text-gold-400">
+                  Step 2 - Character & Action Details
+                </span>
+                <div className="flex items-center gap-2 text-gold-400">
+                  <Timer size={16} />
+                  <span className="font-bold text-glow text-lg">
+                    {isPaused ? 'Paused' : `${detailsTime}s`}
+                  </span>
+                </div>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-xs text-outline-variant">
+                <span className="font-bold text-gold-400">Image hidden.</span> Specify the character count and observations.
+              </div>
+              <div className="space-y-4 text-white">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-bold uppercase text-outline-variant">Characters</label>
+                    <input
+                      placeholder="e.g. 3"
+                      value={characterCount}
+                      onChange={(e) => setCharacterCount(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 text-white outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-bold uppercase text-outline-variant">Age</label>
+                    <input
+                      placeholder="e.g. 24"
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 text-white outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-bold uppercase text-outline-variant">Gender</label>
+                    <select
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 text-white outline-none"
+                    >
+                      <option className="bg-[#161B22] text-white">Male</option>
+                      <option className="bg-[#161B22] text-white">Female</option>
+                      <option className="bg-[#161B22] text-white">Other</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-bold uppercase text-outline-variant">Mood (+/-/0)</label>
+                    <input
+                      placeholder="Positive / Neutral"
+                      value={mood}
+                      onChange={(e) => setMood(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-gold-500 text-white outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold uppercase text-outline-variant">Action of the story</label>
                   <input
-                    placeholder="No. of characters"
-                    value={characterCount}
-                    onChange={(e) => setCharacterCount(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400 col-span-2 sm:col-span-1"
-                  />
-                  <input
-                    placeholder="Age"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400"
-                  />
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400"
-                  >
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
-                  </select>
-                  <input
-                    placeholder="Mood (+/-/0)"
-                    value={mood}
-                    onChange={(e) => setMood(e.target.value)}
-                    className="bg-navy-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-accent-400"
+                    placeholder="Briefly state what the main character is doing..."
+                    value={actionText}
+                    onChange={(e) => setActionText(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-gold-500 text-white outline-none"
                   />
                 </div>
-                <input
-                  placeholder="Action of the story..."
-                  value={actionText}
-                  onChange={(e) => setActionText(e.target.value)}
-                  className="w-full bg-navy-50 border-none rounded-xl p-4 text-sm font-bold focus:ring-2 focus:ring-accent-400"
-                />
+              </div>
+              <div className="flex items-center justify-between gap-4 pt-2">
                 <button
                   type="button"
                   onClick={() => {
                     setStoryTime(WRITING_SECONDS);
                     setStage('writing');
                   }}
-                  className="text-sm font-bold text-gold-600 hover:underline"
+                  className="bg-secondary-fixed text-primary font-bold px-6 py-3 rounded-xl hover:bg-gold-400 transition-all text-xs uppercase tracking-wider"
                 >
-                  Done early? Continue to story writing →
+                  Continue to Story Writing →
                 </button>
-              </div>
-              <div className="sm:w-48 md:w-52 flex sm:flex-col justify-center gap-3 p-4 bg-white rounded-2xl border border-navy-100 shadow-sm shrink-0">
-                <div className="text-center sm:text-left">
-                  <p className="text-[10px] font-bold text-navy-400 uppercase tracking-wide mb-1">
-                    {isPaused ? 'Paused' : 'Details time'}
-                  </p>
-                  <p className="text-lg font-bold text-navy-900 leading-tight">
-                    {isPaused ? 'Write when ready' : formatTime(detailsTime)}
-                  </p>
-                </div>
                 <button
                   type="button"
                   onClick={togglePause}
-                  className={cn(
-                    'flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all w-full',
-                    isPaused
-                      ? 'bg-gold-500 text-navy-900 hover:bg-gold-400'
-                      : 'bg-navy-900 text-white hover:bg-navy-800'
-                  )}
+                  className="bg-white/5 border border-white/10 text-white px-5 py-3 rounded-xl text-xs font-bold hover:bg-white/10 transition-all uppercase tracking-wider"
                 >
-                  {isPaused ? <Play size={16} fill="currentColor" /> : <Pause size={16} />}
-                  {isPaused ? 'Resume' : 'Pause'}
+                  {isPaused ? "Resume" : "Pause"}
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {stage === 'writing' && (
@@ -535,24 +698,24 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
             className="grid grid-cols-1 lg:grid-cols-3 gap-8"
           >
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-3xl border border-navy-100 p-6 shadow-sm">
+              <div className="bg-white rounded-3xl border border-outline-variant/30 p-6 shadow-sm">
                 {showCharacterFields && (
-                  <div className="mb-4 rounded-xl bg-navy-50 p-3 text-xs text-navy-600">
+                  <div className="mb-4 rounded-xl bg-surface-container-low p-3 text-xs text-on-surface-variant">
                     <span className="font-bold">Your details:</span>{' '}
                     {characterCount || '?'} chars · {age || '?'} · {gender} · mood {mood || '?'} ·{' '}
                     {actionText || 'no action yet'}
                   </div>
                 )}
 
-                <div className="flex gap-2 mb-4 p-1 bg-navy-50 rounded-xl w-fit">
+                <div className="flex gap-2 mb-4 p-1 bg-surface-container-low rounded-xl w-fit">
                   <button
                     type="button"
                     onClick={() => setStoryInputMode('type')}
                     className={cn(
                       'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold transition-all',
                       storyInputMode === 'type'
-                        ? 'bg-white text-navy-900 shadow-sm'
-                        : 'text-navy-500 hover:text-navy-700'
+                        ? 'bg-white text-primary shadow-sm'
+                        : 'text-text-secondary hover:text-primary'
                     )}
                   >
                     <Type size={16} /> Type story
@@ -563,8 +726,8 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                     className={cn(
                       'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold transition-all',
                       storyInputMode === 'upload'
-                        ? 'bg-white text-navy-900 shadow-sm'
-                        : 'text-navy-500 hover:text-navy-700'
+                        ? 'bg-white text-primary shadow-sm'
+                        : 'text-text-secondary hover:text-primary'
                     )}
                   >
                     <Upload size={16} /> Upload photo
@@ -576,7 +739,7 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                     placeholder="Start writing your story here..."
                     value={storyText}
                     onChange={(e) => setStoryText(e.target.value)}
-                    className="w-full bg-navy-50 border-none rounded-2xl p-6 text-sm min-h-[300px] focus:ring-2 focus:ring-accent-400 resize-none"
+                    className="w-full bg-surface-container-low border-none rounded-2xl p-6 text-sm min-h-[300px] focus:ring-2 focus:ring-accent-400 resize-none"
                   />
                 ) : (
                   <div className="space-y-4">
@@ -592,30 +755,30 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                       <button
                         type="button"
                         onClick={() => storyFileRef.current?.click()}
-                        className="w-full min-h-[280px] border-2 border-dashed border-navy-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-navy-500 hover:border-gold-400 hover:bg-gold-50/50 transition-all"
+                        className="w-full min-h-[280px] border-2 border-dashed border-navy-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-text-secondary hover:border-gold-400 hover:bg-secondary-fixed/10/50 transition-all"
                       >
-                        <Upload size={36} className="text-navy-400" />
-                        <span className="font-bold text-navy-700">Upload handwritten story</span>
+                        <Upload size={36} className="text-outline" />
+                        <span className="font-bold text-primary">Upload handwritten story</span>
                         <span className="text-xs">Take a photo or choose from gallery</span>
                       </button>
                     ) : (
-                      <div className="relative rounded-2xl overflow-hidden border border-navy-100">
+                      <div className="relative rounded-2xl overflow-hidden border border-outline-variant/30">
                         <img
                           src={storyImagePreview}
                           alt="Handwritten story"
-                          className="w-full max-h-[400px] object-contain bg-navy-50"
+                          className="w-full max-h-[400px] object-contain bg-surface-container-low"
                         />
                         <button
                           type="button"
                           onClick={clearStoryImage}
-                          className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md text-navy-600 hover:text-red-500"
+                          className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md text-on-surface-variant hover:text-red-500"
                           aria-label="Remove image"
                         >
                           <X size={18} />
                         </button>
                       </div>
                     )}
-                    <p className="text-xs text-navy-500">
+                    <p className="text-xs text-text-secondary">
                       AI will read your handwriting from the photo and review your story.
                     </p>
                   </div>
@@ -625,7 +788,7 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                     type="button"
                     onClick={handleSubmitStory}
                     disabled={isSubmitting}
-                    className="bg-navy-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-navy-800 transition-all flex items-center gap-2 disabled:opacity-50"
+                    className="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primary-container transition-all flex items-center gap-2 disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>
@@ -644,8 +807,8 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
             <div className="space-y-6">
               {!showCharacterFields && (
                 <Card className="p-6">
-                  <h3 className="font-bold text-navy-900 mb-4 flex items-center gap-2">
-                    <Eye size={18} className="text-navy-400" /> Reference Image
+                  <h3 className="font-bold text-primary mb-4 flex items-center gap-2">
+                    <Eye size={18} className="text-outline" /> Reference Image
                   </h3>
                   <div className="aspect-video rounded-xl overflow-hidden grayscale blur-[1px]">
                     <img src={imageSrc} className="w-full h-full object-cover" alt="Reference" />
@@ -653,9 +816,9 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
                 </Card>
               )}
               {showCharacterFields && (
-                <Card className="p-6 border border-navy-100">
-                  <p className="text-sm text-navy-600">
-                    <span className="font-bold text-navy-900">Image hidden.</span> Write your story from memory.
+                <Card className="p-6 border border-outline-variant/30">
+                  <p className="text-sm text-on-surface-variant">
+                    <span className="font-bold text-primary">Image hidden.</span> Write your story from memory.
                   </p>
                 </Card>
               )}
@@ -672,124 +835,145 @@ const PictureStoryPractice: React.FC<PictureStoryPracticeProps> = ({
           </motion.div>
         )}
 
-        {stage === 'evaluation' && evaluation && (
-          <motion.div
-            key="evaluation"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="space-y-8"
-          >
-            <div className="bg-navy-900 text-white rounded-3xl p-8">
-              <span className="bg-gold-500 text-navy-900 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
-                Psychology Assessment Complete
-              </span>
-              <h2 className="text-3xl font-display font-bold mb-2">OLQ Evaluation — {type}</h2>
-              <p className="text-navy-300 text-sm">
-                Automated evaluation powered by Groq based on standard SSB selection parameters.
-              </p>
-            </div>
+        {stage === 'evaluation' && evaluation && (() => {
+          const olqScores = evaluation.olq_scores || {};
+          const scoreValues = [
+            olqScores.effective_intelligence,
+            olqScores.expression,
+            olqScores.social_adaptability,
+            olqScores.initiative,
+          ].filter((s) => typeof s === 'number');
+          const averageScore = scoreValues.length > 0
+            ? Math.round(scoreValues.reduce((a, b) => a + b, 0) / scoreValues.length)
+            : 75;
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <Card className="p-6">
-                  <h3 className="font-bold text-navy-900 mb-6 flex items-center gap-2">
-                    <Award className="text-gold-500" /> OLQ Score Breakdown
-                  </h3>
-                  <div className="space-y-4">
-                    <OLQProgress
-                      label="Effective Intelligence"
-                      value={evaluation.olq_scores?.effective_intelligence || 50}
-                    />
-                    <OLQProgress label="Power of Expression" value={evaluation.olq_scores?.expression || 50} />
-                    <OLQProgress
-                      label="Social Adaptability"
-                      value={evaluation.olq_scores?.social_adaptability || 50}
-                    />
-                    <OLQProgress
-                      label="Initiative & Resourcefulness"
-                      value={evaluation.olq_scores?.initiative || 50}
-                    />
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <h3 className="font-bold text-navy-900 mb-4 flex items-center gap-2">
-                    <Info className="text-navy-400" /> Story Theme & Character Analysis
-                  </h3>
-                  <div className="space-y-4 text-sm text-navy-800">
-                    {evaluation.transcribed_story && (
-                      <div className="bg-gold-50 p-4 rounded-xl border border-gold-100">
-                        <p className="font-bold text-navy-900 text-xs uppercase mb-1">
-                          Read from your photo
-                        </p>
-                        <p className="whitespace-pre-line">{evaluation.transcribed_story}</p>
-                      </div>
-                    )}
-                    <div className="bg-navy-50 p-4 rounded-xl">
-                      <p className="font-bold text-navy-900 text-xs uppercase mb-1">Identified Theme</p>
-                      <p>{evaluation.theme}</p>
-                    </div>
-                    <div className="bg-navy-50 p-4 rounded-xl">
-                      <p className="font-bold text-navy-900 text-xs uppercase mb-1">Character Perception</p>
-                      <p>{evaluation.characters}</p>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <h3 className="font-bold text-navy-900 mb-4 font-display">Detailed Psychology Feedback</h3>
-                  <div className="text-sm text-navy-700 leading-relaxed whitespace-pre-line bg-navy-50/50 p-4 rounded-2xl border border-navy-100">
-                    {evaluation.feedback}
-                  </div>
-                </Card>
+          return (
+            <motion.div
+              key="evaluation"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-8"
+            >
+              <div className="bg-primary text-white rounded-3xl p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                  <span className="bg-secondary-fixed text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
+                    Psychology Assessment Complete
+                  </span>
+                  <h2 className="text-3xl font-display font-bold mb-2">OLQ Evaluation — {type}</h2>
+                  <p className="text-outline-variant text-sm">
+                    Automated evaluation powered by Groq based on standard SSB selection parameters.
+                  </p>
+                </div>
+                <CircularScoreRing score={averageScore} />
               </div>
 
-              <div className="space-y-6">
-                <Card className="p-6 border-2 border-gold-500">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-navy-900 flex items-center gap-2">
-                      <Icon className="text-gold-500" /> Recommended Story Version
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-6">
+                  <Card className="p-6">
+                    <h3 className="font-bold text-primary mb-6 flex items-center gap-2">
+                      <Award className="text-secondary-fixed" /> OLQ Score Breakdown
                     </h3>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(evaluation.revised_story);
-                        alert('Story copied to clipboard!');
-                      }}
-                      className="text-xs font-bold text-gold-600 hover:underline"
-                    >
-                      COPY
-                    </button>
-                  </div>
-                  <div className="bg-navy-50 p-4 rounded-xl text-xs text-navy-700 italic leading-relaxed whitespace-pre-line max-h-[320px] overflow-y-auto border border-navy-100">
-                    &ldquo;{evaluation.revised_story}&rdquo;
-                  </div>
-                </Card>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                      <div className="space-y-4">
+                        <OLQProgress
+                          label="Effective Intelligence"
+                          value={olqScores.effective_intelligence || 50}
+                        />
+                        <OLQProgress label="Power of Expression" value={olqScores.expression || 50} />
+                        <OLQProgress
+                          label="Social Adaptability"
+                          value={olqScores.social_adaptability || 50}
+                        />
+                        <OLQProgress
+                          label="Initiative & Resourcefulness"
+                          value={olqScores.initiative || 50}
+                        />
+                      </div>
+                      <div className="flex justify-center border-t md:border-t-0 md:border-l border-outline-variant/30 pt-6 md:pt-0 md:pl-6">
+                        <RadarChart scores={olqScores} />
+                      </div>
+                    </div>
+                  </Card>
 
-                <button
-                  type="button"
-                  onClick={startAnotherSession}
-                  disabled={loadingImage}
-                  className="w-full bg-navy-900 text-white py-4 rounded-2xl font-bold hover:bg-navy-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {loadingImage ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : (
-                    <RotateCcw size={18} />
-                  )}
-                  Next Random Picture
-                </button>
-                <button
-                  type="button"
-                  onClick={resetSession}
-                  className="w-full border border-navy-200 text-navy-700 py-3 rounded-2xl font-bold hover:bg-navy-50 transition-all"
-                >
-                  Back to Home
-                </button>
+                  <Card className="p-6">
+                    <h3 className="font-bold text-primary mb-4 flex items-center gap-2">
+                      <Info className="text-outline" /> Story Theme & Character Analysis
+                    </h3>
+                    <div className="space-y-4 text-sm text-primary">
+                      {evaluation.transcribed_story && (
+                        <div className="bg-secondary-fixed/10 p-4 rounded-xl border border-secondary-fixed/30">
+                          <p className="font-bold text-primary text-xs uppercase mb-1">
+                            Read from your photo
+                          </p>
+                          <p className="whitespace-pre-line">{evaluation.transcribed_story}</p>
+                        </div>
+                      )}
+                      <div className="bg-surface-container-low p-4 rounded-xl">
+                        <p className="font-bold text-primary text-xs uppercase mb-1">Identified Theme</p>
+                        <p>{evaluation.theme}</p>
+                      </div>
+                      <div className="bg-surface-container-low p-4 rounded-xl">
+                        <p className="font-bold text-primary text-xs uppercase mb-1">Character Perception</p>
+                        <p>{evaluation.characters}</p>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6">
+                    <h3 className="font-bold text-primary mb-4 font-display">Detailed Psychology Feedback</h3>
+                    <div className="text-sm text-primary leading-relaxed whitespace-pre-line bg-surface-container-low/50 p-4 rounded-2xl border border-outline-variant/30">
+                      {evaluation.feedback}
+                    </div>
+                  </Card>
+                </div>
+
+                <div className="space-y-6">
+                  <Card className="p-6 border-2 border-secondary-fixed">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-bold text-primary flex items-center gap-2">
+                        <Icon className="text-secondary-fixed" /> Recommended Story Version
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(evaluation.revised_story);
+                          alert('Story copied to clipboard!');
+                        }}
+                        className="text-xs font-bold text-secondary hover:underline"
+                      >
+                        COPY
+                      </button>
+                    </div>
+                    <div className="bg-surface-container-low p-4 rounded-xl text-xs text-primary italic leading-relaxed whitespace-pre-line max-h-[320px] overflow-y-auto border border-outline-variant/30">
+                      &ldquo;{evaluation.revised_story}&rdquo;
+                    </div>
+                  </Card>
+
+                  <button
+                    type="button"
+                    onClick={startAnotherSession}
+                    disabled={loadingImage}
+                    className="w-full bg-primary text-white py-4 rounded-2xl font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {loadingImage ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <RotateCcw size={18} />
+                    )}
+                    Next Random Picture
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetSession}
+                    className="w-full border border-navy-200 text-primary py-3 rounded-2xl font-bold hover:bg-surface-container-low transition-all"
+                  >
+                    Back to Home
+                  </button>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </div>
   );

@@ -8,7 +8,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card = ({ children, className, ...props }: CardProps) => (
   <div 
     className={cn(
-      "bg-white text-navy-900 border border-navy-100 rounded-xl shadow-sm overflow-hidden",
+      "ssb-card text-on-surface overflow-hidden",
       className
     )} 
     {...props}

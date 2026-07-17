@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, UserPlus, Clock, Loader2, Check, X } from 'lucide-react';
+import { Users, UserPlus, Clock, Loader2, Check, X, Search } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { cn } from '../lib/utils';
 import { NetworkService, AuthService } from '../services/api';
@@ -34,6 +34,7 @@ const Connections = () => {
   const [friends, setFriends] = useState<ApiUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<number | null>(null);
+  const [search, setSearch] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -73,31 +74,48 @@ const Connections = () => {
   };
 
   const tabs = [
-    { id: 'incoming' as const, label: 'Requests', count: incoming.length, icon: <UserPlus size={16} /> },
+    { id: 'incoming' as const, label: 'Pending Requests', count: incoming.length, icon: <UserPlus size={16} /> },
     { id: 'sent' as const, label: 'Sent', count: sent.length, icon: <Clock size={16} /> },
     { id: 'friends' as const, label: 'Connected', count: friends.length, icon: <Users size={16} /> },
   ];
 
+  const filteredFriends = friends.filter((f) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return f.username.toLowerCase().includes(q) || displayName(f).toLowerCase().includes(q);
+  });
+
   return (
-    <div className="max-w-3xl mx-auto pt-16 pb-24 px-4 sm:pt-20 sm:pb-10">
+    <div className="max-w-5xl mx-auto pt-20 pb-24 px-4 md:px-8 sm:pb-10 bg-background min-h-screen">
       <div className="mb-8">
-        <h1 className="text-2xl font-display font-bold text-navy-900">Connections</h1>
-        <p className="text-sm text-navy-500 mt-1">
-          Manage friend requests and stay connected with fellow aspirants.
+        <h1 className="ssb-page-title">Connections</h1>
+        <p className="ssb-page-sub">
+          Discover aspirants, manage requests, and grow your preparation network.
         </p>
       </div>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto">
+      <div className="relative mb-6">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search aspirants by name or username..."
+          className="ssb-input w-full pl-11"
+        />
+      </div>
+
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
             className={cn(
-              'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all',
+              'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all',
               tab === t.id
-                ? 'bg-navy-900 text-white shadow-md'
-                : 'bg-white text-navy-600 border border-navy-100 hover:border-navy-300'
+                ? 'bg-primary text-on-primary shadow-sm'
+                : 'bg-surface text-on-surface-variant border border-outline-variant/30 hover:border-primary/30'
             )}
           >
             {t.icon}
@@ -105,7 +123,7 @@ const Connections = () => {
             {t.count > 0 && (
               <span className={cn(
                 'text-[10px] px-1.5 py-0.5 rounded-full min-w-[18px] text-center',
-                tab === t.id ? 'bg-accent-500 text-white' : 'bg-navy-100 text-navy-600'
+                tab === t.id ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-surface-container text-on-surface-variant'
               )}>
                 {t.count}
               </span>
@@ -116,14 +134,14 @@ const Connections = () => {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="animate-spin text-navy-400" size={32} />
+          <Loader2 className="animate-spin text-secondary-fixed" size={32} />
         </div>
       ) : tab === 'incoming' ? (
         incoming.length === 0 ? (
           <Card className="p-12 text-center">
-            <UserPlus className="mx-auto text-navy-300 mb-3" size={36} />
-            <p className="text-navy-500 text-sm">No pending requests right now.</p>
-            <Link to="/map" className="text-gold-600 text-sm font-bold hover:underline mt-2 inline-block">
+            <UserPlus className="mx-auto text-outline-variant mb-3" size={36} />
+            <p className="text-text-secondary text-sm">No pending requests right now.</p>
+            <Link to="/map" className="text-secondary text-sm font-bold hover:underline mt-2 inline-block">
               Discover aspirants nearby
             </Link>
           </Card>
@@ -131,29 +149,30 @@ const Connections = () => {
           <div className="space-y-3">
             {incoming.map((req) => (
               <Card key={req.id} className="p-4 flex items-center gap-4">
-                <img src={getAvatar(req.from_user.username)} alt="" className="w-12 h-12 rounded-full" />
+                <img src={getAvatar(req.from_user.username)} alt="" className="w-14 h-14 rounded-full border-2 border-secondary-fixed/30" />
                 <div className="flex-1 min-w-0">
-                  <Link to={`/profile/${req.from_user.username}`} className="font-bold text-navy-900 hover:underline">
+                  <Link to={`/profile/${req.from_user.username}`} className="font-bold text-primary hover:underline">
                     {displayName(req.from_user)}
                   </Link>
-                  <p className="text-xs text-navy-500">@{req.from_user.username}</p>
+                  <p className="text-xs text-text-secondary">@{req.from_user.username}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => respond(req.id, 'ACCEPTED')}
                     disabled={actingId === req.id}
-                    className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50"
+                    className="px-4 py-2 bg-tertiary-fixed/30 text-tertiary-container rounded-full text-xs font-bold hover:bg-tertiary-fixed/50 disabled:opacity-50 flex items-center gap-1"
                   >
-                    {actingId === req.id ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />}
+                    {actingId === req.id ? <Loader2 className="animate-spin" size={14} /> : <Check size={14} />}
+                    Accept
                   </button>
                   <button
                     type="button"
                     onClick={() => respond(req.id, 'DECLINED')}
                     disabled={actingId === req.id}
-                    className="p-2 bg-navy-100 text-navy-600 rounded-lg hover:bg-navy-200 disabled:opacity-50"
+                    className="px-4 py-2 border border-outline-variant text-on-surface-variant rounded-full text-xs font-bold hover:bg-surface-container disabled:opacity-50"
                   >
-                    <X size={16} />
+                    Decline
                   </button>
                 </div>
               </Card>
@@ -163,49 +182,58 @@ const Connections = () => {
       ) : tab === 'sent' ? (
         sent.length === 0 ? (
           <Card className="p-12 text-center">
-            <Clock className="mx-auto text-navy-300 mb-3" size={36} />
-            <p className="text-navy-500 text-sm">You haven&apos;t sent any connection requests yet.</p>
+            <Clock className="mx-auto text-outline-variant mb-3" size={36} />
+            <p className="text-text-secondary text-sm">You haven&apos;t sent any connection requests yet.</p>
           </Card>
         ) : (
           <div className="space-y-3">
             {sent.map((req) => (
               <Card key={req.id} className="p-4 flex items-center gap-4">
-                <img src={getAvatar(req.to_user.username)} alt="" className="w-12 h-12 rounded-full" />
+                <img src={getAvatar(req.to_user.username)} alt="" className="w-12 h-12 rounded-full border border-outline-variant/30" />
                 <div className="flex-1">
-                  <Link to={`/profile/${req.to_user.username}`} className="font-bold text-navy-900 hover:underline">
+                  <Link to={`/profile/${req.to_user.username}`} className="font-bold text-primary hover:underline">
                     {displayName(req.to_user)}
                   </Link>
-                  <p className="text-xs text-navy-500">@{req.to_user.username} · Pending</p>
+                  <p className="text-xs text-text-secondary">@{req.to_user.username} · Pending</p>
                 </div>
               </Card>
             ))}
           </div>
         )
-      ) : friends.length === 0 ? (
+      ) : filteredFriends.length === 0 ? (
         <Card className="p-12 text-center">
-          <Users className="mx-auto text-navy-300 mb-3" size={36} />
-          <p className="text-navy-500 text-sm">No connections yet. Send requests from aspirant profiles.</p>
-          <Link to="/map" className="text-gold-600 text-sm font-bold hover:underline mt-2 inline-block">
+          <Users className="mx-auto text-outline-variant mb-3" size={36} />
+          <p className="text-text-secondary text-sm">No connections yet. Send requests from aspirant profiles.</p>
+          <Link to="/map" className="text-secondary text-sm font-bold hover:underline mt-2 inline-block">
             Find aspirants
           </Link>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {friends.map((friend) => (
-            <Card key={friend.id} className="p-4 flex items-center gap-3 hover:shadow-md transition-shadow">
-              <img src={getAvatar(friend.username)} alt="" className="w-12 h-12 rounded-full" />
-              <div className="flex-1 min-w-0">
-                <Link to={`/profile/${friend.username}`} className="font-bold text-navy-900 hover:underline truncate block">
-                  {displayName(friend)}
-                </Link>
-                <p className="text-xs text-navy-500">@{friend.username}</p>
-              </div>
-              <Link
-                to={`/chat?user=${friend.id}`}
-                className="text-xs font-bold text-gold-600 hover:underline flex-shrink-0"
-              >
-                Message
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredFriends.map((friend) => (
+            <Card key={friend.id} className="p-5 flex flex-col items-center text-center card-hover connection-card">
+              <img src={getAvatar(friend.username)} alt="" className="w-20 h-20 rounded-full border-2 border-secondary-fixed/40 mb-3" />
+              <Link to={`/profile/${friend.username}`} className="font-bold text-primary hover:underline">
+                {displayName(friend)}
               </Link>
+              <p className="text-xs text-text-secondary mb-3">@{friend.username}</p>
+              <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant mb-4">
+                Aspirant
+              </span>
+              <div className="flex gap-2 w-full">
+                <Link
+                  to={`/profile/${friend.username}`}
+                  className="flex-1 py-2 text-center border border-primary text-primary rounded-full text-[10px] font-bold uppercase tracking-wider hover:bg-primary hover:text-on-primary transition-colors"
+                >
+                  Profile
+                </Link>
+                <Link
+                  to={`/chat?user=${friend.id}`}
+                  className="flex-1 py-2 text-center ssb-btn-primary text-[10px]"
+                >
+                  Message
+                </Link>
+              </div>
             </Card>
           ))}
         </div>

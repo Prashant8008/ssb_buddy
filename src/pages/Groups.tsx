@@ -112,18 +112,18 @@ const Groups = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20 bg-background min-h-screen">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-display font-bold text-navy-900">Community Groups</h1>
-          <p className="text-navy-500">Connect with aspirants preparing for the same entry.</p>
+          <h1 className="ssb-page-title">Study Groups</h1>
+          <p className="ssb-page-sub">Connect with aspirants preparing for the same entry.</p>
         </div>
         <button
           type="button"
           onClick={() => setShowCreate(true)}
-          className="bg-navy-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-navy-800 transition-all flex items-center gap-2 shadow-lg shadow-navy-900/10 self-start md:self-center"
+          className="ssb-btn-gold px-6 py-3 flex items-center gap-2 self-start md:self-center"
         >
-          <Plus size={20} /> Create New Group
+          <Plus size={18} /> Create Group
         </button>
       </div>
 
@@ -136,7 +136,7 @@ const Groups = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="space-y-6">
           <Card className="p-6">
-            <h3 className="font-bold text-navy-900 mb-4">Categories</h3>
+            <h3 className="font-bold text-primary mb-4">Categories</h3>
             <div className="space-y-2">
               {CATEGORIES.map((cat) => (
                 <button
@@ -146,8 +146,8 @@ const Groups = () => {
                   className={cn(
                     'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all',
                     category === cat
-                      ? 'bg-navy-900 text-white'
-                      : 'text-navy-600 hover:bg-navy-50 hover:text-navy-900'
+                      ? 'bg-primary text-white'
+                      : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
                   )}
                 >
                   {cat || 'All Groups'}
@@ -157,35 +157,35 @@ const Groups = () => {
           </Card>
 
           {profileHint && (
-            <Card className="p-6 bg-gold-50 border-gold-100">
-              <h3 className="font-bold text-navy-900 mb-2">Your profile</h3>
-              <p className="text-xs text-navy-600">{profileHint}</p>
-              <p className="text-xs text-navy-500 mt-2">Groups matching your entry and board appear when you search.</p>
+            <Card className="p-6 bg-secondary-fixed/10 border-secondary-fixed/30">
+              <h3 className="font-bold text-primary mb-2">Your profile</h3>
+              <p className="text-xs text-on-surface-variant">{profileHint}</p>
+              <p className="text-xs text-text-secondary mt-2">Groups matching your entry and board appear when you search.</p>
             </Card>
           )}
         </div>
 
         <div className="lg:col-span-3 space-y-6">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search for groups by name, entry, or city..."
-              className="w-full bg-white border border-navy-100 rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-accent-400 transition-all shadow-sm outline-none"
+              className="w-full bg-surface border border-outline-variant/30 rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary transition-all shadow-[0_2px_12px_rgba(0,0,0,0.07)] outline-none"
             />
           </div>
 
           {loading ? (
             <div className="flex justify-center py-20">
-              <Loader2 className="animate-spin text-navy-400" size={32} />
+              <Loader2 className="animate-spin text-outline" size={32} />
             </div>
           ) : groups.length === 0 ? (
             <Card className="p-12 text-center">
-              <Users className="mx-auto text-navy-300 mb-3" size={40} />
-              <p className="font-bold text-navy-700">No groups found</p>
-              <p className="text-sm text-navy-500 mt-1">Create the first study group for your entry!</p>
+              <Users className="mx-auto text-outline-variant mb-3" size={40} />
+              <p className="font-bold text-primary">No groups found</p>
+              <p className="text-sm text-text-secondary mt-1">Create the first study group for your entry!</p>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,9 +196,9 @@ const Groups = () => {
                 const pendingCount = group.pending_requests_count ?? 0;
 
                 return (
-                  <Card key={group.id} className="p-5 hover:shadow-md transition-all border-navy-100">
+                  <Card key={group.id} className="p-5 card-hover border-outline-variant/20">
                     <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 rounded-2xl bg-navy-50 overflow-hidden flex-shrink-0 border border-navy-100">
+                      <div className="w-16 h-16 rounded-2xl bg-surface-container-low overflow-hidden flex-shrink-0 border border-outline-variant/30">
                         <img
                           src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${group.slug}`}
                           alt={group.name}
@@ -207,21 +207,21 @@ const Groups = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-bold text-navy-900 truncate">{group.name}</h4>
+                          <h4 className="font-bold text-primary truncate">{group.name}</h4>
                           {group.is_private ? (
-                            <Lock size={14} className="text-navy-400 flex-shrink-0" />
+                            <Lock size={14} className="text-outline flex-shrink-0" />
                           ) : (
-                            <Globe size={14} className="text-navy-400 flex-shrink-0" />
+                            <Globe size={14} className="text-outline flex-shrink-0" />
                           )}
                         </div>
                         {group.description && (
-                          <p className="text-xs text-navy-500 line-clamp-2 mb-2">{group.description}</p>
+                          <p className="text-xs text-text-secondary line-clamp-2 mb-2">{group.description}</p>
                         )}
-                        <div className="flex items-center gap-3 text-xs text-navy-500 mb-3">
+                        <div className="flex items-center gap-3 text-xs text-text-secondary mb-3">
                           <span className="flex items-center gap-1">
                             <Users size={12} /> {group.members_count} members
                           </span>
-                          <span className="px-2 py-0.5 bg-navy-100 text-navy-700 rounded-full font-bold">
+                          <span className="px-2 py-0.5 bg-surface-container text-primary rounded-full font-bold">
                             {group.category}
                           </span>
                         </div>
@@ -247,7 +247,7 @@ const Groups = () => {
                               ? 'bg-green-50 text-green-700 border border-green-200'
                               : isPending
                                 ? 'bg-amber-50 text-amber-700 border border-amber-200 cursor-default'
-                                : 'bg-navy-50 hover:bg-accent-500 hover:text-white text-navy-900'
+                                : 'bg-surface-container-low hover:bg-primary hover:text-on-primary text-primary border border-outline-variant/30'
                           )}
                         >
                           {joiningId === group.id ? (
@@ -369,8 +369,8 @@ const CreateGroupModal = ({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-bold text-lg text-navy-900">Create Study Group</h2>
-          <button type="button" onClick={onClose} className="p-2 hover:bg-navy-50 rounded-lg">
+          <h2 className="font-bold text-lg text-primary">Create Study Group</h2>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-surface-container-low rounded-lg">
             <X size={20} />
           </button>
         </div>
@@ -380,19 +380,19 @@ const CreateGroupModal = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Group name"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description (optional)"
             rows={3}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400 resize-none"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400 resize-none"
           />
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           >
             {CATEGORIES.filter(Boolean).map((c) => (
               <option key={c} value={c}>{c.replace('_', ' ')}</option>
@@ -402,24 +402,24 @@ const CreateGroupModal = ({
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="City (optional)"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
-          <label className="flex items-center gap-2 text-sm text-navy-700">
+          <label className="flex items-center gap-2 text-sm text-primary">
             <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} />
             Private group (others must request access to join)
           </label>
 
-          <div className="border border-navy-100 rounded-xl p-3 bg-navy-50/50">
-            <p className="text-sm font-bold text-navy-900 mb-1">Add members from connections</p>
-            <p className="text-xs text-navy-500 mb-3">
+          <div className="border border-outline-variant/30 rounded-xl p-3 bg-surface-container-low/50">
+            <p className="text-sm font-bold text-primary mb-1">Add members from connections</p>
+            <p className="text-xs text-text-secondary mb-3">
               Select friends to add directly when the group is created.
             </p>
             {loadingFriends ? (
               <div className="flex justify-center py-4">
-                <Loader2 className="animate-spin text-navy-400" size={20} />
+                <Loader2 className="animate-spin text-outline" size={20} />
               </div>
             ) : connections.length === 0 ? (
-              <p className="text-xs text-navy-500">
+              <p className="text-xs text-text-secondary">
                 No connections yet. Add friends from the Connections page first.
               </p>
             ) : (
@@ -446,7 +446,7 @@ const CreateGroupModal = ({
                         alt=""
                         className="w-7 h-7 rounded-full"
                       />
-                      <span className="text-sm text-navy-800 truncate">{displayName(friend)}</span>
+                      <span className="text-sm text-primary truncate">{displayName(friend)}</span>
                     </label>
                   ))}
                 </div>
@@ -463,7 +463,7 @@ const CreateGroupModal = ({
           type="button"
           onClick={handleCreate}
           disabled={submitting}
-          className="w-full mt-6 bg-accent-500 text-white py-3 rounded-xl font-bold hover:bg-accent-600 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full mt-6 ssb-btn-primary py-3 flex items-center justify-center gap-2"
         >
           {submitting ? <Loader2 className="animate-spin" size={18} /> : 'Create Group'}
         </button>
@@ -521,10 +521,10 @@ const ManageJoinRequestsModal = ({
       <Card className="w-full max-w-md p-6 max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="font-bold text-lg text-navy-900">Join Requests</h2>
-            <p className="text-xs text-navy-500 mt-0.5">{group.name}</p>
+            <h2 className="font-bold text-lg text-primary">Join Requests</h2>
+            <p className="text-xs text-text-secondary mt-0.5">{group.name}</p>
           </div>
-          <button type="button" onClick={onClose} className="p-2 hover:bg-navy-50 rounded-lg">
+          <button type="button" onClick={onClose} className="p-2 hover:bg-surface-container-low rounded-lg">
             <X size={20} />
           </button>
         </div>
@@ -533,16 +533,16 @@ const ManageJoinRequestsModal = ({
 
         {loading ? (
           <div className="flex justify-center py-10">
-            <Loader2 className="animate-spin text-navy-400" size={28} />
+            <Loader2 className="animate-spin text-outline" size={28} />
           </div>
         ) : requests.length === 0 ? (
-          <p className="text-sm text-navy-500 text-center py-8">No pending requests.</p>
+          <p className="text-sm text-text-secondary text-center py-8">No pending requests.</p>
         ) : (
           <div className="space-y-3">
             {requests.map((req) => (
               <div
                 key={req.id}
-                className="flex items-center gap-3 p-3 rounded-xl border border-navy-100 bg-navy-50/50"
+                className="flex items-center gap-3 p-3 rounded-xl border border-outline-variant/30 bg-surface-container-low/50"
               >
                 <img
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${req.user.username}`}
@@ -550,8 +550,8 @@ const ManageJoinRequestsModal = ({
                   className="w-10 h-10 rounded-full flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-navy-900 truncate">{displayName(req.user)}</p>
-                  <p className="text-xs text-navy-500">@{req.user.username}</p>
+                  <p className="text-sm font-bold text-primary truncate">{displayName(req.user)}</p>
+                  <p className="text-xs text-text-secondary">@{req.user.username}</p>
                 </div>
                 <div className="flex gap-1.5 flex-shrink-0">
                   <button

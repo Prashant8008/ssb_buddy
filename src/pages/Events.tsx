@@ -120,40 +120,40 @@ const Events = () => {
   const upcoming = events.slice(featured ? 1 : 0);
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="max-w-7xl mx-auto p-4 md:p-8 pt-20 bg-background min-h-screen">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-display font-bold text-navy-900">Events & Sessions</h1>
-          <p className="text-navy-500">Join live mock sessions, workshops, and fitness meetups.</p>
+          <h1 className="ssb-page-title">Upcoming Events</h1>
+          <p className="ssb-page-sub">Sharpen your OLQs through community drills and expert webinars.</p>
         </div>
         <button
           type="button"
           onClick={() => setShowCreate(true)}
-          className="bg-gold-500 text-navy-900 px-6 py-3 rounded-xl font-bold hover:bg-gold-600 transition-all flex items-center gap-2 shadow-lg shadow-gold-500/10 self-start md:self-center"
+          className="ssb-btn-gold px-6 py-3 flex items-center gap-2 self-start md:self-center"
         >
-          <Plus size={20} /> Host an Event
+          <Plus size={18} /> Create Event
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           {featured && !loading && (
-            <div className="relative rounded-3xl overflow-hidden bg-navy-900 text-white p-8 md:p-12 mb-8">
+            <div className="relative rounded-3xl overflow-hidden bg-primary text-white p-8 md:p-12 mb-8">
               <div className="relative z-10 max-w-lg">
-                <span className="bg-gold-500 text-navy-900 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
+                <span className="bg-secondary-fixed text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
                   {formatEventType(featured.event_type)}
                 </span>
                 <h2 className="text-3xl font-display font-bold mb-4">{featured.title}</h2>
                 {featured.description && (
-                  <p className="text-navy-300 mb-8 leading-relaxed line-clamp-3">{featured.description}</p>
+                  <p className="text-outline-variant mb-8 leading-relaxed line-clamp-3">{featured.description}</p>
                 )}
                 <div className="flex flex-wrap gap-6 mb-8">
                   <div className="flex items-center gap-2 text-sm">
-                    <Calendar size={18} className="text-gold-500" />
+                    <Calendar size={18} className="text-secondary-fixed" />
                     {format(parseISO(featured.starts_at), 'd MMM yyyy')}
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <Clock size={18} className="text-gold-500" />
+                    <Clock size={18} className="text-secondary-fixed" />
                     {format(parseISO(featured.starts_at), 'hh:mm a')}
                   </div>
                 </div>
@@ -161,7 +161,7 @@ const Events = () => {
                   type="button"
                   onClick={() => handleRsvp(featured.id)}
                   disabled={rsvpIds.has(featured.id) || rsvpingId === featured.id}
-                  className="bg-white text-navy-900 px-8 py-3 rounded-xl font-bold hover:bg-navy-50 transition-all disabled:opacity-60"
+                  className="bg-white text-primary px-8 py-3 rounded-xl font-bold hover:bg-surface-container-low transition-all disabled:opacity-60"
                 >
                   {rsvpIds.has(featured.id) ? 'RSVP Confirmed' : 'RSVP Now'}
                 </button>
@@ -173,17 +173,17 @@ const Events = () => {
           )}
 
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-navy-900 text-lg">Upcoming Events</h3>
+            <h3 className="font-bold text-primary text-lg">Upcoming Events</h3>
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setShowFilter(!showFilter)}
-                className="flex items-center gap-2 text-sm font-bold text-navy-500 hover:text-navy-900"
+                className="flex items-center gap-2 text-sm font-bold text-text-secondary hover:text-primary"
               >
                 <Filter size={16} /> Filter
               </button>
               {showFilter && (
-                <div className="absolute right-0 top-full mt-2 bg-white border border-navy-100 rounded-xl shadow-lg p-2 z-10 min-w-[160px]">
+                <div className="absolute right-0 top-full mt-2 bg-white border border-outline-variant/30 rounded-xl shadow-lg p-2 z-10 min-w-[160px]">
                   {EVENT_TYPES.map((t) => (
                     <button
                       key={t.value}
@@ -191,7 +191,7 @@ const Events = () => {
                       onClick={() => { setTypeFilter(t.value); setShowFilter(false); }}
                       className={cn(
                         'w-full text-left px-3 py-2 text-xs font-medium rounded-lg',
-                        typeFilter === t.value ? 'bg-navy-900 text-white' : 'hover:bg-navy-50'
+                        typeFilter === t.value ? 'bg-primary text-white' : 'hover:bg-surface-container-low'
                       )}
                     >
                       {t.label}
@@ -204,31 +204,31 @@ const Events = () => {
 
           {loading ? (
             <div className="flex justify-center py-16">
-              <Loader2 className="animate-spin text-navy-400" size={32} />
+              <Loader2 className="animate-spin text-outline" size={32} />
             </div>
           ) : upcoming.length === 0 && !featured ? (
             <Card className="p-12 text-center">
-              <Calendar className="mx-auto text-navy-300 mb-3" size={40} />
-              <p className="font-bold text-navy-700">No events scheduled</p>
-              <p className="text-sm text-navy-500 mt-1">Be the first to host a mock session!</p>
+              <Calendar className="mx-auto text-outline-variant mb-3" size={40} />
+              <p className="font-bold text-primary">No events scheduled</p>
+              <p className="text-sm text-text-secondary mt-1">Be the first to host a mock session!</p>
             </Card>
           ) : (
             <div className="space-y-4">
               {upcoming.map((event) => {
                 const dateParts = formatEventDate(event.starts_at);
                 return (
-                  <Card key={event.id} className="p-6 hover:shadow-md transition-all border-navy-100">
-                    <div className="flex flex-col md:flex-row md:items-center gap-6">
-                      <div className="w-16 h-16 bg-navy-50 rounded-2xl flex flex-col items-center justify-center border border-navy-100 flex-shrink-0">
-                        <span className="text-[10px] font-bold text-navy-400 uppercase">{dateParts.top}</span>
-                        <span className="text-xl font-bold text-navy-900">{dateParts.bottom}</span>
+                  <Card key={event.id} className="p-5 card-hover border-outline-variant/20">
+                    <div className="flex flex-col sm:flex-row gap-5">
+                      <div className="flex-shrink-0 flex flex-col items-center justify-center w-24 h-24 bg-primary rounded-xl text-on-primary">
+                        <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">{dateParts.top}</span>
+                        <span className="text-2xl font-bold leading-none">{dateParts.bottom}</span>
                       </div>
                       <div className="flex-1">
-                        <span className="text-[10px] font-bold text-gold-600 uppercase tracking-tighter">
+                        <span className="text-[10px] font-bold text-secondary uppercase tracking-tighter">
                           {formatEventType(event.event_type)}
                         </span>
-                        <h4 className="font-bold text-navy-900 text-lg">{event.title}</h4>
-                        <div className="flex flex-wrap gap-4 mt-2 text-xs text-navy-500 font-medium">
+                        <h4 className="font-bold text-primary text-lg">{event.title}</h4>
+                        <div className="flex flex-wrap gap-4 mt-2 text-xs text-text-secondary font-medium">
                           <span className="flex items-center gap-1">
                             <Clock size={14} /> {format(parseISO(event.starts_at), 'hh:mm a')}
                           </span>
@@ -239,17 +239,17 @@ const Events = () => {
                             <Users size={14} /> {event.rsvp_count} going
                           </span>
                         </div>
-                        <p className="text-xs text-navy-400 mt-1">Host: {hostName(event.host)}</p>
+                        <p className="text-xs text-outline mt-1">Host: {hostName(event.host)}</p>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRsvp(event.id)}
                         disabled={rsvpIds.has(event.id) || rsvpingId === event.id}
                         className={cn(
-                          'px-6 py-2.5 rounded-xl font-bold transition-all text-sm',
+                          'px-6 py-2.5 rounded-full font-bold transition-all text-xs uppercase tracking-wider',
                           rsvpIds.has(event.id)
-                            ? 'bg-green-50 text-green-700 border border-green-200'
-                            : 'bg-navy-900 text-white hover:bg-navy-800'
+                            ? 'bg-tertiary-fixed/30 text-tertiary-container border border-tertiary-fixed/40'
+                            : 'ssb-btn-primary'
                         )}
                       >
                         {rsvpingId === event.id ? (
@@ -270,11 +270,11 @@ const Events = () => {
 
         <div className="space-y-6">
           <Card className="p-6">
-            <h3 className="font-bold text-navy-900 mb-4">Your Schedule</h3>
+            <h3 className="font-bold text-primary mb-4">Your Schedule</h3>
             {rsvps.length === 0 ? (
               <div className="text-center py-8">
-                <Calendar size={40} className="text-navy-100 mx-auto mb-4" />
-                <p className="text-sm text-navy-500">No events scheduled yet.</p>
+                <Calendar size={40} className="text-surface-container mx-auto mb-4" />
+                <p className="text-sm text-text-secondary">No events scheduled yet.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -282,9 +282,9 @@ const Events = () => {
                   const ev = r.event;
                   if (!ev?.title) return null;
                   return (
-                    <div key={r.id} className="p-3 bg-navy-50 rounded-xl">
-                      <p className="text-sm font-bold text-navy-900">{ev.title}</p>
-                      <p className="text-xs text-navy-500 mt-1">
+                    <div key={r.id} className="p-3 bg-surface-container-low rounded-xl">
+                      <p className="text-sm font-bold text-primary">{ev.title}</p>
+                      <p className="text-xs text-text-secondary mt-1">
                         {format(parseISO(ev.starts_at), 'd MMM · hh:mm a')}
                       </p>
                     </div>
@@ -294,15 +294,15 @@ const Events = () => {
             )}
           </Card>
 
-          <Card className="p-6 bg-accent-50 border-accent-100">
-            <h3 className="font-bold text-navy-900 mb-2">Host a Session</h3>
-            <p className="text-xs text-navy-600 mb-4">
+          <Card className="p-6 bg-secondary-fixed/10 border-secondary-fixed/20">
+            <h3 className="font-bold text-primary mb-2">Host a Session</h3>
+            <p className="text-xs text-on-surface-variant mb-4">
               Recommended candidates and mentors can host mock sessions for the community.
             </p>
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="w-full bg-accent-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-accent-600 transition-all"
+              className="w-full ssb-btn-gold py-3"
             >
               Create Event
             </button>
@@ -362,8 +362,8 @@ const CreateEventModal = ({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-bold text-lg text-navy-900">Host an Event</h2>
-          <button type="button" onClick={onClose} className="p-2 hover:bg-navy-50 rounded-lg">
+          <h2 className="font-bold text-lg text-primary">Host an Event</h2>
+          <button type="button" onClick={onClose} className="p-2 hover:bg-surface-container-low rounded-lg">
             <X size={20} />
           </button>
         </div>
@@ -373,19 +373,19 @@ const CreateEventModal = ({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Event title"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description"
             rows={3}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400 resize-none"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400 resize-none"
           />
           <select
             value={eventType}
             onChange={(e) => setEventType(e.target.value)}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           >
             {EVENT_TYPES.filter((t) => t.value).map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
@@ -395,26 +395,26 @@ const CreateEventModal = ({
             type="datetime-local"
             value={startsAt}
             onChange={(e) => setStartsAt(e.target.value)}
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="City (optional)"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
           <input
             value={onlineUrl}
             onChange={(e) => setOnlineUrl(e.target.value)}
             placeholder="Online meeting URL (optional)"
-            className="w-full bg-navy-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
+            className="w-full bg-surface-container-low rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-accent-400"
           />
         </div>
         <button
           type="button"
           onClick={handleCreate}
           disabled={submitting}
-          className="w-full mt-6 bg-gold-500 text-navy-900 py-3 rounded-xl font-bold hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full mt-6 bg-secondary-fixed text-primary py-3 rounded-xl font-bold hover:bg-secondary-container disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {submitting ? <Loader2 className="animate-spin" size={18} /> : 'Publish Event'}
         </button>

@@ -71,10 +71,10 @@ const AIMentor = () => {
   if (selectedModule) {
     const activeModule = modules.find(m => m.id === selectedModule);
     return (
-      <div className="flex flex-col h-[calc(100vh-120px)] bg-white max-w-4xl mx-auto rounded-3xl overflow-hidden border border-navy-100 shadow-sm mt-4">
+      <div className="flex flex-col h-[calc(100vh-120px)] bg-white max-w-4xl mx-auto rounded-3xl overflow-hidden border border-outline-variant/30 shadow-sm mt-4">
         {/* Header */}
-        <div className="p-4 border-b border-navy-100 flex items-center gap-3 bg-navy-900 text-white">
-          <button onClick={() => setSelectedModule(null)} className="p-1 hover:bg-navy-800 rounded-lg"><ChevronLeft /></button>
+        <div className="p-4 border-b border-outline-variant/30 flex items-center gap-3 bg-primary text-white">
+          <button onClick={() => setSelectedModule(null)} className="p-1 hover:bg-primary-container rounded-lg"><ChevronLeft /></button>
           <div>
             <h3 className="font-bold text-sm">{activeModule?.title}</h3>
             <p className="text-[10px] text-green-400 font-bold">AI Mentor Active</p>
@@ -82,7 +82,7 @@ const AIMentor = () => {
         </div>
         
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-navy-50/20">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-surface-container-low/20">
           {messages.map((msg, index) => {
             const isOwn = msg.sender === 'Me';
             return (
@@ -94,7 +94,7 @@ const AIMentor = () => {
                 )}
               >
                 {!isOwn && (
-                  <div className="w-8 h-8 rounded-full bg-navy-900 flex items-center justify-center text-gold-500 flex-shrink-0 shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-secondary-fixed flex-shrink-0 shadow-sm">
                     <Bot size={16} />
                   </div>
                 )}
@@ -102,8 +102,8 @@ const AIMentor = () => {
                   className={cn(
                     "p-3 rounded-2xl text-sm leading-relaxed whitespace-pre-line shadow-sm border",
                     isOwn 
-                      ? "bg-navy-900 text-white rounded-tr-none border-navy-900" 
-                      : "bg-white text-navy-900 rounded-tl-none border-navy-100"
+                      ? "bg-primary text-on-primary rounded-tr-none border-primary-container" 
+                      : "bg-white text-primary rounded-tl-none border-outline-variant/30"
                   )}
                 >
                   {msg.text}
@@ -113,10 +113,10 @@ const AIMentor = () => {
           })}
           {isLoading && (
             <div className="flex gap-3 max-w-[85%] mr-auto">
-              <div className="w-8 h-8 rounded-full bg-navy-900 flex items-center justify-center text-gold-500 flex-shrink-0 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-secondary-fixed flex-shrink-0 shadow-sm">
                 <Bot size={16} />
               </div>
-              <div className="bg-white text-navy-400 p-3 rounded-2xl rounded-tl-none border border-navy-100 flex items-center gap-2 text-sm">
+              <div className="bg-white text-outline p-3 rounded-2xl rounded-tl-none border border-outline-variant/30 flex items-center gap-2 text-sm">
                 <Loader2 className="animate-spin" size={14} /> AI is formulating evaluation...
               </div>
             </div>
@@ -125,8 +125,8 @@ const AIMentor = () => {
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handleSendMessage} className="p-4 border-t border-navy-100 bg-white">
-          <div className="flex items-center gap-2 bg-navy-50 rounded-2xl px-4 py-2 border border-navy-100/50">
+        <form onSubmit={handleSendMessage} className="p-4 border-t border-outline-variant/30 bg-white">
+          <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl px-4 py-2 border border-outline-variant/30/50">
             <input 
               type="text" 
               value={inputText}
@@ -137,7 +137,7 @@ const AIMentor = () => {
             />
             <button 
               type="submit" 
-              className="p-2 bg-navy-900 text-white rounded-full hover:bg-navy-800 disabled:opacity-55"
+              className="p-2 bg-primary text-white rounded-full hover:bg-primary-container disabled:opacity-55"
               disabled={isLoading || !inputText.trim()}
             >
               <Send size={16} />
@@ -149,28 +149,36 @@ const AIMentor = () => {
   }
 
   return (
-    <div className="p-4 space-y-6 max-w-4xl mx-auto">
-      <div className="bg-navy-900 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg shadow-navy-900/10">
+    <div className="p-4 space-y-6 max-w-5xl mx-auto bg-background min-h-screen pb-24">
+      <div className="bg-primary rounded-2xl p-6 text-on-primary relative overflow-hidden shadow-lg shadow-primary/10">
         <div className="relative z-10">
-          <h2 className="text-xl font-bold mb-2">AI SSB Mentor</h2>
-          <p className="text-navy-300 text-xs">Powered by Llama 3.3 and Groq for precise psychological and interview evaluation.</p>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-secondary-fixed/20 border-2 border-secondary-fixed flex items-center justify-center text-secondary-fixed">
+              <Bot size={20} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-secondary-fixed">SSB AI Mentor</h2>
+              <p className="text-[10px] text-on-primary-container font-bold">Online — Powered by Groq AI</p>
+            </div>
+          </div>
+          <p className="text-on-primary-container text-xs">Select a module to begin your coaching session.</p>
         </div>
-        <Bot className="absolute -right-4 -bottom-4 w-32 h-32 text-navy-800 opacity-50" />
+        <Shield className="absolute -right-4 -bottom-4 w-32 h-32 text-on-primary/10" />
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-3">
         {modules.map((module) => (
-          <Card 
-            key={module.id} 
-            className="p-4 flex items-center gap-4 active:scale-95 transition-all cursor-pointer hover:border-gold-500 hover:shadow-md border border-navy-50"
+          <Card
+            key={module.id}
+            className="p-4 flex items-center gap-4 card-hover cursor-pointer border-outline-variant/20"
             onClick={() => setSelectedModule(module.id)}
           >
-            <div className="w-12 h-12 bg-accent-50 text-accent-600 rounded-xl flex items-center justify-center border border-accent-100 shadow-sm flex-shrink-0">
+            <div className="w-12 h-12 bg-primary-container text-secondary-fixed rounded-xl flex items-center justify-center flex-shrink-0">
               {module.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-navy-900 text-sm">{module.title}</h4>
-              <p className="text-xs text-navy-500 truncate">{module.desc}</p>
+              <h4 className="font-bold text-primary text-sm">{module.title}</h4>
+              <p className="text-xs text-text-secondary truncate">{module.desc}</p>
             </div>
           </Card>
         ))}

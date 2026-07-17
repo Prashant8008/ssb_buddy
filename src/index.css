@@ -10,20 +10,45 @@
   }
 
   body {
-    @apply antialiased text-navy-900 bg-navy-50 overflow-x-hidden;
+    @apply antialiased text-on-surface bg-background overflow-x-hidden;
     overscroll-behavior-y: contain;
   }
 
-  /* iOS Safari: inputs without explicit color can render invisible text in light UI */
   input,
   textarea,
   select {
-    @apply text-navy-900;
+    @apply text-on-surface;
   }
 
   input::placeholder,
   textarea::placeholder {
-    @apply text-navy-400;
+    @apply text-on-surface-variant;
+  }
+}
+
+@layer components {
+  .ssb-card {
+    @apply bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-outline-variant/20;
+  }
+
+  .ssb-btn-primary {
+    @apply bg-primary hover:bg-primary-container text-on-primary font-bold rounded-full text-xs uppercase tracking-wider transition-all active:scale-95 disabled:opacity-50;
+  }
+
+  .ssb-btn-gold {
+    @apply bg-secondary-fixed hover:bg-secondary-container text-on-secondary-fixed font-bold rounded-full text-xs uppercase tracking-wider transition-all active:scale-95 disabled:opacity-50;
+  }
+
+  .ssb-input {
+    @apply bg-surface-container-low border border-outline-variant/40 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none text-on-surface placeholder:text-on-surface-variant;
+  }
+
+  .ssb-page-title {
+    @apply text-headline-lg font-bold text-primary tracking-tight;
+  }
+
+  .ssb-page-sub {
+    @apply text-sm text-text-secondary mt-1;
   }
 }
 
@@ -106,3 +131,56 @@
 .active-scale:active {
   transform: scale(0.96);
 }
+
+/* Mockup Design Tokens Utility Classes */
+.glass-dark {
+  background: rgba(0, 3, 23, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hero-gradient {
+  background: radial-gradient(circle at top right, #0f1c3f 0%, #000317 100%);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 224, 143, 0.3);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.connection-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.connection-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes pulse-gold {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite ease-in-out;
+}
+
+.shield-pin {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+

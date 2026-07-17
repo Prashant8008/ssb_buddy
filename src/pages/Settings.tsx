@@ -1,63 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, NavLink } from 'react-router-dom';
+import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import {
   User,
   Bell,
-  Eye,
+  Lock,
   Palette,
   ShieldCheck,
   LogOut,
   ChevronRight,
   Loader2,
+  Edit,
+  Sun,
+  Moon,
+  Laptop,
+  Smartphone,
+  CheckCircle,
+  Eye
 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { cn } from '../lib/utils';
 import { AuthService, ProfileService } from '../services/api';
 
 const Settings = () => {
+  const navigate = useNavigate();
   const menuItems = [
     { icon: <User size={18} />, label: 'Account', path: '' },
-    { icon: <Eye size={18} />, label: 'Privacy', path: 'privacy' },
+    { icon: <Lock size={18} />, label: 'Privacy', path: 'privacy' },
     { icon: <Bell size={18} />, label: 'Notifications', path: 'notifications' },
     { icon: <Palette size={18} />, label: 'Theme', path: 'theme' },
     { icon: <ShieldCheck size={18} />, label: 'Security', path: 'security' },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto pt-20 pb-10 px-4">
-      <h1 className="text-2xl font-display font-bold text-navy-900 mb-8">Settings</h1>
+    <div className="max-w-7xl mx-auto px-4 py-8 text-[#191c1f] font-sans">
+      <div className="flex flex-col lg:flex-row gap-8">
+        
+        {/* Sidebar Navigation */}
+        <aside className="w-full lg:w-64 shrink-0">
+          <div className="bg-white rounded-2xl border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-4 flex flex-col gap-1.5">
+            <h2 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest px-3 mb-2">Settings</h2>
+            
+            {menuItems.map((item) => (
+              <NavLink
+                key={item.label}
+                to={item.path}
+                end
+                className={({ isActive }) => cn(
+                  'flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all',
+                  isActive
+                    ? 'bg-[#000317] text-white shadow-sm'
+                    : 'text-[#45464e] hover:bg-slate-50'
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  {item.label}
+                </div>
+                <ChevronRight size={14} className="opacity-55" />
+              </NavLink>
+            ))}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="space-y-2">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.label}
-              to={item.path}
-              end
-              className={({ isActive }) => cn(
-                'flex items-center justify-between p-3 rounded-xl transition-all font-medium text-sm',
-                isActive
-                  ? 'bg-accent-500 text-white shadow-lg'
-                  : 'text-navy-600 hover:bg-navy-100'
-              )}
+            <hr className="my-3 border-[#c6c6cf]/20" />
+            <button
+              onClick={() => {
+                AuthService.logout();
+                navigate('/login');
+              }}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 text-xs font-bold uppercase tracking-wider transition-all"
             >
-              <div className="flex items-center gap-3">
-                {item.icon}
-                {item.label}
-              </div>
-              <ChevronRight size={16} className="opacity-50" />
-            </NavLink>
-          ))}
-          <button
-            type="button"
-            onClick={() => AuthService.logout()}
-            className="w-full flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 rounded-xl transition-all font-medium text-sm mt-8"
-          >
-            <LogOut size={18} /> Logout
-          </button>
-        </div>
+              <LogOut size={18} />
+              Logout
+            </button>
+          </div>
+        </aside>
 
-        <div className="lg:col-span-3">
+        {/* Content Area */}
+        <section className="flex-1 max-w-2xl">
           <Routes>
             <Route path="/" element={<AccountSettings />} />
             <Route path="/privacy" element={<PrivacySettings />} />
@@ -65,30 +83,45 @@ const Settings = () => {
             <Route path="/theme" element={<ThemeSettings />} />
             <Route path="/security" element={<SecuritySettings />} />
           </Routes>
-        </div>
+        </section>
       </div>
     </div>
   );
 };
 
+// ── Account Subpage ───────────────────────────────────────────────────────────
 const AccountSettings = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [bio, setBio] = useState('');
+  
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
+  const getAvatar = (seed: string) =>
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+
   useEffect(() => {
-    AuthService.me()
-      .then((res) => {
-        setFirstName(res.data.first_name || '');
-        setLastName(res.data.last_name || '');
-        setUsername(res.data.username || '');
-        setEmail(res.data.email || '');
-      })
-      .finally(() => setLoading(false));
+    const fetchMe = async () => {
+      try {
+        const meRes = await AuthService.me();
+        setFirstName(meRes.data.first_name || '');
+        setLastName(meRes.data.last_name || '');
+        setUsername(meRes.data.username || '');
+        setEmail(meRes.data.email || '');
+
+        const profileRes = await ProfileService.getMe();
+        setBio(profileRes.data.bio || '');
+      } catch (err) {
+        console.error('Failed to load settings user info:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMe();
   }, []);
 
   const handleSave = async () => {
@@ -100,6 +133,7 @@ const AccountSettings = () => {
         last_name: lastName.trim(),
         email: email.trim(),
       });
+      await ProfileService.updateMe({ bio: bio.trim() });
       setMessage('Account updated successfully.');
     } catch (e: any) {
       setMessage(e.response?.data?.detail || 'Failed to save changes.');
@@ -110,78 +144,109 @@ const AccountSettings = () => {
 
   if (loading) {
     return (
-      <Card className="p-12 flex justify-center">
-        <Loader2 className="animate-spin text-navy-400" size={28} />
+      <Card className="p-12 flex justify-center border-[#c6c6cf]/20">
+        <Loader2 className="animate-spin text-[#ffe08f]" size={28} />
       </Card>
     );
   }
 
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-bold text-navy-900 mb-6">Account Information</h3>
-      <div className="space-y-6">
+    <div className="space-y-6">
+      <h1 className="text-xl font-bold text-[#000317] tracking-tight">Account Settings</h1>
+      
+      {/* Profile info block */}
+      <div className="bg-white rounded-2xl border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-6">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-full overflow-hidden border border-[#ffe08f] bg-slate-50 flex-shrink-0">
+              <img className="w-full h-full object-cover" src={getAvatar(username)} alt="" />
+            </div>
+            <button className="absolute bottom-0 right-0 bg-[#000317] text-white p-1.5 rounded-full shadow-md hover:scale-105 transition-transform">
+              <Edit size={12} />
+            </button>
+          </div>
+          <div>
+            <h3 className="font-bold text-base text-[#1A1F36]">{firstName} {lastName}</h3>
+            <p className="text-xs text-[#6B7280]">@{username}</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-navy-500 uppercase">First Name</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">First Name</label>
             <input
               type="text"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+              className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#000317] outline-none text-[#191c1f]"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-navy-500 uppercase">Last Name</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Last Name</label>
             <input
               type="text"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
+              className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#000317] outline-none text-[#191c1f]"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#000317] outline-none text-[#191c1f]"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5 md:col-span-2">
+            <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Bio</label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              rows={3}
+              className="bg-[#f2f3f7] border border-[#c6c6cf]/40 rounded-xl px-4 py-2.5 text-xs focus:ring-1 focus:ring-[#000317] outline-none resize-none text-[#191c1f]"
             />
           </div>
         </div>
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-navy-500 uppercase">Username</label>
-          <input
-            type="text"
-            value={username}
-            readOnly
-            className="w-full bg-navy-100 border-none rounded-lg p-3 text-sm text-navy-500 cursor-not-allowed"
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-navy-500 uppercase">Email Address</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-navy-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent-400 outline-none"
-          />
-        </div>
+
         {message && (
-          <p className={cn('text-sm', message.includes('success') ? 'text-green-600' : 'text-red-500')}>
+          <p className={cn('text-xs font-semibold mt-4', message.includes('success') ? 'text-green-600' : 'text-red-500')}>
             {message}
           </p>
         )}
-        <div className="pt-6 border-t border-navy-50">
+
+        <div className="mt-6 pt-4 border-t border-slate-100 flex justify-end">
           <button
-            type="button"
             onClick={handleSave}
             disabled={saving}
-            className="bg-navy-900 text-white px-8 py-2.5 rounded-lg text-sm font-bold hover:bg-navy-800 transition-all disabled:opacity-50 flex items-center gap-2"
+            className="bg-[#000317] hover:bg-[#0f1c3f] text-white px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 flex items-center gap-1.5"
           >
-            {saving ? <Loader2 className="animate-spin" size={16} /> : null}
+            {saving ? <Loader2 className="animate-spin" size={12} /> : null}
             Save Changes
           </button>
         </div>
       </div>
-    </Card>
+      
+      {/* Danger Zone */}
+      <div className="bg-red-50 border border-red-200/50 rounded-2xl p-6">
+        <h3 className="font-bold text-sm text-red-700 uppercase tracking-wide">Danger Zone</h3>
+        <p className="text-xs text-red-900 mt-2 leading-relaxed">
+          Deleting your account is permanent. All your progress, OLQ tracker logs, and discussions will be deleted forever.
+        </p>
+        <button className="mt-4 border border-red-500 hover:bg-red-500 hover:text-white text-red-500 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all">
+          Delete Account
+        </button>
+      </div>
+    </div>
   );
 };
 
+// ── Privacy Subpage ──────────────────────────────────────────────────────────
 const PrivacySettings = () => {
   const [publicProfile, setPublicProfile] = useState(true);
   const [friendsOnly, setFriendsOnly] = useState(false);
+  const [showStats, setShowStats] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -195,100 +260,94 @@ const PrivacySettings = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const setVisibility = async (mode: 'public' | 'followers' | 'private') => {
-    const updates = {
-      public: { public_profile: true, friends_only: false },
-      followers: { public_profile: true, friends_only: true },
-      private: { public_profile: false, friends_only: false },
-    }[mode];
+  const toggleSwitch = async (mode: 'public' | 'private' | 'stats', checked: boolean) => {
     setSaving(true);
     setMessage('');
     try {
-      await ProfileService.updateMe(updates);
-      setPublicProfile(updates.public_profile);
-      setFriendsOnly(updates.friends_only);
+      if (mode === 'public') {
+        const updates = { public_profile: checked, friends_only: false };
+        await ProfileService.updateMe(updates);
+        setPublicProfile(checked);
+        setFriendsOnly(false);
+      } else if (mode === 'private') {
+        const updates = { public_profile: !checked, friends_only: checked };
+        await ProfileService.updateMe(updates);
+        setPublicProfile(!checked);
+        setFriendsOnly(checked);
+      } else if (mode === 'stats') {
+        setShowStats(checked);
+      }
       setMessage('Privacy settings saved.');
     } catch {
-      setMessage('Failed to save privacy settings.');
+      setMessage('Failed to save settings.');
     } finally {
       setSaving(false);
     }
   };
 
-  const currentMode = !publicProfile ? 'private' : friendsOnly ? 'followers' : 'public';
-
   if (loading) {
     return (
-      <Card className="p-12 flex justify-center">
-        <Loader2 className="animate-spin text-navy-400" size={28} />
+      <Card className="p-12 flex justify-center border-[#c6c6cf]/20">
+        <Loader2 className="animate-spin text-[#ffe08f]" size={28} />
       </Card>
     );
   }
 
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-bold text-navy-900 mb-6">Privacy Controls</h3>
-      <div className="space-y-6">
-        <PrivacyToggle
-          label="Profile Visibility"
-          desc="Who can see your profile and SSB journey"
-          options={['Public', 'Followers', 'Private']}
-          active={currentMode === 'public' ? 'Public' : currentMode === 'followers' ? 'Followers' : 'Private'}
-          onSelect={(opt) => {
-            const map: Record<string, 'public' | 'followers' | 'private'> = {
-              Public: 'public',
-              Followers: 'followers',
-              Private: 'private',
-            };
-            setVisibility(map[opt]);
-          }}
-          disabled={saving}
-        />
-        {message && <p className="text-sm text-green-600">{message}</p>}
+    <div className="space-y-6">
+      <h1 className="text-xl font-bold text-[#000317] tracking-tight">Privacy Controls</h1>
+      
+      <div className="bg-white rounded-2xl border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-6 space-y-6">
+        
+        {/* Toggle 1: Public Profile */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-xs text-[#000317]">Public Profile Visibility</h4>
+            <p className="text-[11px] text-[#6B7280] mt-0.5">Make your profile visible to selectors and other aspirants.</p>
+          </div>
+          <button
+            onClick={() => toggleSwitch('public', !publicProfile)}
+            disabled={saving}
+            className={cn(
+              "w-11 h-6 rounded-full p-1 transition-colors relative duration-200",
+              publicProfile ? "bg-[#ffe08f]" : "bg-slate-200"
+            )}
+          >
+            <div className={cn(
+              "bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
+              publicProfile ? "translate-x-5" : "translate-x-0"
+            )} />
+          </button>
+        </div>
+
+        {/* Toggle 2: Show Practice Stats */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-xs text-[#000317]">Show Practice Radar Stats</h4>
+            <p className="text-[11px] text-[#6B7280] mt-0.5">Allow others to see your OLQ progress charts and mock results.</p>
+          </div>
+          <button
+            onClick={() => toggleSwitch('stats', !showStats)}
+            disabled={saving}
+            className={cn(
+              "w-11 h-6 rounded-full p-1 transition-colors relative duration-200",
+              showStats ? "bg-[#ffe08f]" : "bg-slate-200"
+            )}
+          >
+            <div className={cn(
+              "bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
+              showStats ? "translate-x-5" : "translate-x-0"
+            )} />
+          </button>
+        </div>
+
+        {message && <p className="text-xs font-semibold text-green-600 mt-2">{message}</p>}
       </div>
-    </Card>
+    </div>
   );
 };
 
-const PrivacyToggle = ({
-  label,
-  desc,
-  options,
-  active,
-  onSelect,
-  disabled,
-}: {
-  label: string;
-  desc: string;
-  options: string[];
-  active: string;
-  onSelect: (opt: string) => void;
-  disabled?: boolean;
-}) => (
-  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-navy-50 rounded-xl">
-    <div>
-      <p className="font-bold text-navy-900 text-sm">{label}</p>
-      <p className="text-xs text-navy-500">{desc}</p>
-    </div>
-    <div className="flex bg-white p-1 rounded-lg border border-navy-100">
-      {options.map((opt) => (
-        <button
-          key={opt}
-          type="button"
-          disabled={disabled}
-          onClick={() => onSelect(opt)}
-          className={cn(
-            'px-3 py-1 text-[10px] font-bold rounded transition-colors',
-            active === opt ? 'bg-accent-500 text-white' : 'hover:bg-navy-50'
-          )}
-        >
-          {opt}
-        </button>
-      ))}
-    </div>
-  </div>
-);
-
+// ── Notifications Subpage ────────────────────────────────────────────────────
 const NotificationSettings = () => {
   const [emailNotif, setEmailNotif] = useState(true);
   const [pushNotif, setPushNotif] = useState(true);
@@ -316,99 +375,137 @@ const NotificationSettings = () => {
 
   if (loading) {
     return (
-      <Card className="p-12 flex justify-center">
-        <Loader2 className="animate-spin text-navy-400" size={28} />
+      <Card className="p-12 flex justify-center border-[#c6c6cf]/20">
+        <Loader2 className="animate-spin text-[#ffe08f]" size={28} />
       </Card>
     );
   }
 
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-bold text-navy-900 mb-6">Notifications</h3>
-      <div className="space-y-4">
-        <ToggleItem
-          label="Email Notifications"
-          checked={emailNotif}
-          onChange={(v) => toggle('email_notifications', v)}
-        />
-        <ToggleItem
-          label="Push Notifications"
-          checked={pushNotif}
-          onChange={(v) => toggle('push_notifications', v)}
-        />
+    <div className="space-y-6">
+      <h1 className="text-xl font-bold text-[#000317] tracking-tight">Notification Alerts</h1>
+      
+      <div className="bg-white rounded-2xl border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-6 space-y-6">
+        
+        {/* Email Toggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-xs text-[#000317]">Email Digest Notifications</h4>
+            <p className="text-[11px] text-[#6B7280] mt-0.5">Weekly digest summarizing academy updates and local group drills.</p>
+          </div>
+          <button
+            onClick={() => toggle('email_notifications', !emailNotif)}
+            className={cn(
+              "w-11 h-6 rounded-full p-1 transition-colors relative duration-200",
+              emailNotif ? "bg-[#ffe08f]" : "bg-slate-200"
+            )}
+          >
+            <div className={cn(
+              "bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
+              emailNotif ? "translate-x-5" : "translate-x-0"
+            )} />
+          </button>
+        </div>
+
+        {/* Push Toggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-xs text-[#000317]">Flash Drill Alerts</h4>
+            <p className="text-[11px] text-[#6B7280] mt-0.5">Instant alerts when timed psychology mock sessions begin.</p>
+          </div>
+          <button
+            onClick={() => toggle('push_notifications', !pushNotif)}
+            className={cn(
+              "w-11 h-6 rounded-full p-1 transition-colors relative duration-200",
+              pushNotif ? "bg-[#ffe08f]" : "bg-slate-200"
+            )}
+          >
+            <div className={cn(
+              "bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200",
+              pushNotif ? "translate-x-5" : "translate-x-0"
+            )} />
+          </button>
+        </div>
+
       </div>
-    </Card>
+    </div>
   );
 };
 
+// ── Theme Subpage ────────────────────────────────────────────────────────────
 const ThemeSettings = () => (
-  <Card className="p-6">
-    <h3 className="text-lg font-bold text-navy-900 mb-6">Appearance</h3>
-    <p className="text-sm text-navy-500">Theme switching coming soon. Light mode is active.</p>
-    <div className="grid grid-cols-3 gap-4 mt-4">
-      <ThemeCard label="Light" active />
-      <ThemeCard label="Dark" />
-      <ThemeCard label="System" />
-    </div>
-  </Card>
-);
+  <div className="space-y-6">
+    <h1 className="text-xl font-bold text-[#000317] tracking-tight">Theme Preferences</h1>
+    
+    <div className="bg-white rounded-2xl border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        
+        <button className="p-4 border-2 border-[#ffe08f] bg-slate-50 rounded-xl flex flex-col items-center gap-3 transition-all select-none">
+          <Sun className="text-[#000317] w-8 h-8" />
+          <span className="text-xs font-bold text-[#000317]">Light Active</span>
+        </button>
+        
+        <button className="p-4 border border-[#c6c6cf]/30 bg-slate-50/50 opacity-60 rounded-xl flex flex-col items-center gap-3 transition-all cursor-not-allowed">
+          <Moon className="text-[#76767f] w-8 h-8" />
+          <span className="text-xs font-bold text-[#76767f]">Dark Mode</span>
+        </button>
 
-const SecuritySettings = () => (
-  <Card className="p-6">
-    <h3 className="text-lg font-bold text-navy-900 mb-6">Security</h3>
-    <div className="p-4 bg-navy-50 rounded-xl flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center text-gold-600">
-          <ShieldCheck size={20} />
-        </div>
-        <div>
-          <p className="font-bold text-sm">Two-Factor Authentication</p>
-          <p className="text-xs text-navy-500">Coming in a future update</p>
-        </div>
       </div>
     </div>
-  </Card>
-);
-
-const ToggleItem = ({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) => (
-  <div className="flex items-center justify-between py-2">
-    <span className="text-sm font-medium text-navy-800">{label}</span>
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className={cn(
-        'w-10 h-5 rounded-full relative transition-colors',
-        checked ? 'bg-gold-500' : 'bg-navy-200'
-      )}
-    >
-      <div
-        className={cn(
-          'absolute top-1 w-3 h-3 bg-white rounded-full transition-all',
-          checked ? 'left-6' : 'left-1'
-        )}
-      />
-    </button>
   </div>
 );
 
-const ThemeCard = ({ label, active = false }: { label: string; active?: boolean }) => (
-  <div
-    className={cn(
-      'aspect-video rounded-xl border-2 flex items-center justify-center cursor-default transition-all',
-      active ? 'border-gold-500 bg-navy-50' : 'border-navy-100 opacity-50'
-    )}
-  >
-    <span className="text-xs font-bold">{label}</span>
+// ── Security Subpage ──────────────────────────────────────────────────────────
+const SecuritySettings = () => (
+  <div className="space-y-6">
+    <h1 className="text-xl font-bold text-[#000317] tracking-tight">Security Access</h1>
+    
+    <div className="bg-white rounded-2xl border border-[#c6c6cf]/20 shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-6 space-y-6">
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[#000317]">
+            <ShieldCheck size={20} />
+          </div>
+          <div>
+            <h4 className="font-bold text-xs text-[#000317]">Two-Factor Authentication</h4>
+            <p className="text-[11px] text-[#6B7280]">Add a hardware or software authenticator layer to logins.</p>
+          </div>
+        </div>
+        <button className="bg-slate-100 text-[#000317] font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-slate-200">
+          Enable
+        </button>
+      </div>
+
+      <hr className="border-[#c6c6cf]/10" />
+
+      <div>
+        <h4 className="font-bold text-xs text-[#000317] mb-3">Active Registered Devices</h4>
+        
+        <div className="flex items-center justify-between py-3 border-b border-slate-50">
+          <div className="flex items-center gap-3">
+            <Laptop className="text-[#76767f]" size={18} />
+            <div>
+              <p className="text-xs font-bold text-[#000317]">Windows PC • New Delhi, IN</p>
+              <p className="text-[10px] text-[#6B7280]">Current active session</p>
+            </div>
+          </div>
+          <span className="text-[9px] text-[#785d00] bg-[#ffe08f]/20 px-2 py-0.5 rounded uppercase font-bold tracking-wider">Active</span>
+        </div>
+
+        <div className="flex items-center justify-between py-3">
+          <div className="flex items-center gap-3">
+            <Smartphone className="text-[#76767f]" size={18} />
+            <div>
+              <p className="text-xs font-bold text-[#000317]">iPhone 15 • Bangalore, IN</p>
+              <p className="text-[10px] text-[#6B7280]">Last active: 2 hours ago</p>
+            </div>
+          </div>
+          <button className="text-xs font-bold text-red-600 hover:underline">Revoke</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 );
 

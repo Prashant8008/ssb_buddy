@@ -4,7 +4,7 @@
  */
 import axios from 'axios';
 
-const PRODUCTION_API_BASE_URL = 'https://ssb-connect.onrender.com/api';
+const PRODUCTION_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ssb-connect-api.onrender.com/api';
 
 const isUsableApiEnv = (value: unknown): value is string => {
   if (typeof value !== 'string' || !value.trim()) return false;

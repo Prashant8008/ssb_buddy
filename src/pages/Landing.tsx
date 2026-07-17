@@ -1,587 +1,385 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AuthPanel, { AuthTab } from '../components/auth/AuthPanel';
-import HeroAdventureBackground from '../components/landing/HeroAdventureBackground';
 import {
   Shield,
-  Users,
-  MessageCircle,
-  Calendar,
-  BookOpen,
-  ChevronRight,
-  MapPin,
-  Clock,
-  Send,
-  Share2,
-  Globe,
-  Video,
-  Menu,
-  X,
-  Flame,
-  Radio,
-  GraduationCap,
-  Target,
-  Award,
+  Star,
+  Brain,
+  Bot,
+  Map,
+  Heart,
+  MessageSquare,
+  Download,
+  FileText,
+  CheckCircle,
   ArrowRight,
+  Globe,
+  Share2,
+  Mail,
+  Users,
+  Calendar,
+  MessageCircle,
+  Award,
+  BookOpen,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { cn } from '../lib/utils';
 
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-40px' },
-  transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-};
-
-const glass =
-  'bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl';
-
-const navLinks = [
-  { label: 'Home', href: '#top' },
-  { label: 'Community', href: '#community' },
-  { label: 'Events', href: '#events' },
-  { label: 'Resources', href: '#features' },
-  { label: 'Mentors', href: '#about' },
-  { label: 'Success Stories', href: '#stories' },
-];
-
-const liveStats = [
-  { icon: Users, value: '20K+', label: 'Aspirants' },
-  { icon: GraduationCap, value: '500+', label: 'Mentors' },
-  { icon: MessageCircle, value: '2.5K+', label: 'Discussions' },
-  { icon: Calendar, value: '100+', label: 'Events' },
-];
-
-const hubEvents = [
-  { day: '15', month: 'JUN', title: 'SSB Preparation Webinar', time: '6:00 PM · Online' },
-  { day: '18', month: 'JUN', title: 'Group Discussion Practice', time: '5:30 PM · Bangalore' },
-  { day: '22', month: 'JUN', title: 'Mock Interview Session', time: '4:00 PM · Online' },
-];
-
-const feedPosts = [
-  {
-    seed: 'arjun',
-    name: 'Arjun_S',
-    time: '2h ago',
-    body: 'Just cleared my screening test! Happy to share my PPDT approach with anyone preparing for NDA.',
-    hot: true,
-    replies: 24,
-  },
-  {
-    seed: 'priya',
-    name: 'Priya_M',
-    time: '4h ago',
-    body: 'Looking for a GD practice group in Pune this weekend. Anyone interested?',
-    hot: false,
-    replies: 12,
-  },
-  {
-    seed: 'rahul',
-    name: 'Rahul_V',
-    time: '6h ago',
-    body: 'Sharing my TAT practice notes — 30 prompts with sample stories. Link in comments.',
-    hot: true,
-    replies: 38,
-  },
-];
-
-const popularGroups = [
-  { name: 'NDA Aspirants 2025', members: '4.2K', icon: Target, color: 'text-olive-600 bg-olive-900/40' },
-  { name: 'CDS Preparation Hub', members: '3.1K', icon: Shield, color: 'text-signal-500 bg-signal-500/10' },
-  { name: 'AFCAT Study Circle', members: '2.8K', icon: Award, color: 'text-sky-400 bg-sky-400/10' },
-  { name: 'SSB Tips & Experiences', members: '5.6K', icon: BookOpen, color: 'text-white/70 bg-white/5' },
-];
-
-const successStories = [
-  { seed: 'vikram', name: 'Vikram S.', quote: 'Found my study tribe here. Cleared SSB on my second attempt.', entry: 'NDA 2024' },
-  { seed: 'meera', name: 'Meera K.', quote: 'The mock GDs and mentor sessions were game-changers.', entry: 'CDS 2024' },
-  { seed: 'dev', name: 'Dev P.', quote: 'Real aspirants, real support. No toxic competition.', entry: 'AFCAT 2024' },
-  { seed: 'sana', name: 'Sana R.', quote: 'Events kept me disciplined through 8 months of prep.', entry: 'SSB Recommended' },
-];
-
-const LOGO_SRC = '/ssb-connect-logo.png';
-
-const logoImageClass =
-  'rounded-full object-cover ring-1 ring-white/10 shadow-lg shadow-black/30 transition-transform duration-300 group-hover:scale-[1.02]';
-
-const Logo = ({ className, imageClassName }: { className?: string; imageClassName?: string }) => (
-  <Link to="/" className={cn('inline-flex items-center group', className)}>
-    <img
-      src={LOGO_SRC}
-      alt="SSB Connect — Army, Navy, Air Force"
-      className={cn('h-11 w-11', logoImageClass, imageClassName)}
-    />
-  </Link>
-);
+const glass = 'bg-[#000317]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl';
 
 const Landing = () => {
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [email, setEmail] = useState('');
   const [authTab, setAuthTab] = useState<AuthTab>('login');
-  const [feedTab, setFeedTab] = useState<'trending' | 'latest' | 'following'>('trending');
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const openAuth = (tab: AuthTab) => {
     setAuthTab(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const authElement = document.getElementById('auth-section');
+    if (authElement) {
+      authElement.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
-    <div id="top" className="min-h-screen bg-midnight-950 text-white scroll-smooth selection:bg-signal-500/30">
-      {/* ── Hero ── */}
-      <section className="relative min-h-[92vh] flex flex-col">
-        <HeroAdventureBackground />
+    <div className="min-h-screen bg-[#f8f9fd] text-[#191c1f] scroll-smooth selection:bg-[#ffe08f] selection:text-[#241a00] font-sans">
+      {/* Navigation Shell */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? 'bg-[#000317]/95 shadow-lg py-3' : 'bg-[#000317]/90 py-4'
+        } border-b border-white/[0.06] backdrop-blur-md`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
+          {/* Brand */}
+          <div className="flex items-center gap-2">
+            <Shield className="text-[#ffe08f] w-8 h-8 fill-current" />
+            <h1 className="text-xl font-bold text-[#ffe08f]">SSB Connect</h1>
+          </div>
 
-        <header
-          className={cn(
-            'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-            scrolled ? 'bg-midnight-950/90 backdrop-blur-xl border-b border-white/[0.06]' : 'bg-transparent'
-          )}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-            <Logo />
+          {/* Nav Links (Desktop) */}
+          <nav className="hidden md:flex items-center gap-8">
+            <a className="text-[#ffe08f] border-b-2 border-[#ffe08f] pb-1 text-xs font-semibold tracking-wider uppercase" href="#top">Home</a>
+            <a className="text-[#7984ad] hover:text-white transition-colors text-xs font-semibold tracking-wider uppercase" href="#features">Hub</a>
+            <a className="text-[#7984ad] hover:text-white transition-colors text-xs font-semibold tracking-wider uppercase" href="#feed">Feed</a>
+            <a className="text-[#7984ad] hover:text-white transition-colors text-xs font-semibold tracking-wider uppercase" href="#stories">Stories</a>
+          </nav>
 
-            <nav className="hidden xl:flex items-center gap-7">
-              {navLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="text-[13px] font-medium text-white/60 hover:text-white transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-
-            <div className="hidden md:flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => openAuth('login')}
-                className="px-5 py-2 text-sm font-semibold text-white/80 border border-white/20 rounded-full hover:bg-white/5 transition-all"
-              >
-                Login
-              </button>
-              <button
-                type="button"
-                onClick={() => openAuth('signup')}
-                className="px-5 py-2.5 text-sm font-bold text-midnight-950 bg-signal-500 hover:bg-signal-400 rounded-full transition-all shadow-lg shadow-signal-500/25"
-              >
-                Sign Up
-              </button>
-            </div>
-
+          {/* Actions */}
+          <div className="flex items-center gap-4">
             <button
-              type="button"
-              className="md:hidden p-2 text-white/80"
-              onClick={() => setMobileNavOpen((v) => !v)}
-              aria-label="Toggle menu"
-            >
-              {mobileNavOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
-          </div>
-
-          {mobileNavOpen && (
-            <div className="md:hidden border-t border-white/10 bg-midnight-950/95 backdrop-blur-xl px-4 py-4 space-y-3">
-              {navLinks.map((link) => (
-                <a key={link.label} href={link.href} onClick={() => setMobileNavOpen(false)} className="block text-sm text-white/70 py-2">
-                  {link.label}
-                </a>
-              ))}
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { openAuth('login'); setMobileNavOpen(false); }} className="flex-1 py-2.5 text-sm border border-white/20 rounded-full">
-                  Login
-                </button>
-                <button type="button" onClick={() => { openAuth('signup'); setMobileNavOpen(false); }} className="flex-1 py-2.5 text-sm font-bold bg-signal-500 text-midnight-950 rounded-full">
-                  Sign Up
-                </button>
-              </div>
-            </div>
-          )}
-        </header>
-
-        <div className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-24 lg:pt-28 pb-12 flex flex-col justify-center">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.img
-                src={LOGO_SRC}
-                alt="SSB Connect logo"
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="h-32 w-32 sm:h-40 sm:w-40 rounded-full object-cover ring-2 ring-white/10 shadow-2xl shadow-black/40 mb-6"
-              />
-              <p className="text-signal-500/90 text-xs font-bold uppercase tracking-[0.25em] mb-5">
-                India&apos;s Armed Forces Community
-              </p>
-              <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-[3.4rem] leading-[1.05] tracking-tight">
-                ONE GOAL. ONE COMMUNITY.{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-signal-400 to-signal-500">
-                  ENDLESS POSSIBILITIES.
-                </span>
-              </h1>
-              <p className="mt-6 text-base sm:text-lg text-white/55 max-w-lg leading-relaxed">
-                Connect with aspirants, mentors, and seniors. Practice together, join events,
-                and prepare for your SSB journey — as one community.
-              </p>
-
-              <div className="mt-9 flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={() => openAuth('signup')}
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-olive-900 hover:bg-olive-800 text-white font-bold rounded-full border border-olive-700/50 transition-all"
-                >
-                  Join the Community
-                  <ChevronRight size={18} />
-                </button>
-                <a
-                  href="#events"
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-white/80 font-semibold rounded-full border border-white/20 hover:bg-white/5 transition-all"
-                >
-                  Explore Events
-                </a>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="flex justify-center lg:justify-end"
-            >
-              <AuthPanel tab={authTab} onTabChange={setAuthTab} variant="hero-dark" />
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Live stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5 }}
-          className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6 pb-10"
-        >
-          <div className={cn(glass, 'grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-white/[0.06]')}>
-            {liveStats.map(({ icon: Icon, value, label }) => (
-              <div key={label} className="flex items-center gap-3 px-5 py-4 lg:py-5">
-                <div className="w-9 h-9 rounded-full border border-signal-500/30 flex items-center justify-center text-signal-500">
-                  <Icon size={16} strokeWidth={1.8} />
-                </div>
-                <div>
-                  <p className="font-display font-bold text-lg leading-none">{value}</p>
-                  <p className="text-[11px] text-white/45 mt-0.5 uppercase tracking-wider">{label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ── Community Hub ── */}
-      <section id="community" className="relative py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mb-10">
-            <p className="text-signal-500/80 text-xs font-bold uppercase tracking-[0.2em] mb-2">Live Community</p>
-            <h2 className="font-display font-bold text-2xl sm:text-3xl">See What&apos;s Happening Now</h2>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-12 gap-5">
-            {/* Events column */}
-            <motion.div {...fadeUp} id="events" className={cn(glass, 'lg:col-span-3 p-5')}>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="font-bold text-sm flex items-center gap-2">
-                  <Calendar size={15} className="text-signal-500" />
-                  Upcoming Events
-                </h3>
-              </div>
-              <div className="space-y-3">
-                {hubEvents.map((ev) => (
-                  <div
-                    key={ev.title}
-                    className="group p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-signal-500/20 hover:bg-white/[0.05] transition-all cursor-pointer"
-                  >
-                    <div className="flex gap-3">
-                      <div className="text-center shrink-0 w-11 py-1 rounded-lg bg-olive-900/60 border border-olive-700/30">
-                        <p className="text-[9px] font-bold text-white/50">{ev.month}</p>
-                        <p className="text-lg font-bold leading-none text-signal-500">{ev.day}</p>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold leading-snug truncate">{ev.title}</p>
-                        <p className="text-[11px] text-white/40 mt-1">{ev.time}</p>
-                        <button type="button" className="mt-2 text-[11px] font-bold text-signal-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                          Register →
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Feed column */}
-            <motion.div {...fadeUp} className={cn(glass, 'lg:col-span-5 p-5')}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-sm flex items-center gap-2">
-                  <MessageCircle size={15} className="text-signal-500" />
-                  Active Community
-                </h3>
-                <div className="flex gap-1 p-0.5 rounded-lg bg-white/[0.04]">
-                  {(['trending', 'latest', 'following'] as const).map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setFeedTab(t)}
-                      className={cn(
-                        'px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all capitalize',
-                        feedTab === t ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'
-                      )}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-3">
-                {feedPosts.map((post) => (
-                  <div
-                    key={post.name}
-                    className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-white/10 transition-all"
-                  >
-                    <div className="flex items-start gap-3">
-                      <img
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.seed}`}
-                        alt=""
-                        className="w-9 h-9 rounded-full bg-white/10 shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-bold">{post.name}</span>
-                          <span className="text-[10px] text-white/35">{post.time}</span>
-                          {post.hot && (
-                            <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-orange-400">
-                              <Flame size={11} /> Hot
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-white/60 mt-1 leading-relaxed">{post.body}</p>
-                        <p className="text-[11px] text-white/35 mt-2">{post.replies} replies</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Groups + Live */}
-            <div className="lg:col-span-4 space-y-5">
-              <motion.div {...fadeUp} className={cn(glass, 'p-5')}>
-                <h3 className="font-bold text-sm flex items-center gap-2 mb-4">
-                  <Users size={15} className="text-signal-500" />
-                  Popular Groups
-                </h3>
-                <div className="space-y-2">
-                  {popularGroups.map((g) => (
-                    <div
-                      key={g.name}
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.04] transition-colors cursor-pointer group"
-                    >
-                      <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center shrink-0', g.color)}>
-                        <g.icon size={16} strokeWidth={1.8} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate group-hover:text-signal-400 transition-colors">{g.name}</p>
-                        <p className="text-[11px] text-white/35">{g.members} members</p>
-                      </div>
-                      <ChevronRight size={14} className="text-white/20 group-hover:text-white/50 shrink-0" />
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              <motion.div
-                {...fadeUp}
-                className={cn(glass, 'p-5 border-signal-500/15')}
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </span>
-                  <h3 className="font-bold text-sm">Live Now</h3>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { label: '356 Aspirants Online', icon: Radio },
-                    { label: '12 New Discussions Today', icon: MessageCircle },
-                    { label: '5 Events This Week', icon: Calendar },
-                  ].map(({ label, icon: Icon }) => (
-                    <div key={label} className="flex items-center gap-3 text-sm text-white/60">
-                      <Icon size={14} className="text-signal-500/70 shrink-0" />
-                      {label}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Features strip ── */}
-      <section id="features" className="py-14 border-y border-white/[0.05] bg-midnight-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: Users, title: 'Connect', desc: 'Find mentors & peers' },
-              { icon: MessageCircle, title: 'Discuss', desc: 'Share real experiences' },
-              { icon: Calendar, title: 'Events', desc: 'GDs, mocks & meetups' },
-              { icon: BookOpen, title: 'Learn', desc: 'Resources & guidance' },
-            ].map(({ icon: Icon, title, desc }) => (
-              <motion.div
-                key={title}
-                {...fadeUp}
-                whileHover={{ y: -2 }}
-                className="text-center p-4 rounded-xl hover:bg-white/[0.03] transition-colors"
-              >
-                <div className="w-10 h-10 mx-auto rounded-full border border-signal-500/25 flex items-center justify-center text-signal-500 mb-3">
-                  <Icon size={18} strokeWidth={1.8} />
-                </div>
-                <p className="font-bold text-sm">{title}</p>
-                <p className="text-xs text-white/40 mt-1">{desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Success Stories ── */}
-      <section id="stories" className="py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div {...fadeUp} className="text-center mb-12">
-            <p className="text-signal-500/80 text-xs font-bold uppercase tracking-[0.2em] mb-2">Success Stories</p>
-            <h2 className="font-display font-bold text-2xl sm:text-3xl">Aspirants Who Made It</h2>
-          </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {successStories.map((s) => (
-              <motion.div
-                key={s.name}
-                {...fadeUp}
-                whileHover={{ y: -3 }}
-                className={cn(glass, 'p-6 text-center')}
-              >
-                <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${s.seed}`}
-                  alt=""
-                  className="w-16 h-16 rounded-full mx-auto border-2 border-signal-500/30 bg-white/5"
-                />
-                <p className="mt-4 text-sm text-white/60 italic leading-relaxed">&ldquo;{s.quote}&rdquo;</p>
-                <p className="mt-3 text-sm font-bold">{s.name}</p>
-                <p className="text-[11px] text-signal-500/80 mt-0.5">{s.entry}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Report for Duty CTA ── */}
-      <section id="about" className="py-16 sm:py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <motion.div {...fadeUp}>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl leading-tight">
-              Your Journey.{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-signal-400 to-signal-500">
-                Our Mission.
-              </span>
-            </h2>
-            <p className="mt-4 text-white/50 max-w-md mx-auto">
-              Join thousands of defence aspirants preparing smarter, together.
-            </p>
-            <button
-              type="button"
               onClick={() => openAuth('signup')}
-              className="mt-8 inline-flex items-center gap-2 px-10 py-4 bg-signal-500 hover:bg-signal-400 text-midnight-950 font-bold text-lg rounded-full transition-all shadow-xl shadow-signal-500/25 hover:shadow-signal-500/40 hover:-translate-y-0.5"
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-[#ffe08f] hover:bg-[#fed977] text-[#241a00] rounded-full text-xs font-bold uppercase tracking-wider transition-all hover:scale-105 active:scale-95 shadow-md shadow-gold-500/10"
             >
-              Report for Duty
-              <ArrowRight size={20} />
+              Enlist Now
             </button>
-          </motion.div>
+            <button
+              onClick={() => openAuth('login')}
+              className="text-white hover:text-[#ffe08f] transition-colors text-xs font-semibold tracking-wider uppercase"
+            >
+              Login
+            </button>
+          </div>
         </div>
-      </section>
+      </header>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-white/[0.06] bg-midnight-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            <div>
-              <Logo imageClassName="h-14 w-14" />
-              <p className="mt-4 text-sm text-white/40 leading-relaxed">
-                India&apos;s community platform for SSB aspirants — connect, prepare, and grow together.
-              </p>
-              <div className="flex gap-3 mt-5">
-                {[Share2, Video, Globe].map((Icon, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className="w-9 h-9 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-signal-500 hover:border-signal-500/30 transition-all"
-                    aria-label="Social"
-                  >
-                    <Icon size={15} />
-                  </a>
-                ))}
-              </div>
-            </div>
+      {/* Hero Section */}
+      <section id="top" className="hero-gradient min-h-[90vh] pt-24 pb-16 flex flex-col items-center justify-center relative overflow-hidden px-4">
+        {/* Background Animation Placement */}
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #1a1f36 0%, transparent 70%)' }}></div>
+        </div>
 
-            <div>
-              <h4 className="font-bold text-sm mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-white/45">
-                {navLinks.slice(0, 5).map((l) => (
-                  <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-sm mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-white/45">
-                {['Help Center', 'Guidelines', 'Privacy Policy', 'Terms of Service'].map((item) => (
-                  <li key={item}><a href="#" className="hover:text-white transition-colors">{item}</a></li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-sm mb-4">Stay Connected</h4>
-              <form
-                className="flex rounded-full overflow-hidden bg-white/[0.05] border border-white/10"
-                onSubmit={(e) => { e.preventDefault(); setEmail(''); }}
+        <div className="max-w-7xl mx-auto w-full z-10 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-center lg:text-left text-white max-w-2xl mx-auto lg:mx-0">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0f1c3f] border border-[#7984ad]/20 text-[#ffe08f] text-xs font-semibold uppercase tracking-wider mb-6 animate-pulse">
+              <Star className="w-3.5 h-3.5 fill-current" />
+              India's #1 Community for Future Officers
+            </span>
+            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-glow tracking-tight leading-tight">
+              Your Journey to the <br /> <span className="text-[#ffe08f]">Stars</span> Begins Here.
+            </h2>
+            <p className="text-sm sm:text-base text-[#7984ad] mt-6 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Connect with thousands of aspirants, train with AI-powered SSB feedback, and track your Officer-Like Qualities (OLQs) in real-time.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <button
+                onClick={() => openAuth('signup')}
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#ffe08f] hover:bg-[#fed977] text-[#241a00] font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl shadow-gold-500/20"
               >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email"
-                  className="flex-1 px-4 py-2.5 bg-transparent text-sm text-white placeholder:text-white/30 outline-none min-w-0"
-                />
-                <button type="submit" className="px-4 text-signal-500 hover:text-signal-400 transition-colors" aria-label="Subscribe">
-                  <Send size={16} />
-                </button>
-              </form>
+                Join Community
+              </button>
+              <a
+                href="#features"
+                className="w-full sm:w-auto px-8 py-3.5 bg-transparent border-2 border-[#7984ad] hover:border-white text-white font-bold rounded-full transition-all text-center"
+              >
+                Start Practice Hub
+              </a>
+            </div>
+
+            {/* Stats Bar */}
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 p-6 glass-dark rounded-2xl border border-white/[0.06] text-center">
+              <div>
+                <div className="text-xl font-bold text-white">20K+</div>
+                <div className="text-[9px] text-[#7984ad] uppercase tracking-widest font-semibold mt-1">Aspirants</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-white">1.2M</div>
+                <div className="text-[9px] text-[#7984ad] uppercase tracking-widest font-semibold mt-1">Questions Solved</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-white">500+</div>
+                <div className="text-[9px] text-[#7984ad] uppercase tracking-widest font-semibold mt-1">Mock Interviews</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-white">98%</div>
+                <div className="text-[9px] text-[#7984ad] uppercase tracking-widest font-semibold mt-1">Success Rate</div>
+              </div>
             </div>
           </div>
 
-          <p className="mt-12 pt-8 border-t border-white/[0.06] text-center text-xs text-white/30">
-            © {new Date().getFullYear()} SSB Connect. All rights reserved.
-          </p>
+          {/* Authentication Panel */}
+          <div id="auth-section" className="flex justify-center lg:justify-end">
+            <AuthPanel tab={authTab} onTabChange={setAuthTab} variant="hero-dark" />
+          </div>
+        </div>
+      </section>
+
+      {/* Features Bento Strip */}
+      <section id="features" className="py-20 bg-white px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12 text-center">
+            <h3 className="text-3xl font-bold text-[#000317] tracking-tight">Built for Strategic Mastery</h3>
+            <p className="text-sm text-[#6B7280] mt-2">Precision-engineered tools to help you crack the SSB interview.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Feature 1: SSB Practice Hub */}
+            <div className="p-6 bg-[#f2f3f7] rounded-2xl border border-[#c6c6cf]/20 hover:shadow-lg transition-all duration-300 flex flex-col h-full group">
+              <div className="w-12 h-12 bg-[#000317] flex items-center justify-center rounded-xl mb-6">
+                <Brain className="text-white w-6 h-6" />
+              </div>
+              <h4 className="text-lg font-bold text-[#000317] mb-2">Practice Hub</h4>
+              <p className="text-xs text-[#45464e] leading-relaxed flex-grow">
+                Complete TAT, WAT, and SRT modules with real-time timers and officer-vetted sample responses.
+              </p>
+              <a className="mt-6 flex items-center gap-1.5 text-xs font-bold text-[#000317] group-hover:gap-2.5 transition-all" href="#auth-section">
+                Enter Hub <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+
+            {/* Feature 2: AI Mentor */}
+            <div className="p-6 bg-[#000317] text-white rounded-2xl hover:shadow-lg transition-all duration-300 flex flex-col h-full relative overflow-hidden">
+              <div className="w-12 h-12 bg-[#ffe08f] flex items-center justify-center rounded-xl mb-6">
+                <Bot className="text-[#241a00] w-6 h-6" />
+              </div>
+              <h4 className="text-lg font-bold text-[#ffe08f] mb-2">AI Personal Mentor</h4>
+              <p className="text-xs text-[#7984ad] leading-relaxed flex-grow">
+                Our proprietary AI analyzes your PIQ form and simulates personalized interview questions tailored to your profile.
+              </p>
+              <button
+                onClick={() => openAuth('signup')}
+                className="mt-6 px-4 py-2 bg-[#ffe08f] hover:bg-[#fed977] text-[#241a00] rounded-lg font-bold text-xs w-fit"
+              >
+                Upgrade to Pro
+              </button>
+            </div>
+
+            {/* Feature 3: Locality Map */}
+            <div className="p-6 bg-[#f2f3f7] rounded-2xl border border-[#c6c6cf]/20 hover:shadow-lg transition-all duration-300 flex flex-col h-full">
+              <div className="w-12 h-12 bg-green-500/10 flex items-center justify-center rounded-xl mb-6 text-green-700">
+                <Map className="w-6 h-6" />
+              </div>
+              <h4 className="text-lg font-bold text-[#000317] mb-2">Aspirant Network</h4>
+              <p className="text-xs text-[#45464e] leading-relaxed flex-grow">
+                Find and connect with fellow aspirants in your city for ground practice and PPDT sessions.
+              </p>
+              <div className="mt-6 rounded-lg overflow-hidden h-28 bg-[#edeef2] border border-[#c6c6cf] flex items-center justify-center relative bg-cover bg-center grayscale" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuA8pDQkp6QGl_K_yn0TRWjju5abnBEiM5ySwpLjeu1M7Zg5txldPfUbcb7NyF1xgowd9m_Fj1CDy3ngu90ZizOu2_r84togoxbBbGpA6rlo4flVWwji8oE2Z01bKS42OX65qbteZKmTKLXr4uY_chbp1cUrsXGblAaL7FsYRsICJKoJtHbr2rq9Pc56mwXjTBbCKFidpXkmoiXj0e-t752FN3wkndF0vjFj7dTcOgTUB6dXkeTRBlTX5dnv8NvI_98WKTFs3Ug32oz_')" }}>
+                <span className="absolute bg-[#000317]/70 text-[#ffe08f] text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Map Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Community Feed Preview */}
+      <section id="feed" className="py-20 bg-[#000317] text-white relative px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-4">
+            <div className="max-w-xl">
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight">Pulse of the Regiment</h3>
+              <p className="text-[#7984ad] text-xs sm:text-sm mt-2 leading-relaxed">
+                Real-time updates from aspirants across the country. From PPDT experiences to daily motivation.
+              </p>
+            </div>
+            <button
+              onClick={() => openAuth('login')}
+              className="px-6 py-2.5 bg-[#0f1c3f] border border-[#7984ad]/30 text-white rounded-full hover:bg-[#0f1c3f]/50 transition-all font-bold text-xs uppercase tracking-wider"
+            >
+              View Global Feed
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Post 1 */}
+            <div className="glass-dark p-6 rounded-2xl border border-white/[0.05] hover:border-[#ffe08f]/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-cover bg-center border border-[#ffe08f]" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDp_iCeR5MmKLSP4eXw7Du0eoBIyoLbEwYHdMcHb5cr-UOoskn-YtFCEa91ollsjjafrTNg9WGNywd1RsWtvI6JEMknHyOC5kwYBcul9B5CM392zrXGBUz0a2L_se67XVcc_gRY-wjCXFane9LiEagRcHGdyJBF_xleMHb6TfhkV7PBb2e5wkM8cjxiJnpLqvqnUmdm2kRbASHPROGcvwsjMpEPolC8gnNDtmVQMFR91HvcBxEmCgdvu1aXrXyoh2oU57Z7aVtA3S9B')" }}></div>
+                <div>
+                  <p className="font-bold text-xs text-white">Vikram S. <span className="ml-2 px-1.5 py-0.5 bg-[#ffe08f]/20 text-[#ffe08f] text-[8px] rounded uppercase font-semibold">Recommended</span></p>
+                  <p className="text-[9px] text-[#7984ad] uppercase tracking-wider">AFSB Varanasi</p>
+                </div>
+              </div>
+              <p className="text-xs text-[#7984ad] mb-4 italic leading-relaxed">
+                "Just got recommended from 4 AFSB! The AI Mock Interviews on SSB Connect were literally 90% identical to the real ones."
+              </p>
+              <div className="flex items-center gap-4 text-[#7984ad]">
+                <div className="flex items-center gap-1"><Heart size={12} /> <span className="text-[10px]">142</span></div>
+                <div className="flex items-center gap-1"><MessageSquare size={12} /> <span className="text-[10px]">28</span></div>
+              </div>
+            </div>
+
+            {/* Post 2 */}
+            <div className="glass-dark p-6 rounded-2xl border border-white/[0.05] hover:border-[#ffe08f]/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-cover bg-center border border-white/10" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAudgJklV1J_ByEzu3pg9Zij7IJHm2xNXPBKgrPBCdrxWABPTOl6KFwCXUdZhMi71EfBs1yokw7gsboGHQBHv8NdCdPdkVGbTog1y8WVt6Vow6abC5njAx5tGxvL-CeYaJIBQ_OAUkTUBV8tCY4b-w65UjkpHcvbWQIo6VbPDv91gG6mr6ofvLCLuLFsqw8XoBilWi9cWcRkfkOgemPB-eX2eRW8oXS2K7gfev0zdP3Ax5rFbLw9w9Ow1AaVRgiAHazz9tut9_GnkA9')" }}></div>
+                <div>
+                  <p className="font-bold text-xs text-white">Priya Mallik</p>
+                  <p className="text-[9px] text-[#7984ad] uppercase tracking-wider">NDA 152 Aspirant</p>
+                </div>
+              </div>
+              <p className="text-xs text-[#7984ad] mb-4 leading-relaxed">
+                Daily Run completed. 5km in 22:40. Discipline is the only way forward. Who's joining the morning OIR session tomorrow? ⚔️
+              </p>
+              <div className="flex items-center gap-4 text-[#7984ad]">
+                <div className="flex items-center gap-1"><Heart size={12} /> <span className="text-[10px]">89</span></div>
+                <div className="flex items-center gap-1"><MessageSquare size={12} /> <span className="text-[10px]">12</span></div>
+              </div>
+            </div>
+
+            {/* Post 3 */}
+            <div className="glass-dark p-6 rounded-2xl border border-white/[0.05] hover:border-[#ffe08f]/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-cover bg-center border border-white/10" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAYMXolo4esT4P559QNgUnU8m8gEGzojG0ncrssJRkOmcQRamVJfU3EK50KlkP3SjIW58XgchFqSokskZYEzowzVzRF8yS0FlegAUUYUXbAlPDjpnGlpHGn_0Opsiyfhny6e3uN54C7DbQrRCC0H2lj-CJz9DOe4zlVxw8Ugs8rr6bkyOU7h6WFPGtA2K7_C1CGHtzpXe7Ebv1Ae6an3JYRKzeMxZfNkXdn7HOWfAYakMQejVAoMnKcFn49toMMciP8xt1MFKlhz41R')" }}></div>
+                <div>
+                  <p className="font-bold text-xs text-white">Arjun Mehta</p>
+                  <p className="text-[9px] text-[#7984ad] uppercase tracking-wider">SSB Hub Master</p>
+                </div>
+              </div>
+              <p className="text-xs text-[#7984ad] mb-4 leading-relaxed">
+                Shared a new PDF on TAT Story Structures for fresher level candidates in the Hub section. Go check it out!
+              </p>
+              <div className="p-3 bg-[#0f1c3f] rounded-lg border border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="text-[#ffe08f] w-4 h-4" />
+                  <span className="text-[10px] font-semibold truncate text-[#7984ad]">TAT_Mastery_V1.pdf</span>
+                </div>
+                <Download className="w-4 h-4 text-[#7984ad] hover:text-[#ffe08f] cursor-pointer" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Success Stories Section */}
+      <section id="stories" className="py-20 bg-[#f2f3f7]">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-[#ffe08f]/20 rounded-[2rem] -rotate-2"></div>
+              <div className="relative rounded-[2rem] overflow-hidden aspect-video shadow-2xl bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC-XVszwG9Qgj8aDhrACv0RFXtLIeSVZb40RSXM-atBUOEAtIwSxsKQROIYhMXKFq1_ap1OJ-RlWDmFRBBXOrABuCeuasDZUqftJVENAehmEDl0F6DIgKS7zKHU2j_U5upPHTdpTqYJETb3hSOPHAK0Mmc8d5OrJRdgUwgAinh15rCj_Cd4OEjjUK5HSl91d4LQSuvzd6rNyGeCanBdSiBTJiuWGQzSrnKNg6ITJef2uckZb8WJt6KUjve4Tl_9kbOJN7yfUvqqHmPD')" }}></div>
+              <div className="absolute -bottom-8 -right-4 bg-white p-5 rounded-2xl shadow-lg max-w-[220px]">
+                <p className="text-[#000317] font-bold text-2xl">1,240+</p>
+                <p className="text-[#6B7280] text-[9px] uppercase tracking-wider font-semibold mt-1 leading-normal">
+                  Officers Recommended in 2023 via SSB Connect
+                </p>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <h3 className="text-3xl font-bold text-[#000317] tracking-tight">From Aspirants to Officers.</h3>
+              <p className="text-sm text-[#6B7280] leading-relaxed">
+                Our platform isn't just about social networking—it's about the result. We track every recommended candidate's journey to provide you with the exact blueprints for success.
+              </p>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <CheckCircle className="text-green-600 w-5 h-5 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-xs text-[#000317]">Vetted Strategies</p>
+                    <p className="text-[#45464e] text-xs mt-0.5">Learn from those who have already made it to the academies.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <CheckCircle className="text-green-600 w-5 h-5 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-xs text-[#000317]">Academy Networking</p>
+                    <p className="text-[#45464e] text-xs mt-0.5">Get insights about life at NDA, IMA, OTA, and AFA directly from cadets.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <CheckCircle className="text-green-600 w-5 h-5 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-xs text-[#000317]">Officer-Led Webinars</p>
+                    <p className="text-[#45464e] text-xs mt-0.5">Monthly sessions with retired GTOs and Interviewing Officers.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-[#000317] text-white py-16 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+          <div className="max-w-xs">
+            <div className="flex items-center gap-2 mb-6">
+              <Shield className="text-[#ffe08f] w-8 h-8 fill-current" />
+              <h1 className="text-xl font-bold text-[#ffe08f]">SSB Connect</h1>
+            </div>
+            <p className="text-[#7984ad] text-xs leading-relaxed mb-6">
+              Empowering the next generation of Indian Armed Forces officers through community, technology, and discipline.
+            </p>
+            <div className="flex gap-4 text-[#7984ad]">
+              <Globe className="w-5 h-5 cursor-pointer hover:text-[#ffe08f]" />
+              <Share2 className="w-5 h-5 cursor-pointer hover:text-[#ffe08f]" />
+              <Mail className="w-5 h-5 cursor-pointer hover:text-[#ffe08f]" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-12 w-full md:w-auto">
+            <div>
+              <h4 className="text-[#ffe08f] font-bold mb-6 text-xs uppercase tracking-widest">Company</h4>
+              <ul className="space-y-3 text-xs text-[#7984ad]">
+                <li><a className="hover:text-white" href="#">About Us</a></li>
+                <li><a className="hover:text-white" href="#">Our Mission</a></li>
+                <li><a className="hover:text-white" href="#">Careers</a></li>
+                <li><a className="hover:text-white" href="#">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-[#ffe08f] font-bold mb-6 text-xs uppercase tracking-widest">Platform</h4>
+              <ul className="space-y-3 text-xs text-[#7984ad]">
+                <li><a className="hover:text-white" href="#features">Practice Hub</a></li>
+                <li><a className="hover:text-white" href="#features">AI Mentor</a></li>
+                <li><a className="hover:text-white" href="#features">OLQ Tracker</a></li>
+              </ul>
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <h4 className="text-[#ffe08f] font-bold mb-6 text-xs uppercase tracking-widest">Enlist Today</h4>
+              <div className="flex bg-[#0f1c3f] rounded-lg p-1 border border-white/10 max-w-sm">
+                <input className="bg-transparent border-none focus:ring-0 text-white text-xs px-3 py-2 w-full outline-none" placeholder="Email Address" type="email" />
+                <button className="bg-[#ffe08f] hover:bg-[#fed977] text-[#241a00] font-bold px-4 py-1.5 rounded-md text-xs uppercase tracking-wider">Join</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[#7984ad] text-xs">
+          <p>© 2026 SSB Connect. For the Brave.</p>
+          <div className="flex gap-6">
+            <a className="hover:text-white" href="#">Privacy Policy</a>
+            <a className="hover:text-white" href="#">Terms of Service</a>
+          </div>
         </div>
       </footer>
     </div>
